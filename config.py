@@ -1,11 +1,11 @@
 from utils import Json
 
+from asyncio import run
+from datetime import datetime, timedelta, timezone
 from os.path import isfile
 
 from pydantic import BaseModel
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession, create_async_engine
-from sqlalchemy.orm.decl_api import DeclarativeMeta
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
 class WebConfig(BaseModel):
@@ -14,7 +14,7 @@ class WebConfig(BaseModel):
 
 
 class SQLAlchemyConfig(BaseModel):
-    url: str = "sqlite:///./data.db"
+    url: str = "sqlite+aiosqlite:///data.db"
     check_same_thread: bool = False
 
 
@@ -30,33 +30,21 @@ else:
 
         },
         "sqlalchemy": {
-            "url": "sqlite:///./data.db",
+            "url": "sqlite+aiosqlite:///data.db",
             "check_same_thread": False
-        }
+        },
+        "timezone": 8,
     }
 
 WEB_CONFIG = WebConfig(**config.get("web", {}))
 SQLALCHEMY_CONFIG = SQLAlchemyConfig(**config.get("sqlalchemy", {}))
 
-engine = create_async_engine(
-    SQLALCHEMY_CONFIG.url, connect_args={
-        "check_same_thread": SQLALCHEMY_CONFIG.check_same_thread}
+ENGINE = create_async_engine(
+    SQLALCHEMY_CONFIG.url,
+    connect_args={
+        "check_same_thread": SQLALCHEMY_CONFIG.check_same_thread,
+    },
 )
-class Base(DeclarativeMeta):
-    pass
 
-class Test(Base):
-    __tablename__ = "test"
-    account: str = Column(String, primary_key=True, unique=True, nullable=False)
-    password: str = Column(String, nullable=False)
-
-
-async def create_session() -> :
-    Session = async_sessionmaker()
-    session = Session()
-
-    return session
-
-Base.metadata.create_all(engine)
-
-s = create_session()
+TIMEZONE = timezone(timedelta(hours=config.get("timezone", 8)))
+def NOWTIME(): return datetime.now(TIMEZONE)

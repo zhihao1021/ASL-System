@@ -4,9 +4,9 @@ from aiofiles import open as aopen
 from fastapi.responses import HTMLResponse
 
 
-async def open_templates(filepath: str) -> HTMLResponse:
+async def open_template(filepath: str) -> HTMLResponse:
     filepath = filepath if filepath.endswith(".html") else f"{filepath}.html"
-    filepath = join("templates", filepath)
+    filepath = filepath if filepath == "index.html" else join("templates", filepath)
 
     if isfile(filepath):
         async with aopen(filepath, mode="rb") as html_file:

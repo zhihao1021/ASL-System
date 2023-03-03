@@ -1,4 +1,6 @@
+aiofiles
 fastapi
 uvicorn
-sqlalchemy
+sqlmodel
 orjson
+aiosqlite
