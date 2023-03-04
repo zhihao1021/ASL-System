@@ -25,8 +25,6 @@ async def sql_init():
 
             await session.commit()
 
-run(sql_init())
-
 
 if __name__ == "__main__":
     from platform import system
@@ -37,6 +35,8 @@ if __name__ == "__main__":
     server = gen_server()
 
     loop = new_event_loop()
+    sql_init_task = loop.create_task(sql_init())
+    loop.run_until_complete(sql_init_task)
     app_task = loop.create_task(server.serve())
     loop.run_until_complete(app_task)
 
