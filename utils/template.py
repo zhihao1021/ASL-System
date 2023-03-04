@@ -6,7 +6,8 @@ from fastapi.responses import HTMLResponse
 
 async def open_template(filepath: str) -> HTMLResponse:
     filepath = filepath if filepath.endswith(".html") else f"{filepath}.html"
-    filepath = filepath if filepath == "index.html" else join("templates", filepath)
+    filepath = filepath if filepath == "index.html" else join(
+        "templates", filepath)
 
     if isfile(filepath):
         async with aopen(filepath, mode="rb") as html_file:

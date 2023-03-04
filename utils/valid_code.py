@@ -24,12 +24,14 @@ def gen_valid_code() -> tuple[str, BytesIO]:
         x2 = randint(0, 128)
         y2 = randint(0, 42)
         y1 = randint(0, 42)
-        draw.line((x1, y1, x2, y2), fill=random_color(100, 200), width=randint(1, 5))
+        draw.line((x1, y1, x2, y2), fill=random_color(
+            100, 200), width=randint(1, 5))
     for i, s in enumerate(answer):
         draw.text((20 * i, randint(-6, 6)), s, random_color(0, 128), FONT)
     io = BytesIO()
     img.save(io, format="jpeg")
     img.save("d.png")
     return answer, io
+
 
 gen_valid_code()

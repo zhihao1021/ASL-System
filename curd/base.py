@@ -70,7 +70,7 @@ class CURDBase(Generic[ModelType, CreateSchemaType]):
             db_session.add(obj)
             await db_session.commit()
         except IntegrityError:
-            db_session.rollback()
+            await db_session.rollback()
         await db_session.refresh(obj)
         return obj
 

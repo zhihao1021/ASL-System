@@ -61,6 +61,7 @@ class Json:
         :param file: 文件路徑。
         :param data: 輸入資料。
         :param option: orjson選項。
+        :param by_alias: pydantic選項。
         """
         async with aopen(file, mode="wb") as open_file:
             await open_file.write(orjson.dumps(

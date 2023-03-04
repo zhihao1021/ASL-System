@@ -51,11 +51,11 @@ async def auth(data: LoginData):
         await curd_session.create(session)
 
         status_code = status.HTTP_200_OK
-        response = Response(**{
+        raw_response = Response(**{
             "status": status_code,
             "success": True,
             "data": "Auth Success!"
         })
-        json_response = ORJSONResponse(response.dict(), status_code)
-        json_response.set_cookie("session", session_id)
-    return json_response
+        response = ORJSONResponse(raw_response.dict(), status_code)
+        response.set_cookie("session", session_id)
+    return response
