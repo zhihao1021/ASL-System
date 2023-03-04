@@ -4,7 +4,6 @@ from typing import (Any, Mapping, Optional, Sequence,
 from sqlalchemy import util
 from sqlalchemy.ext.asyncio import (
     AsyncConnection, AsyncEngine, AsyncSession as _AsyncSession)
-from sqlalchemy.orm import Session
 from sqlmodel.engine.result import Result, ScalarResult
 from sqlmodel.sql.base import Executable
 from sqlmodel.sql.expression import Select, SelectOfScalar

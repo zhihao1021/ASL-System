@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="icon" href="/static/img/favicon.ico">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/css/login.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="/static/js/index.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script> -->
+        <title>線上請假系統</title>
+    </head>
+    <body>
+        <img id="background" src="/static/img/background.jpg">
+        <div id="login-box">
+            <div class="title">嘉義市私立嘉華中學</div>
+            <hr>
+            <div class="title">線上請假系統</div>
+            <input class="account" type="text" placeholder="帳號" required>
+            <input class="password" type="password" placeholder="密碼" required>
+            <div id="valid-box">
+                <input class="valid-code" type="text" placeholder="驗證碼" required>
+                <img src="/static/img/ValidCode.jpg">
+            </div>
+            <div id="message-box" style="display: none;">驗證碼未輸入。</div>
+            <button onclick="auth();">登入</button>
+        </div>
+    </body>
+    <script>
+        let auth_callback = (result) => {
+            location.href = "/";
+        };
+        let auth_error = (error) => {
+            let message_box = document.querySelector("#message-box");
+            let account_ele = document.querySelector("input.account");
+            let password_ele = document.querySelector("input.password");
+            if (error.status == 404) {
+                account_ele.value = "";
+                password_ele.value = "";
+                message_box.textContent = "帳號有誤或不存在。";
+                message_box.style.display = "";
+            }
+            else if (error.status == 403) {
+                password_ele.value = "";
+                message_box.textContent = "密碼錯誤。";
+                message_box.style.display = "";
+            }
+        }
+        function auth() {
+            let message_box = document.querySelector("#message-box");
+            let account = document.querySelector("input.account").value;
+            if (!account) {
+                message_box.textContent = "帳號未輸入。";
+                message_box.style.display = "";
+                return;
+            }
+            let password = document.querySelector("input.password").value;
+            if (!password) {
+                message_box.textContent = "密碼未輸入。";
+                message_box.style.display = "";
+                return;
+            }
+            let valid_code = document.querySelector("input.valid-code").value;
+            if (!valid_code) {
+                message_box.textContent = "驗證碼未輸入。";
+                message_box.style.display = "";
+                return;
+            }
+
+            postJSON("/api/login/auth", {
+                "account": account,
+                "password": password,
+                "valid_code": valid_code,
+            }, auth_callback, auth_error)
+        }
+    </script>
+</html>

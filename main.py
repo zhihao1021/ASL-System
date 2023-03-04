@@ -1,6 +1,31 @@
+from config import ENGINE
+from aiosqlmodel import AsyncSession
+from models import User
 from web import gen_server
 
-from asyncio import all_tasks, new_event_loop
+from asyncio import all_tasks, new_event_loop, run
+
+from sqlmodel import SQLModel
+
+DEBUG = True
+
+
+async def sql_init():
+    async with ENGINE.begin() as conn:
+        if DEBUG:
+            await conn.run_sync(SQLModel.metadata.drop_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
+
+    if DEBUG:
+        async with AsyncSession(ENGINE) as session:
+            session.add(
+                User(**{"sid": "000", "account": "admin", "password": "admin"}))
+            session.add(
+                User(**{"sid": "001", "account": "alice", "password": "alice"}))
+
+            await session.commit()
+
+run(sql_init())
 
 
 if __name__ == "__main__":

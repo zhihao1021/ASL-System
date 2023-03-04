@@ -10,7 +10,7 @@ async def open_template(filepath: str) -> HTMLResponse:
 
     if isfile(filepath):
         async with aopen(filepath, mode="rb") as html_file:
-            return HTMLResponse(await html_file.read(), 403)
+            return HTMLResponse(await html_file.read(), 200)
     return await error_404()
 
 

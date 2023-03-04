@@ -1,50 +1,32 @@
-from .post_model import EncryptLoginData
+from .api import api_router
 
-from aiosqlmodel import AsyncSession, SessionData
-from config import ENGINE, WEB_CONFIG
-from utils import error_403, error_404, error_500
-from utils import gen_session_id, open_template
+from curd import CURDSession
+from config import WEB_CONFIG
+from utils import error_403, error_404, error_500, open_template
 
 from typing import Optional
 
 from fastapi import Cookie, FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from sqlmodel import select
 from uvicorn import Config, Server
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(api_router, prefix="/api")
+
+curd_session = CURDSession()
 
 
 @app.get("/")
 async def index(session: Optional[str] = Cookie(None)):
-    valid = True
-    # 檢查Session是否為空
-    if session == None:
-        valid = False
-    else:
-        # 尋找Session
-        query_stat = select(SessionData).filter(SessionData.session == session)
-
-        async with AsyncSession(ENGINE) as sql_session:
-            # 執行指令
-            results = await sql_session.exec(query_stat)
-            result = results.first()
-
-            # 檢查結果是否存在
-            if results == None:
-                valid = False
-            else:
-                # 更新最後登入時間
-                await result.update_time()
+    # 檢查紀錄是否存在
+    obj = await curd_session.get_by_session(session)
 
     # 檢查驗證是否通過
-    if not valid:
+    if not obj:
         # 未通過驗證，重新導向至登入頁面
-        session_id = gen_session_id()
         respond = RedirectResponse("/login")
-        respond.set_cookie("session", session_id)
     else:
         # 通過驗證，回傳主頁
         respond = await open_template("index")
@@ -55,11 +37,6 @@ async def index(session: Optional[str] = Cookie(None)):
 @app.get("/login")
 async def login():
     return await open_template("login")
-
-
-@app.post("/api/valid")
-async def api_valid(data: EncryptLoginData):
-    valid_result = await data.valid()
 
 
 @app.exception_handler(403)
