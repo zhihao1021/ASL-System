@@ -50,11 +50,14 @@ class ValidCodeDict:
     def __thread_job(self):
         while True:
             try:
-                for key in filter(lambda k: time() - self.data.get(k)[1] > 600, self.data.keys()):
+                key_list = filter(lambda k: time() - self.data.get(k)[1] > 600, self.data.keys())
+                for key in key_list:
                     del self.data[key]
                 sleep(60)
             except SystemExit:
                 return
+            except:
+                pass
 
     def valid(self, session: str, valid_code: str) -> bool:
         answer = self.get(session)
