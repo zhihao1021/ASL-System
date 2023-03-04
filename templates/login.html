@@ -13,14 +13,14 @@
     <body>
         <img id="background" src="/static/img/background.jpg">
         <div id="login-box">
-            <div class="title">嘉義市私立嘉華中學</div>
+            <div class="title">嘉義市----中學</div>
             <hr>
             <div class="title">線上請假系統</div>
             <input class="account" type="text" placeholder="帳號" required>
             <input class="password" type="password" placeholder="密碼" required>
             <div id="valid-box">
                 <input class="valid-code" type="text" placeholder="驗證碼" required>
-                <img src="/static/img/ValidCode.jpg">
+                <img id="valid-img" src="/valid-code" onclick="this.src = `/valid-code?d=${Date.now()}`" title="點擊刷新">
             </div>
             <div id="message-box" style="display: none;">驗證碼未輸入。</div>
             <button onclick="auth();">登入</button>
@@ -34,6 +34,7 @@
             let message_box = document.querySelector("#message-box");
             let account_ele = document.querySelector("input.account");
             let password_ele = document.querySelector("input.password");
+            let valid_code_ele = document.querySelector("input.valid-code");
             if (error.status == 404) {
                 account_ele.value = "";
                 password_ele.value = "";
@@ -45,6 +46,13 @@
                 message_box.textContent = "密碼錯誤。";
                 message_box.style.display = "";
             }
+            else if (error.status == 400) {
+                password_ele.value = "";
+                message_box.textContent = "驗證碼錯誤。";
+                message_box.style.display = "";
+            }
+            valid_code_ele.value = "";
+            document.querySelector("#valid-img").src = `/valid-code?d=${Date.now()}`
         }
         function auth() {
             let message_box = document.querySelector("#message-box");

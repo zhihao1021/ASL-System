@@ -118,6 +118,7 @@ body::after {
 #valid-box img {
     object-fit: contain;
     height: 60%;
+    cursor: pointer;
 }
 
 #login-box button {
