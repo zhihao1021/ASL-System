@@ -53,7 +53,8 @@ class ValidCodeDict:
                 key_list = filter(lambda k: time() - self.data.get(k)[1] > 600, self.data.keys())
                 for key in key_list:
                     del self.data[key]
-                sleep(60)
+                for _ in randint(60):
+                    sleep(1)
             except SystemExit:
                 return
             except:
