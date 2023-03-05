@@ -32,8 +32,15 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
     user = await curd_user.get_by_account(data.account)
     if session is None:
         session = gen_session_id()
-    print(data, VALID_CODE_DICT.get(session))
-    if user == None:
+
+    if not VALID_CODE_DICT.valid(session, data.valid_code):
+        status_code = status.HTTP_400_BAD_REQUEST
+        response = Response(**{
+            "status": status_code,
+            "success": False,
+            "data": "Wrong Valid Code!"
+        })
+    elif user == None:
         status_code = status.HTTP_404_NOT_FOUND
         response = Response(**{
             "status": status_code,
@@ -46,13 +53,6 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
             "status": status_code,
             "success": False,
             "data": "Wrong Password!"
-        })
-    elif not VALID_CODE_DICT.valid(session, data.valid_code):
-        status_code = status.HTTP_400_BAD_REQUEST
-        response = Response(**{
-            "status": status_code,
-            "success": False,
-            "data": "Wrong Valid Code!"
         })
     else:
         session = gen_session_id()

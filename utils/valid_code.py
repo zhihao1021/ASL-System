@@ -1,14 +1,16 @@
 from .threading_ import Thread
+from .util import string_exception
 
 from io import BytesIO
+from logging import getLogger, Logger
 from random import choice, randint
 from time import sleep, time
-from typing import Optional
+from typing import Optional, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
 FONTS = tuple(map(lambda i: ImageFont.truetype(
-    "Mynerve-Regular.ttf", size=i), range(32, 40)))
+    "Mynerve-Regular.ttf", size=i), range(128, 160)))
 
 
 def random_color(l: int = 0, u: int = 255) -> tuple[int]:
@@ -16,23 +18,23 @@ def random_color(l: int = 0, u: int = 255) -> tuple[int]:
 
 
 def random_string() -> str:
-    return f"{randint(10, 99)}+{randint(10, 99)}="
+    return f"{randint(10, 25)}+{randint(10, 25)}="
 
 
 def gen_valid_code() -> tuple[str, bytes]:
-    img = Image.new("RGB", (128, 42), random_color(155))
+    img = Image.new("RGB", (512, 168), random_color(155))
     draw = ImageDraw.Draw(img)
     answer = random_string()
-    for i in range(randint(3, 6)):
-        x1, x2, x3 = map(lambda x: randint(0, 128), range(3))
-        y1, y2, y3 = map(lambda x: randint(0, 42), range(3))
-        draw.line((x1, y1, x2, y2), fill=random_color(), width=randint(1, 5))
+    for i in range(randint(5, 10)):
+        x1, x2, x3 = map(lambda x: randint(0, 512), range(3))
+        y1, y2, y3 = map(lambda x: randint(0, 168), range(3))
+        draw.line((x1, y1, x2, y2), fill=random_color(), width=randint(5, 24))
         for _ in range(randint(1, 5)):
-            draw.arc((x3, y3, x3 + randint(-60, 60), y3 + randint(-20, 20)),
-                     randint(0, 360), randint(0, 360), random_color(), randint(1, 5))
+            draw.arc((x3, y3, x3 + randint(-256, 256), y3 + randint(-84, 84)),
+                     randint(0, 360), randint(0, 360), random_color(), randint(5, 24))
     for i, s in enumerate(answer):
-        draw.text((20 * i, randint(-6, 6)), s,
-                  random_color(0, 100), choice(FONTS))
+        draw.text((80 * i, randint(-24, 24)), s,
+                  random_color(0, 140), choice(FONTS), stroke_width=randint(1, 3))
     io = BytesIO()
     img.save(io, format="jpeg")
     answer = str(eval(answer.removesuffix("=")))
@@ -40,8 +42,12 @@ def gen_valid_code() -> tuple[str, bytes]:
 
 
 class ValidCodeDict:
-    def __init__(self) -> None:
+    def __init__(self, logger: Optional[Union[str, Logger]] = None) -> None:
         self.data = {}
+
+        if type(logger) == str:
+            logger = getLogger(logger)
+        self.logger = logger if logger else getLogger("main")
 
         self.thread = Thread(target=self.__thread_job,
                              name="ValidCodeDict Auto Cleaner")
@@ -50,15 +56,16 @@ class ValidCodeDict:
     def __thread_job(self):
         while True:
             try:
-                key_list = filter(lambda k: time() - self.data.get(k)[1] > 600, self.data.keys())
+                key_list = tuple(filter(lambda k: time() -
+                                  self.data.get(k)[1] > 600, self.data.keys()))
                 for key in key_list:
                     del self.data[key]
-                for _ in randint(60):
-                    sleep(1)
+                for _ in range(600):
+                    sleep(0.1)
             except SystemExit:
                 return
-            except:
-                pass
+            except Exception as exc:
+                self.logger.error(string_exception(exc))
 
     def valid(self, session: str, valid_code: str) -> bool:
         answer = self.get(session)
@@ -66,7 +73,6 @@ class ValidCodeDict:
             return False
         self.remove(session)
         return True
-
 
     def update(self, session: str, answer: str):
         self.data[session] = (answer, time())

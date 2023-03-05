@@ -1,6 +1,7 @@
 from aiosqlmodel import AsyncSession
 from config import ENGINE
 from models import IDBase
+from utils import format_exception
 
 from typing import Generic, Optional, Type, TypeVar, Union
 

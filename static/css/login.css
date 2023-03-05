@@ -33,6 +33,10 @@ body::after {
     backdrop-filter: blur(5px);
 }
 
+#react-content {
+    z-index: 1;
+}
+
 #login-box {
     background-color: #FFFFFF90;
     margin: 1vmin;
@@ -47,7 +51,6 @@ body::after {
     /* font-family: "Noto Sans TC", sans-serif; */
     font-family: "Microsoft JhengHei";
     align-items: center;
-    z-index: 1;
 }
 
 #login-box .title {
@@ -82,7 +85,7 @@ body::after {
     border-bottom-style: solid;
     border-color: #AAAAAA;
     outline: none;
-    transition: border-color 0.5s;
+    transition: 0.2s;
 }
 #login-box input:focus {
     border-color: #000000;
@@ -137,6 +140,14 @@ body::after {
 }
 #login-box button:hover {
     background-color: #999999;
+}
+
+input.empty {
+    color: #FF0000;
+    border-color: #FF0000 !important;
+}
+input.empty::placeholder {
+    color: #FF0000;
 }
 
 @media (max-aspect-ratio: 1/1) {

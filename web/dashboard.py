@@ -9,7 +9,7 @@ from utils import (error_403, error_404, error_500, gen_session_id,
 from typing import Optional
 
 from fastapi import Cookie, FastAPI
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Config, Server
 
@@ -23,12 +23,12 @@ curd_session = CURDSession()
 @app.get("/")
 async def index(session: Optional[str] = Cookie(None)):
     # 檢查紀錄是否存在
-    obj = await curd_session.get_by_session(session)
+    login_session = await curd_session.get_by_session(session)
 
     # 檢查驗證是否通過
-    if not obj:
-        # 未通過驗證，重新導向至登入頁面
-        response = RedirectResponse("/login")
+    if not login_session:
+        # 未通過驗證，回傳登入頁面
+        response = await open_template("login")
         if session is None:
             session = gen_session_id()
             response.set_cookie("session", session)
@@ -40,7 +40,7 @@ async def index(session: Optional[str] = Cookie(None)):
 
 
 @app.get("/valid-code")
-async def valid_code(session: Optional[str] = Cookie(None)):
+def valid_code(session: Optional[str] = Cookie(None)):
     answer, img_bytes = gen_valid_code()
     response = Response(content=img_bytes, headers={
                         "Cache-Control": "no-store"}, media_type="image/jpeg")
@@ -49,11 +49,6 @@ async def valid_code(session: Optional[str] = Cookie(None)):
         response.set_cookie("session", session)
     VALID_CODE_DICT.update(session, answer)
     return response
-
-
-@app.get("/login")
-async def login():
-    return await open_template("login")
 
 
 @app.exception_handler(403)

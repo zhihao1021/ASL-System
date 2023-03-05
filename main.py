@@ -1,13 +1,14 @@
-from config import ENGINE
 from aiosqlmodel import AsyncSession
+from config import ENGINE
 from models import User
+from swap import VALID_CODE_DICT
 from web import gen_server
 
 from asyncio import all_tasks, new_event_loop, run
 
 from sqlmodel import SQLModel
 
-DEBUG = True
+DEBUG = False
 
 
 async def sql_init():
@@ -25,18 +26,16 @@ async def sql_init():
 
             await session.commit()
 
-
 if __name__ == "__main__":
     from platform import system
     if system() == "Windows":
         from asyncio import set_event_loop_policy, WindowsSelectorEventLoopPolicy
         set_event_loop_policy(WindowsSelectorEventLoopPolicy())
+    run(sql_init())
 
     server = gen_server()
 
     loop = new_event_loop()
-    sql_init_task = loop.create_task(sql_init())
-    loop.run_until_complete(sql_init_task)
     app_task = loop.create_task(server.serve())
     loop.run_until_complete(app_task)
 
