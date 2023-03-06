@@ -4,17 +4,22 @@ from curd import CURDSession
 from config import WEB_CONFIG
 from swap import VALID_CODE_DICT
 from utils import (error_403, error_404, error_500, gen_session_id,
-                   gen_valid_code, open_template)
+                   gen_valid_code, Json, open_template)
 
 from typing import Optional
 
 from fastapi import Cookie, FastAPI
-from fastapi.responses import Response
+from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Config, Server
 
+OFFLINE = True
+SCRIPTS_MAP: dict[str, dict[str, str]] = Json.load_nowait("scripts_map.json")
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
+if OFFLINE:
+    app.mount("/node_modules", StaticFiles(directory="node_modules"), name="node_modules")
 app.include_router(api_router, prefix="/api")
 
 curd_session = CURDSession()
@@ -49,6 +54,17 @@ def valid_code(session: Optional[str] = Cookie(None)):
         response.set_cookie("session", session)
     VALID_CODE_DICT.update(session, answer)
     return response
+
+
+@app.get("/scripts/{filename}")
+def scripts(filename: str):
+    data = SCRIPTS_MAP.get(filename)
+    if not data:
+        return Response(status_code=404)
+
+    if OFFLINE:
+        return RedirectResponse(data.get("local"))
+    return RedirectResponse(data.get("cdn"), headers={"cache-control": "max-age=315360000"})
 
 
 @app.exception_handler(403)
