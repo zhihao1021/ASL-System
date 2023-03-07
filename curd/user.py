@@ -2,14 +2,14 @@ from .base import CURDBase
 
 from aiosqlmodel import AsyncSession
 from models import User
-from schemas import UserCreate
+from schemas import UserCreate, UserUpdate
 
 from typing import Optional
 
 from sqlmodel import select
 
 
-class CURDUser(CURDBase[User, UserCreate]):
+class CURDUser(CURDBase[User, UserCreate, UserUpdate]):
     def __init__(self) -> None:
         super().__init__(User)
 

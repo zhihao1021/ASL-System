@@ -56,11 +56,11 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
         })
     else:
         session = gen_session_id()
-        session = SessionCreate(**{
+        session_obj = SessionCreate(**{
             "session": session,
             "sid": user.sid
         })
-        await curd_session.create(session)
+        await curd_session.create(session_obj)
 
         status_code = status.HTTP_200_OK
         response = Response(**{

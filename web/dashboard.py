@@ -38,6 +38,8 @@ async def index(session: Optional[str] = Cookie(None)):
             session = gen_session_id()
             response.set_cookie("session", session)
     else:
+        # 更新最後登入時間
+        await curd_session.update_time(login_session)
         # 通過驗證，回傳主頁
         response = await open_template("index")
 

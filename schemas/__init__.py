@@ -1,2 +1,2 @@
-from .session import SessionCreate
-from .user import UserCreate
+from .session import SessionCreate, SessionUpdate
+from .user import UserCreate, UserUpdate

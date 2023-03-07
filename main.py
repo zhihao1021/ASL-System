@@ -8,7 +8,7 @@ from asyncio import all_tasks, new_event_loop, run
 
 from sqlmodel import SQLModel
 
-DEBUG = False
+DEBUG = True
 
 
 async def sql_init():
@@ -20,9 +20,9 @@ async def sql_init():
     if DEBUG:
         async with AsyncSession(ENGINE) as session:
             session.add(
-                User(**{"sid": "000", "account": "admin", "password": "admin"}))
+                User(**{"sid": "000", "name": "admin", "account": "admin", "password": "admin"}))
             session.add(
-                User(**{"sid": "001", "account": "alice", "password": "alice"}))
+                User(**{"sid": "001", "name": "alice", "account": "alice", "password": "alice"}))
 
             await session.commit()
 

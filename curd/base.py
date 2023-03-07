@@ -1,10 +1,10 @@
 from aiosqlmodel import AsyncSession
 from config import ENGINE
 from models import IDBase
-from utils import format_exception
 
-from typing import Generic, Optional, Type, TypeVar, Union
+from typing import Any, Generic, Optional, Type, TypeVar, Union
 
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
@@ -13,12 +13,13 @@ from sqlmodel.sql.expression import Select, SelectOfScalar
 
 ModelType = TypeVar("ModelType", bound=IDBase)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 _TSelectParam = TypeVar("_TSelectParam")
 
 
-class CURDBase(Generic[ModelType, CreateSchemaType]):
+class CURDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType], db_session: Optional[AsyncSession] = None) -> None:
         self.model = model
 
@@ -78,9 +79,26 @@ class CURDBase(Generic[ModelType, CreateSchemaType]):
     async def update(
         self,
         obj: ModelType,
-        db_session: Optional[AsyncSession] = None
+        obj_update: Union[UpdateSchemaType, dict[str, Any], ModelType],
+        db_session: Optional[AsyncSession] = None,
     ) -> ModelType:
-        return await self.create(obj, db_session)
+        db_session = db_session or self.db
+        obj_data = jsonable_encoder(obj)
+
+        if isinstance(obj_update, dict):
+            update_data = obj_update
+        else:
+            update_data = obj_update.dict(
+                exclude_unset=True
+            )  # This tells Pydantic to not include the values that were not sent
+        for field in obj_data:
+            if field in update_data:
+                setattr(obj, field, update_data[field])
+
+        db_session.add(obj)
+        await db_session.commit()
+        await db_session.refresh(obj)
+        return obj
 
     async def delete(
         self,
