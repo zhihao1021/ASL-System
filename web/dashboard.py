@@ -46,6 +46,11 @@ async def index(session: Optional[str] = Cookie(None)):
     return response
 
 
+@app.get("/favicon.ico")
+def favicon():
+    return RedirectResponse("/static/img/favicon.ico")
+
+
 @app.get("/valid-code")
 def valid_code(session: Optional[str] = Cookie(None)):
     answer, img_bytes = gen_valid_code()
