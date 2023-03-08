@@ -1,3 +1,5 @@
+@import url(/static/fonts/material-symbols.css);
+
 html,
 body {
     margin: 0px;
@@ -7,19 +9,61 @@ body {
 
 #top-bar {
     position: absolute;
-    z-index: 1;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
     width: 100%;
-    height: 10vh;
+    height: 8vh;
     background-color: #ECECEC;
     display: flex;
     align-items: center;
     box-shadow: 0px -14px 16px 16px black;
 }
 
+#top-bar .ms {
+    font-size: 2.7vh;
+    line-height: 2.7vh;
+    margin: 0.8vw;
+    cursor: pointer;
+    color: #888888;
+    transition: color 0.3s;
+}
+
+#top-bar .ms:hover {
+    color: #000000;
+}
+
 #top-bar img {
     object-fit: contain;
     height: 70%;
     cursor: pointer;
-    margin: 0.5vw;
+    margin: 0px;
     user-select: none;
+}
+
+#side-bar {
+    position: absolute;
+    top: 0px;
+    left: calc(-18vw + 1.6vw + 2.7vh);
+    z-index: 1;
+    width: 18vw;
+    height: 100%;
+    background-color: #88888890;
+    transition: left 0.5s;
+    display: flex;
+    flex-direction: column;
+    padding-top: 8vh;
+}
+
+#side-bar.activate,
+#side-bar:hover {
+    left: 0px;
+}
+
+#side-bar .box {
+    position: relative;
+    width: 100%;
+    height: 8vh;
+    background-color: black;
+    display: flex;
 }
