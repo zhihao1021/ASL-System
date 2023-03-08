@@ -3,12 +3,13 @@ from .api import api_router
 from curd import CURDSession
 from config import WEB_CONFIG
 from swap import VALID_CODE_DICT
+from urllib.parse import urlparse
 from utils import (error_403, error_404, error_500, gen_session_id,
                    gen_valid_code, Json, open_template)
 
 from typing import Optional
 
-from fastapi import Cookie, FastAPI
+from fastapi import Cookie, FastAPI, Request
 from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Config, Server
@@ -23,6 +24,15 @@ if OFFLINE:
 app.include_router(api_router, prefix="/api")
 
 curd_session = CURDSession()
+
+# 設置Cache Time
+@app.middleware("   ")
+async def api_filter(request: Request, call_next):
+    print(request.url)
+    response: Response = await call_next(request)
+    if not response.headers.get("cache-control"):
+        response.headers["cache-control"] = "max-age=0"
+    return response
 
 
 @app.get("/")
