@@ -16,6 +16,8 @@ class SessionBase(IDBase):
         nullable=False, foreign_key="UserData.sid", description="學號")
     last_login: datetime = SQLField(
         default_factory=NOWTIME, nullable=False, sa_column=Column(String()), description="最後登入時間")
+    ip: str = SQLField(
+        nullable=False, description="登入IP")
 
 
 class Session(SessionBase, table=True):

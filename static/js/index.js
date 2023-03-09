@@ -55,6 +55,10 @@ class MainContent extends React.Component {
                             <p className="ms">account_circle</p>
                             <p>帳號</p>
                         </div>
+                        <div className="user-menu-tag">
+                            <p className="ms">history</p>
+                            <p>登入紀錄</p>
+                        </div>
                         <div className="user-menu-tag" onClick={this.clickLogout.bind(this)}>
                             <p className="ms">logout</p>
                             <p>登出</p>

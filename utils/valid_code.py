@@ -68,6 +68,8 @@ class ValidCodeDict:
                 self.logger.error(string_exception(exc))
 
     def valid(self, session: str, valid_code: str) -> bool:
+        if session is None:
+            return False
         answer = self.get(session)
         if answer is None or valid_code != answer:
             return False

@@ -25,6 +25,16 @@ class CURDSession(CURDBase[Session, SessionCreate, SessionUpdate]):
             result = await db_session.exec(query_stat)
 
             return result.first()
+    
+    async def get_by_sid(
+        self,
+        sid: str,
+    ) -> Optional[list[Session]]:
+        async with AsyncSession(ENGINE) as db_session:
+            query_stat = select(Session).where(Session.sid == sid)
+            result = await db_session.exec(query_stat)
+
+            return result.all()
 
     async def update_time(
         self,

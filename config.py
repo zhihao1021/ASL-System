@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 class WebConfig(BaseModel):
     host: str = "0.0.0.0"
-    port: int = 8080
+    port: int = 8081
 
 
 class SQLAlchemyConfig(BaseModel):

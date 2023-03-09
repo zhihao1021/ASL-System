@@ -14,7 +14,8 @@ from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Config, Server
 
-OFFLINE = True
+from os.path import isfile
+OFFLINE = isfile("OFFLINE")
 SCRIPTS_MAP: dict[str, dict[str, str]] = Json.load_nowait("scripts_map.json")
 
 app = FastAPI()

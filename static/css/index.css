@@ -69,9 +69,9 @@ body {
 #top-bar .user-menu .user-menu-tag {
     display: flex;
     align-items: center;
-    margin: 1vh 0px;
+    margin: 0.75vh 0px;
     position: relative;
-    right: -14vh;
+    right: calc(-18vh - 2px);
     color: #666666;
     background-color: #DDDDDD;
     border-left-style: solid;
@@ -94,13 +94,17 @@ body {
 
 #top-bar .user-menu .user-menu-tag p {
     font-size: 2vh;
+    text-align: center;
+    text-indent: -1.5vh;
+    width: 13.5vh;
     height: 4vh;
     line-height: 4vh;
-    margin: 0px 2.5vh;
+    margin: 0px;
 }
 
 #top-bar .user-menu .user-menu-tag p.ms {
     margin: auto 1vh;
+    text-indent: 0px;
     width: 2.5vh;
 }
 

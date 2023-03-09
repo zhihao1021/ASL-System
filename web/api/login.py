@@ -5,10 +5,9 @@ from models import CustomResponse
 from schemas import SessionCreate
 from swap import VALID_CODE_DICT
 from typing import Optional
-from utils import gen_session_id
 
 
-from fastapi import APIRouter, status, Cookie
+from fastapi import APIRouter, Cookie, Request, status
 from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
 
@@ -31,9 +30,8 @@ curd_user = CURDUser()
     response_model=CustomResponse,
     description="Auth by account and password to get the session cookies."
 )
-async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
+async def auth(request: Request, data: LoginData, session: Optional[str] = Cookie(None)):
     user = await curd_user.get_by_account(data.account)
-    session = session or gen_session_id()
 
     if not VALID_CODE_DICT.valid(session, data.valid_code):
         status_code, response = response_400("Wrong Valid Code!")
@@ -42,10 +40,10 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
     elif data.password != user.password:
         status_code, response = response_403("Wrong Password!")
     else:
-        session = gen_session_id()
         session_obj = SessionCreate(**{
             "session": session,
-            "sid": user.sid
+            "sid": user.sid,
+            "ip": request.client.host
         })
         await curd_session.create(session_obj)
 
@@ -56,6 +54,4 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
             "data": "Auth Success!"
         })
 
-    response = ORJSONResponse(response.dict(), status_code)
-    response.set_cookie("session", session)
-    return response
+    return ORJSONResponse(response.dict(), status_code)

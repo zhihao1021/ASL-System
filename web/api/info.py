@@ -1,7 +1,7 @@
 from .responses import response_403, response_404 
 
 from curd import CURDSession, CURDUser
-from models import CustomResponse
+from models import CustomResponse, Session
 from typing import Optional
 from utils import permissions
 
@@ -47,9 +47,6 @@ async def get_user(sid: str, session: Optional[str] = Cookie(None)):
     return ORJSONResponse(
         response.dict(),
         status_code,
-        headers={
-            "cache-control": "max-age=300"
-        }
     )
 
 
@@ -77,7 +74,6 @@ async def get_user_icon(sid: str, session: Optional[str] = Cookie(None)):
                 response = FileResponse(file_path, media_type=f"image/{img_type}")
             else:
                 response = FileResponse("default_files/user_icon.png", media_type="image/png")
-            response.headers["cache-control"] = "max-age=300"
             return response
     else:
         status_code, response = response_403()
@@ -86,3 +82,30 @@ async def get_user_icon(sid: str, session: Optional[str] = Cookie(None)):
         response.dict(),
         status_code,
     )
+
+@router.get(
+    "/user/current/login-history",
+    response_class=ORJSONResponse,
+    response_model=CustomResponse,
+    description="Get the Login History of user whose sid equal to the given sid(\"current\" to query current user's)."
+)
+async def get_user_login_history(session: Optional[str] = Cookie(None)):
+    def encode_dict(d: Session):
+        result = d.dict()
+        result["current"] = d.session == session
+        return result
+    login_session = await curd_session.get_by_session(session)
+    target_sessions = await curd_session.get_by_sid(login_session.sid)
+
+    data: list[dict] = list(map(encode_dict, target_sessions))
+
+    status_code = status.HTTP_200_OK
+    response = CustomResponse(**{
+        "status": status_code,
+        "success": True,
+        "data": data
+    })
+
+    response = ORJSONResponse(response.dict(), status_code)
+    return response
+

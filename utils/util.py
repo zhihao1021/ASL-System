@@ -9,19 +9,20 @@ import inspect
 from pydantic import BaseModel
 
 
-def text_encode(text: Union[str, bytes]) -> str:
+def text_encode(text: Union[str, bytes], path_safe=False) -> str:
     """
     將明文加密。
     """
     text = text.encode() if type(text) == str else text
-    return b64encode(sha256(text).digest()).decode()
+    result = b64encode(sha256(text).digest()).decode()
+    return result.replace("/", "$") if path_safe else result
 
 
 def gen_session_id() -> str:
     """
     產生Session ID。
     """
-    return text_encode(uuid1().bytes.replace(b"/", b"$"))
+    return text_encode(uuid1().bytes, path_safe=True)
 
 
 def format_exception(exc: Exception) -> list[str]:

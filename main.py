@@ -8,8 +8,8 @@ from asyncio import all_tasks, new_event_loop, run
 
 from sqlmodel import SQLModel
 
-DEBUG = True
-# DEBUG = False
+from os.path import isfile
+DEBUG = isfile("DEBUG")
 
 
 async def sql_init():
