@@ -1,5 +1,6 @@
-from .login import router as login_router
 from .info import router as info_router
+from .login import router as login_router
+from .logout import router as logout_router
 
 from curd import CURDSession
 from utils import error_403
@@ -7,11 +8,13 @@ from utils import error_403
 from fastapi import FastAPI, Request, Response
 
 api_router = FastAPI()
-api_router.include_router(login_router, prefix="/login", tags=["login"])
 api_router.include_router(info_router, prefix="/info", tags=["info"])
+api_router.include_router(login_router, prefix="/login", tags=["login"])
+api_router.include_router(logout_router, prefix="/logout", tags=["logout"])
 
 NEED_AUTH = (
     "/api/info",
+    "/api/logout",
 )
 
 curd_session = CURDSession()

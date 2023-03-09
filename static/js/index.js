@@ -3,12 +3,13 @@ class MainContent extends React.Component {
         super(props);
         this.state = {
             open: false,
+            user_open: false,
             icon: "/api/info/user/current/icon",
             name: ""
         }
         $.getJSON(
             `/api/info/user/current`,
-            (data)=>{
+            (data) => {
                 this.setState({
                     name: data.data.name
                 })
@@ -16,9 +17,15 @@ class MainContent extends React.Component {
         )
     }
 
-    touchMenu() {
+    clickMenu() {
         this.setState((state) => {
             return { open: !state.open }
+        });
+    }
+
+    clickUserMenu() {
+        this.setState((state) => {
+            return { user_open: !state.user_open }
         });
     }
 
@@ -28,13 +35,23 @@ class MainContent extends React.Component {
                 <div id="top-bar">
                     <div
                         className={`menu ms ${this.state.open ? "open" : ""}`}
-                        onClick={this.touchMenu.bind(this)}
+                        onClick={this.clickMenu.bind(this)}
                     />
                     <img src="/static/img/logo.png" />
                     <div className="empty" />
-                    <div className="user-tag">
+                    <div className="user-tag" onClick={this.clickUserMenu.bind(this)}>
                         <img src={this.state.icon} />
                         <div>{this.state.name}</div>
+                    </div>
+                    <div className={`user-menu ${this.state.user_open ? "open" : ""}`}>
+                        <div className="user-menu-tag">
+                            <p className="ms">account_circle</p>
+                            <p>帳號</p>
+                        </div>
+                        <div className="user-menu-tag">
+                            <p className="ms">logout</p>
+                            <p>登出</p>
+                        </div>
                     </div>
                 </div>
                 <div id="side-bar" className={this.state.open ? "open" : ""}>

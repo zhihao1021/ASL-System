@@ -102,13 +102,12 @@ class CURDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def delete(
         self,
-        obj: Optional[ModelType] = None,
-        id: Optional[int] = None,
+        id: int,
         db_session: Optional[AsyncSession] = None
     ) -> ModelType:
         db_session = db_session or self.db
 
-        obj = obj or await self.get(id, db_session)
+        obj = await self.get(id, db_session)
 
         await db_session.delete(obj)
         await db_session.commit()

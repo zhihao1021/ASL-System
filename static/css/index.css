@@ -1,8 +1,10 @@
 @import url(/static/fonts/material-symbols.css);
+@import url(/static/fonts/font.css);
 
 html,
 body {
     margin: 0px;
+    overflow: hidden;
 }
 
 #top-bar {
@@ -35,21 +37,76 @@ body {
     height: 80%;
     margin: 0px 1vw;
     align-items: center;
-    justify-content: flex-end;
-    width: 20%;
-    background-color: red;
+    border-radius: 4px;
+    user-select: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#top-bar .user-tag:hover {
+    background-color: #AAAAAAA0;
 }
 
 #top-bar .user-tag img {
-    height: 85%;
+    margin-left: 1vh;
 }
 
 #top-bar .user-tag div {
-    font-size: 3vh;
+    font-size: 2.5vh;
+    line-height: 100%;
+    margin-right: 1vh;
+    font-family: "Noto Sans TC";
+}
+
+#top-bar .user-menu {
+    position: absolute;
+    top: 8vh;
+    right: 0px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#top-bar .user-menu .user-menu-tag {
+    display: flex;
+    align-items: center;
+    margin: 1vh 0px;
+    position: relative;
+    right: -14vh;
+    color: #666666;
+    background-color: #DDDDDD;
+    border-left-style: solid;
+    border-left-color: #AAAAAA;
+    border-left-width: 2px;
+    pointer-events: initial;
+    user-select: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, right 0.5s;
+}
+
+#top-bar .user-menu.open .user-menu-tag {
+    right: 0px;
+}
+
+#top-bar .user-menu .user-menu-tag:hover {
+    color: #000000;
+    border-left-color: #333333;
+}
+
+#top-bar .user-menu .user-menu-tag p {
+    font-size: 2vh;
+    height: 4vh;
+    line-height: 4vh;
+    margin: 0px 2.5vh;
+}
+
+#top-bar .user-menu .user-menu-tag p.ms {
+    margin: auto 1vh;
+    width: 2.5vh;
 }
 
 #side-bar {
     position: absolute;
+    pointer-events: none;
     top: 8vh;
     left: 0px;
     width: 11vh;
@@ -57,6 +114,7 @@ body {
 
 #side-bar .side-tag {
     position: relative;
+    pointer-events: initial;
     margin: 6px 0px;
     width: calc(100% - 1.5vh);
     height: 6vh;

@@ -69,15 +69,26 @@ class AsyncSession(_AsyncSession):
         _add_event: Optional[Any] = None,
         **kw: Any,
     ) -> Union[Result[_TSelectParam], ScalarResult[_TSelectParam]]:
-        results = await super().execute(
-            statement,
-            params=params,
-            execution_options=execution_options,
-            bind_arguments=bind_arguments,
-            _parent_execute_state=_parent_execute_state,
-            _add_event=_add_event,
-            **kw,
-        )
+        try:
+            results = await super().execute(
+                statement,
+                params=params,
+                execution_options=execution_options,
+                bind_arguments=bind_arguments,
+                _parent_execute_state=_parent_execute_state,
+                _add_event=_add_event,
+                **kw,
+            )
+        except:
+            return await self.execute(
+                statement,
+                params=params,
+                execution_options=execution_options,
+                bind_arguments=bind_arguments,
+                _parent_execute_state=_parent_execute_state,
+                _add_event=_add_event,
+                **kw,
+            )
         if isinstance(statement, SelectOfScalar):
             return results.scalars()  # type: ignore
         return results  # type: ignore
@@ -102,3 +113,15 @@ class AsyncSession(_AsyncSession):
             identity_token=identity_token,
             execution_options=execution_options,
         )
+
+    async def commit(self, i=0) -> None:
+        try:
+            return await super().commit()
+        except:
+            try:
+                await self.begin()
+                return await super().commit()
+            except:
+                if i < 5:
+                    return await self.commit(i=i+1)
+                raise
