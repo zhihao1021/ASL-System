@@ -21,7 +21,7 @@ def gen_session_id() -> str:
     """
     產生Session ID。
     """
-    return text_encode(uuid1().bytes)
+    return text_encode(uuid1().bytes.replace(b"/", b"$"))
 
 
 def format_exception(exc: Exception) -> list[str]:

@@ -1,6 +1,7 @@
 from .base import CURDBase
 
 from aiosqlmodel import AsyncSession
+from config import ENGINE
 from models import User
 from schemas import UserCreate, UserUpdate
 
@@ -16,27 +17,23 @@ class CURDUser(CURDBase[User, UserCreate, UserUpdate]):
     async def get_by_account(
         self,
         account: str,
-        db_session: Optional[AsyncSession] = None
     ) -> Optional[User]:
         if account == None:
             return None
-        db_session = db_session or self.db
+        async with AsyncSession(ENGINE) as db_session:
+            query_stat = select(User).where(User.account == account)
+            result = await db_session.exec(query_stat)
 
-        query_stat = select(User).where(User.account == account)
-        result = await db_session.exec(query_stat)
-
-        return result.first()
+            return result.first()
 
     async def get_by_sid(
         self,
         sid: str,
-        db_session: Optional[AsyncSession] = None
     ) -> Optional[User]:
         if sid == None:
             return None
-        db_session = db_session or self.db
+        async with AsyncSession(ENGINE) as db_session:
+            query_stat = select(User).where(User.sid == sid)
+            result = await db_session.exec(query_stat)
 
-        query_stat = select(User).where(User.sid == sid)
-        result = await db_session.exec(query_stat)
-
-        return result.first()
+            return result.first()

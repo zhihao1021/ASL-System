@@ -113,15 +113,3 @@ class AsyncSession(_AsyncSession):
             identity_token=identity_token,
             execution_options=execution_options,
         )
-
-    async def commit(self, i=0) -> None:
-        try:
-            return await super().commit()
-        except:
-            try:
-                await self.begin()
-                return await super().commit()
-            except:
-                if i < 5:
-                    return await self.commit(i=i+1)
-                raise

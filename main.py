@@ -9,6 +9,7 @@ from asyncio import all_tasks, new_event_loop, run
 from sqlmodel import SQLModel
 
 DEBUG = True
+# DEBUG = False
 
 
 async def sql_init():

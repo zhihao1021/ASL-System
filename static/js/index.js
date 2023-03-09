@@ -29,6 +29,13 @@ class MainContent extends React.Component {
         });
     }
 
+    clickLogout() {
+        $.ajax({
+            url: "/api/logout/current",
+            success: ()=>{location.reload()}
+        })
+    }
+
     render() {
         return (
             <div id="react-content">
@@ -48,19 +55,22 @@ class MainContent extends React.Component {
                             <p className="ms">account_circle</p>
                             <p>帳號</p>
                         </div>
-                        <div className="user-menu-tag">
+                        <div className="user-menu-tag" onClick={this.clickLogout.bind(this)}>
                             <p className="ms">logout</p>
                             <p>登出</p>
                         </div>
                     </div>
                 </div>
                 <div id="side-bar" className={this.state.open ? "open" : ""}>
-                    <SideTag color="#FF0000" ms="event_available" title="請假" data={[]} />
-                    <SideTag color="#FF8000" ms="select_check_box" title="審核" data={[]} />
-                    <SideTag color="#FFFF00" ms="search" title="查詢" data={[]} />
-                    <SideTag color="#00FF00" ms="more_horiz" title="其他" data={[]} />
-                    <SideTag color="#00FFFF" ms="settings" title="設定" data={[]} />
-                    <SideTag color="#8000FF" ms="manage_accounts" title="管理" data={[]} />
+                    <SideTag color="#FF0000" ms="event_available" title="請假" />
+                    <SideTag color="#FF8000" ms="select_check_box" title="審核" />
+                    <SideTag color="#FFFF00" ms="search" title="查詢" />
+                    <SideTag color="#00FF00" ms="more_horiz" title="其他" />
+                    <SideTag color="#00FFFF" ms="settings" title="設定" />
+                    <SideTag color="#8000FF" ms="manage_accounts" title="管理" />
+                </div>
+                <div id="copyright">
+                    Copyright © {new Date().getFullYear()} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank">莊智皓</a>
                 </div>
             </div>
         )
@@ -73,19 +83,11 @@ class SideTag extends React.Component {
         this.state = {
             color: props.color,
             ms: props.ms,
-            title: props.title,
-            data: props.data
+            title: props.title
         }
     }
 
     render() {
-        let list = this.state.data.map((d) => {
-            return (
-                <div className="tab" onClick={() => { location.hash = d.src }}>
-                    {d.name}
-                </div>
-            )
-        })
         return (
             <div
                 className="side-tag"
@@ -94,9 +96,6 @@ class SideTag extends React.Component {
                 <div className="tag">
                     <p>{this.state.title}</p>
                     <p className="ms">{this.state.ms}</p>
-                </div>
-                <div className="page">
-                    {list}
                 </div>
             </div>
         )

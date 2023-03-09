@@ -56,7 +56,7 @@ body::after {
     width: 40vmin;
     height: 50vmax;
     border-radius: 8px;
-
+    position: relative;
     display: flex;
     flex-direction: column;
     /* font-family: "Noto Sans TC", sans-serif; */
@@ -168,6 +168,17 @@ input.empty {
 
 input.empty::placeholder {
     color: #FF0000;
+}
+
+#copyright {
+    position: absolute;
+    font-size: 1.2vh;
+    bottom: 6px;
+    user-select: none;
+}
+#copyright a {
+    color: inherit;
+    text-decoration: none;
 }
 
 @media (max-aspect-ratio: 1/1) {

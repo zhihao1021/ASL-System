@@ -44,6 +44,7 @@ async def index(session: Optional[str] = Cookie(None)):
         await curd_session.update_time(login_session)
         # 通過驗證，回傳主頁
         response = await open_template("index")
+    response.headers["cache-control"] = "max-age=0"
 
     return response
 
@@ -71,9 +72,10 @@ def scripts(filename: str):
     if not data:
         return Response(status_code=404)
 
-    if OFFLINE:
-        return RedirectResponse(data.get("local"))
-    return RedirectResponse(data.get("cdn"), headers={"cache-control": "max-age=315360000"})
+    return RedirectResponse(
+        data.get("local") if OFFLINE else data.get("cdn"),
+        headers={"cache-control": "max-age=315360000"}
+    )
 
 
 @app.exception_handler(403)

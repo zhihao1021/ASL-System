@@ -1,5 +1,7 @@
+from .responses import response_400, response_403, response_404
+
 from curd import CURDSession, CURDUser
-from models import Response
+from models import CustomResponse
 from schemas import SessionCreate
 from swap import VALID_CODE_DICT
 from typing import Optional
@@ -26,7 +28,7 @@ curd_user = CURDUser()
 @router.post(
     "/auth",
     response_class=ORJSONResponse,
-    response_model=Response,
+    response_model=CustomResponse,
     description="Auth by account and password to get the session cookies."
 )
 async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
@@ -34,26 +36,11 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
     session = session or gen_session_id()
 
     if not VALID_CODE_DICT.valid(session, data.valid_code):
-        status_code = status.HTTP_400_BAD_REQUEST
-        response = Response(**{
-            "status": status_code,
-            "success": False,
-            "data": "Wrong Valid Code!"
-        })
+        status_code, response = response_400("Wrong Valid Code!")
     elif user is None:
-        status_code = status.HTTP_404_NOT_FOUND
-        response = Response(**{
-            "status": status_code,
-            "success": False,
-            "data": "Account Not Found!"
-        })
+        status_code, response = response_404("Account")
     elif data.password != user.password:
-        status_code = status.HTTP_403_FORBIDDEN
-        response = Response(**{
-            "status": status_code,
-            "success": False,
-            "data": "Wrong Password!"
-        })
+        status_code, response = response_403("Wrong Password!")
     else:
         session = gen_session_id()
         session_obj = SessionCreate(**{
@@ -63,11 +50,12 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
         await curd_session.create(session_obj)
 
         status_code = status.HTTP_200_OK
-        response = Response(**{
+        response = CustomResponse(**{
             "status": status_code,
             "success": True,
             "data": "Auth Success!"
         })
+
     response = ORJSONResponse(response.dict(), status_code)
     response.set_cookie("session", session)
     return response

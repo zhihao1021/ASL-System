@@ -145,6 +145,19 @@ body {
     width: 2.5vh;
 }
 
+#copyright {
+    position: absolute;
+    font-size: 1.2vh;
+    left: 2px;
+    bottom: 2px;
+    user-select: none;
+    font-family: "Noto Sans TC";
+}
+
+#copyright a {
+    color: inherit;
+    text-decoration: none;
+}
 
 @media (min-aspect-ratio: 1/1) {
     #top-bar .menu {
@@ -190,7 +203,7 @@ body {
         transform: scale(100%) rotate(0deg);
     }
 
-    #top-bar .menu::before{
+    #top-bar .menu::before {
         position: absolute;
         top: 0px;
         left: 0px;

@@ -1,5 +1,7 @@
+from .responses import response_403
+
 from curd import CURDSession
-from models import Response
+from models import CustomResponse
 from typing import Optional
 from urllib.parse import unquote
 
@@ -15,7 +17,7 @@ curd_session = CURDSession()
 @router.get(
     "/{session_id}",
     response_class=ORJSONResponse,
-    response_model=Response,
+    response_model=CustomResponse,
     description="Logout the user whose sid equal to the given sid(\"current\" to query current user's)."
 )
 async def logout_user(session_id: str, session: Optional[str] = Cookie(None)):
@@ -28,18 +30,13 @@ async def logout_user(session_id: str, session: Optional[str] = Cookie(None)):
         await curd_session.delete(target_session.id)
 
         status_code = status.HTTP_200_OK
-        response = Response(**{
+        response = CustomResponse(**{
             "status": status_code,
             "success": True,
             "data": "Logout Success!"
         })
     else:
-        status_code = status.HTTP_403_FORBIDDEN
-        response = Response(**{
-            "status": status_code,
-            "success": False,
-            "data": "Permission Denied!"
-        })
+        status_code, response = response_403()
 
     response = ORJSONResponse(response.dict(), status_code)
     return response

@@ -191,6 +191,9 @@ class LoginBox extends React.Component {
                 </div>
                 <div id="message-box" style={{ "display": this.state.message_dsplay ? "initial" : "none" }}>{this.state.message}</div>
                 <button id="login-button" onClick={this.auth.bind(this)}>登入</button>
+                <div id="copyright">
+                    Copyright © {new Date().getFullYear()} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank">莊智皓</a>
+                </div>
             </div>
         );
     }
