@@ -2,8 +2,18 @@ class MainContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            open: false
+            open: false,
+            icon: "/api/info/user/current/icon",
+            name: ""
         }
+        $.getJSON(
+            `/api/info/user/current`,
+            (data)=>{
+                this.setState({
+                    name: data.data.name
+                })
+            }
+        )
     }
 
     touchMenu() {
@@ -18,9 +28,14 @@ class MainContent extends React.Component {
                 <div id="top-bar">
                     <div
                         className={`menu ms ${this.state.open ? "open" : ""}`}
-                        onTouchStart={this.touchMenu.bind(this)}
+                        onClick={this.touchMenu.bind(this)}
                     />
                     <img src="/static/img/logo.png" />
+                    <div className="empty" />
+                    <div className="user-tag">
+                        <img src={this.state.icon} />
+                        <div>{this.state.name}</div>
+                    </div>
                 </div>
                 <div id="side-bar" className={this.state.open ? "open" : ""}>
                     <SideTag color="#FF0000" ms="event_available" title="請假" data={[]} />

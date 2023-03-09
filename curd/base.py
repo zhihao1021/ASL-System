@@ -108,7 +108,7 @@ class CURDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> ModelType:
         db_session = db_session or self.db
 
-        obj = obj if obj else await self.get(id, db_session)
+        obj = obj or await self.get(id, db_session)
 
         await db_session.delete(obj)
         await db_session.commit()

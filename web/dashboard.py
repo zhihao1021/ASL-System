@@ -9,7 +9,7 @@ from utils import (error_403, error_404, error_500, gen_session_id,
 
 from typing import Optional
 
-from fastapi import Cookie, FastAPI, Request
+from fastapi import Cookie, FastAPI
 from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Config, Server
@@ -18,21 +18,13 @@ OFFLINE = True
 SCRIPTS_MAP: dict[str, dict[str, str]] = Json.load_nowait("scripts_map.json")
 
 app = FastAPI()
+app.mount("/api", api_router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 if OFFLINE:
-    app.mount("/node_modules", StaticFiles(directory="node_modules"), name="node_modules")
-app.include_router(api_router, prefix="/api")
+    app.mount("/node_modules", StaticFiles(directory="node_modules"),
+              name="node_modules")
 
 curd_session = CURDSession()
-
-# 設置Cache Time
-@app.middleware("   ")
-async def api_filter(request: Request, call_next):
-    print(request.url)
-    response: Response = await call_next(request)
-    if not response.headers.get("cache-control"):
-        response.headers["cache-control"] = "max-age=0"
-    return response
 
 
 @app.get("/")
@@ -58,7 +50,7 @@ async def index(session: Optional[str] = Cookie(None)):
 
 @app.get("/favicon.ico")
 def favicon():
-    return RedirectResponse("/static/img/favicon.ico")
+    return RedirectResponse("/static/img/favicon.ico", headers={"cache-control": "max-age=315360000"})
 
 
 @app.get("/valid-code")

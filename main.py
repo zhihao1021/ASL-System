@@ -1,7 +1,7 @@
 from aiosqlmodel import AsyncSession
 from config import ENGINE
 from models import User
-from swap import VALID_CODE_DICT
+from utils import permissions
 from web import gen_server
 
 from asyncio import all_tasks, new_event_loop, run
@@ -20,9 +20,23 @@ async def sql_init():
     if DEBUG:
         async with AsyncSession(ENGINE) as session:
             session.add(
-                User(**{"sid": "000", "name": "admin", "account": "admin", "password": "admin"}))
+                User(**{
+                    "sid": "000",
+                    "name": "admin",
+                    "account": "admin",
+                    "password": "admin",
+                    "role": permissions.ADMIN_ROLE
+                })
+            )
             session.add(
-                User(**{"sid": "001", "name": "alice", "account": "alice", "password": "alice"}))
+                User(**{
+                    "sid": "001",
+                    "name": "alice",
+                    "account": "alice",
+                    "password": "alice",
+                    "role": permissions.STUDENT_ROLE
+                })
+            )
 
             await session.commit()
 

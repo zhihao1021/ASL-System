@@ -22,8 +22,30 @@ body {
     object-fit: contain;
     height: 70%;
     cursor: pointer;
-    margin: 0px;
+    margin: 0px 1vw;
     user-select: none;
+}
+
+#top-bar .empty {
+    flex: 1;
+}
+
+#top-bar .user-tag {
+    display: flex;
+    height: 80%;
+    margin: 0px 1vw;
+    align-items: center;
+    justify-content: flex-end;
+    width: 20%;
+    background-color: red;
+}
+
+#top-bar .user-tag img {
+    height: 85%;
+}
+
+#top-bar .user-tag div {
+    font-size: 3vh;
 }
 
 #side-bar {
@@ -44,6 +66,7 @@ body {
     font-size: 2.2vh;
     padding-left: 1.5vh;
     cursor: pointer;
+    user-select: none;
     color: #888888C0;
     transition: left 0.5s, background-color 0.5s, color 0.5s;
 }
@@ -84,6 +107,7 @@ body {
 @media (max-aspect-ratio: 1/1) {
     #top-bar .menu {
         position: relative;
+        cursor: pointer;
         height: 3vh;
         width: 3vh;
         margin: 1vh;

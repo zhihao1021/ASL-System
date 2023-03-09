@@ -1,5 +1,5 @@
 from curd import CURDSession, CURDUser
-from models import Response, User
+from models import Response
 from schemas import SessionCreate
 from swap import VALID_CODE_DICT
 from typing import Optional
@@ -27,11 +27,11 @@ curd_user = CURDUser()
     "/auth",
     response_class=ORJSONResponse,
     response_model=Response,
+    description="Auth by account and password to get the session cookies."
 )
 async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
     user = await curd_user.get_by_account(data.account)
-    if session is None:
-        session = gen_session_id()
+    session = session or gen_session_id()
 
     if not VALID_CODE_DICT.valid(session, data.valid_code):
         status_code = status.HTTP_400_BAD_REQUEST
@@ -40,7 +40,7 @@ async def auth(data: LoginData, session: Optional[str] = Cookie(None)):
             "success": False,
             "data": "Wrong Valid Code!"
         })
-    elif user == None:
+    elif user is None:
         status_code = status.HTTP_404_NOT_FOUND
         response = Response(**{
             "status": status_code,
