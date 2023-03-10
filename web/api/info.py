@@ -97,6 +97,7 @@ async def get_user_login_history(session: Optional[str] = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     target_sessions = await curd_session.get_by_sid(login_session.sid)
 
+    target_sessions.sort()
     data: list[dict] = list(map(encode_dict, target_sessions))
 
     status_code = status.HTTP_200_OK

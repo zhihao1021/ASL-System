@@ -5,16 +5,15 @@ class MainContent extends React.Component {
             open: false,
             user_open: false,
             icon: "/api/info/user/current/icon",
-            name: ""
+            name: "",
+            show: 0
         }
-        $.getJSON(
-            `/api/info/user/current`,
-            (data) => {
-                this.setState({
-                    name: data.data.name
-                })
-            }
-        )
+    }
+
+    showPage(page) {
+        this.setState({
+            show: page
+        })
     }
 
     clickMenu() {
@@ -36,9 +35,20 @@ class MainContent extends React.Component {
         })
     }
 
+    componentDidMount() {
+        $.getJSON(
+            `/api/info/user/current`,
+            (data) => {
+                this.setState({
+                    name: data.data.name
+                })
+            }
+        );
+    }
+
     render() {
         return (
-            <div id="react-content">
+            <div className="react-content">
                 <div id="top-bar">
                     <div
                         className={`menu ms ${this.state.open ? "open" : ""}`}
@@ -55,7 +65,7 @@ class MainContent extends React.Component {
                             <p className="ms">account_circle</p>
                             <p>帳號</p>
                         </div>
-                        <div className="user-menu-tag">
+                        <div className="user-menu-tag" onClick={this.showPage.bind(this, 2)}>
                             <p className="ms">history</p>
                             <p>登入紀錄</p>
                         </div>
@@ -72,6 +82,9 @@ class MainContent extends React.Component {
                     <SideTag color="#00FF00" ms="more_horiz" title="其他" />
                     <SideTag color="#00FFFF" ms="settings" title="設定" />
                     <SideTag color="#8000FF" ms="manage_accounts" title="管理" />
+                </div>
+                <div id="content">
+                    <Page id="login-history" display={this.state.show == 2}/>
                 </div>
                 <div id="copyright">
                     Copyright © {new Date().getFullYear()} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank">莊智皓</a>
@@ -101,6 +114,32 @@ class SideTag extends React.Component {
                     <p>{this.state.title}</p>
                     <p className="ms">{this.state.ms}</p>
                 </div>
+            </div>
+        )
+    }
+}
+
+class Page extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: props.id
+        }
+        this.ref = React.createElement();
+    }
+
+    componentDidMount() {
+        $(this.ref.current).load(`/load/${this.state.id}`, ()=>{
+            Babel.transformScriptTags();
+        });
+    }
+
+    render() {
+        const display = this.props.display;
+        return (
+            <div className="page">
+                <link rel="stylesheet" href={`/static/css/${this.state.id}.css`} />
+                <div ref={this.ref} className={`page ${this.state.id}`} style={display ? {} : {display: "none"}} />
             </div>
         )
     }

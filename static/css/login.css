@@ -172,7 +172,7 @@ input.empty::placeholder {
 
 #copyright {
     position: absolute;
-    font-size: 1.2vh;
+    font-size: 1.2vmax;
     bottom: 6px;
     user-select: none;
 }

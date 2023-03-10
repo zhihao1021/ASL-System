@@ -50,6 +50,25 @@ async def index(session: Optional[str] = Cookie(None)):
     return response
 
 
+@app.get("/load/{filename}")
+async def load(filename: str, session: Optional[str] = Cookie(None)):
+    # 檢查紀錄是否存在
+    login_session = await curd_session.get_by_session(session)
+
+    # 檢查驗證是否通過
+    if not login_session:
+        # 未通過驗證
+        response = await error_403()
+    else:
+        # 更新最後登入時間
+        await curd_session.update_time(login_session)
+        # 通過驗證，回傳主頁
+        response = await open_template(filename)
+
+    return response
+
+
+
 @app.get("/favicon.ico")
 def favicon():
     return RedirectResponse("/static/img/favicon.ico", headers={"cache-control": "max-age=315360000"})
