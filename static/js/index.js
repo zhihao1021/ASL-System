@@ -6,7 +6,7 @@ class MainContent extends React.Component {
             user_open: false,
             icon: "/api/info/user/current/icon",
             name: "",
-            show: 0
+            show: 2
         }
     }
 
@@ -48,7 +48,7 @@ class MainContent extends React.Component {
 
     render() {
         return (
-            <div className="react-content">
+            <div id="react-content">
                 <div id="top-bar">
                     <div
                         className={`menu ms ${this.state.open ? "open" : ""}`}

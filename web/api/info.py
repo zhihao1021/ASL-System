@@ -1,10 +1,12 @@
-from .responses import response_403, response_404 
+from .responses import response_403, response_404
 
+from config import NOWTIME
 from curd import CURDSession, CURDUser
 from models import CustomResponse, Session
 from typing import Optional
 from utils import permissions
 
+from datetime import datetime
 from imghdr import what
 from os.path import isfile
 
@@ -71,9 +73,11 @@ async def get_user_icon(sid: str, session: Optional[str] = Cookie(None)):
                 async with aopen(file_path, mode="rb") as img_file:
                     img_content = await img_file.read()
                 img_type = what(None, img_content) or "jpeg"
-                response = FileResponse(file_path, media_type=f"image/{img_type}")
+                response = FileResponse(
+                    file_path, media_type=f"image/{img_type}")
             else:
-                response = FileResponse("default_files/user_icon.png", media_type="image/png")
+                response = FileResponse(
+                    "default_files/user_icon.png", media_type="image/png")
             return response
     else:
         status_code, response = response_403()
@@ -82,6 +86,7 @@ async def get_user_icon(sid: str, session: Optional[str] = Cookie(None)):
         response.dict(),
         status_code,
     )
+
 
 @router.get(
     "/user/current/login-history",
@@ -97,8 +102,12 @@ async def get_user_login_history(session: Optional[str] = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     target_sessions = await curd_session.get_by_sid(login_session.sid)
 
-    target_sessions.sort()
+    now_datetime = NOWTIME()
+    target_sessions.sort(key=lambda d: (
+        now_datetime - datetime.fromisoformat(d.last_login)
+    ).total_seconds())
     data: list[dict] = list(map(encode_dict, target_sessions))
+    data.sort(key=lambda d: 0 if d["current"] else 1)
 
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
@@ -109,4 +118,3 @@ async def get_user_login_history(session: Optional[str] = Cookie(None)):
 
     response = ORJSONResponse(response.dict(), status_code)
     return response
-

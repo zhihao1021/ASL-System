@@ -1,5 +1,14 @@
 #login-history {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 100%;
+}
+
+#login-history .list {
+    height: 100%;
+    overflow-y: auto;
+}
+
+#login-history .login-box {
+    margin: 1vh auto;
+    width: 80%;
+    border-style: solid;
 }

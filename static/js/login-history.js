@@ -1,12 +1,45 @@
 class LoginHistory extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            data: []
+        }
+        this.updataData();
+    }
+
+    updataData() {
+        $.getJSON(
+            "/api/info/user/current/login-history",
+            (data) => {
+                this.setState({
+                    data: data.data
+                })
+            }
+        )
     }
 
     render() {
+        let list = this.state.data.map((data)=>{
+            return (
+                <LoginBox
+                    ip={data.ip}
+                    session={data.session}
+                    last_login={data.last_login}
+                    current={data.current}
+                />
+            )
+        })
         return (
             <div id="login-history">
-                <div>Hello World</div>
+                <div className="tool-bar">
+                    <button onClick={this.updataData.bind(this)}>
+                        <p>重新整理</p>
+                    </button>
+                </div>
+                <div className="list">
+                    {list}
+                    {list}
+                </div>
             </div>
         );
     }
@@ -44,7 +77,7 @@ class LoginBox extends React.Component {
                 <button
                     className="logout-button"
                     onClick={this.clickLogout.bind(this)}
-                    disabled={!this.current}
+                    disabled={this.state.current}
                 >
                     登出
                 </button>
