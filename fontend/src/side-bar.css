@@ -1,0 +1,64 @@
+#side-bar {
+    position: absolute;
+    pointer-events: none;
+    top: 8vh;
+    left: 0px;
+    width: 11vh;
+    z-index: 1;
+}
+
+#side-bar .side-tag {
+    position: relative;
+    pointer-events: initial;
+    margin: 6px 0px;
+    width: calc(100% - 1.5vh);
+    height: 6vh;
+    background-color: #CCCCCCC0;
+    border-width: 4px;
+    border-right-style: solid;
+    font-size: 2.2vh;
+    padding-left: 1.5vh;
+    cursor: pointer;
+    user-select: none;
+    color: #888888C0;
+    transition: left 0.5s, background-color 0.5s, color 0.5s;
+}
+
+#side-bar .side-tag .tag {
+    display: flex;
+    align-items: center;
+}
+
+#side-bar .side-tag .tag p {
+    height: 6vh;
+    line-height: 6vh;
+    margin: 0px auto;
+}
+
+#side-bar .side-tag .tag p.ms {
+    margin: auto 1vh;
+    width: 2.5vh;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    #side-bar .side-tag {
+        left: calc(-100% + 4.5vh);
+    }
+    
+    #side-bar .side-tag:hover {
+        left: 0px;
+        background-color: #AAAAAA;
+        color: #000000;
+    }
+}
+
+@media (max-aspect-ratio: 1/1) {
+    #side-bar .side-tag {
+        left: calc(-100% - 4px);
+    }
+
+    #side-bar.open .side-tag {
+        color: #000000;
+        left: 0px;
+    }
+}

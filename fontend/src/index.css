@@ -1,13 +1,22 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  margin: 0px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#copyright {
+  position: absolute;
+  font-size: 1.2vmin;
+  left: 2px;
+  bottom: 2px;
+  user-select: none;
+  font-family: "Noto Sans TC";
+}
+
+#copyright a {
+  color: inherit;
+  text-decoration: none;
 }
