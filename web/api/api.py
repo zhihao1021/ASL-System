@@ -9,8 +9,9 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import ORJSONResponse
 
 api_router = FastAPI()
-api_router.include_router(info_router, prefix="/info", tags=["info"])
 api_router.include_router(login_router, prefix="/login", tags=["login"])
+
+api_router.include_router(info_router, prefix="/info", tags=["info"])
 api_router.include_router(logout_router, prefix="/logout", tags=["logout"])
 
 NEED_AUTH = (

@@ -2,10 +2,8 @@ from .api import api_router
 
 from curd import CURDSession
 from config import WEB_CONFIG
-from swap import VALID_CODE_DICT
-from urllib.parse import urlparse
-from utils import (error_403, error_404, error_500, gen_session_id,
-                   gen_valid_code, Json, open_template)
+from utils import (error_403, error_404, error_500,
+                   gen_session_id, Json, open_template)
 
 from typing import Optional
 
@@ -68,22 +66,9 @@ async def load(filename: str, session: Optional[str] = Cookie(None)):
     return response
 
 
-
 @app.get("/favicon.ico")
 def favicon():
     return RedirectResponse("/static/img/favicon.ico", headers={"cache-control": "max-age=315360000"})
-
-
-@app.get("/valid-code")
-def valid_code(session: Optional[str] = Cookie(None)):
-    answer, img_bytes = gen_valid_code()
-    response = Response(content=img_bytes, headers={
-                        "Cache-Control": "no-store"}, media_type="image/jpeg")
-    if session is None:
-        session = gen_session_id()
-        response.set_cookie("session", session)
-    VALID_CODE_DICT.update(session, answer)
-    return response
 
 
 @app.get("/scripts/{filename}")

@@ -4,10 +4,11 @@ from curd import CURDSession, CURDUser
 from models import CustomResponse
 from schemas import SessionCreate
 from swap import VALID_CODE_DICT
+from utils import gen_session_id, gen_valid_code
 from typing import Optional
 
 
-from fastapi import APIRouter, Cookie, Request, status
+from fastapi import APIRouter, Cookie, Request, Response, status
 from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
 
@@ -55,3 +56,18 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
         })
 
     return ORJSONResponse(response.dict(), status_code)
+
+
+@router.get(
+    "/valid-code",
+    description="Valid Code."
+)
+def valid_code(session: Optional[str] = Cookie(None)):
+    answer, img_bytes = gen_valid_code()
+    response = Response(content=img_bytes, headers={
+                        "Cache-Control": "no-store"}, media_type="image/jpeg")
+    if session is None:
+        session = gen_session_id()
+        response.set_cookie("session", session)
+    VALID_CODE_DICT.update(session, answer)
+    return response
