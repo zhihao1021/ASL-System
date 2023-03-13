@@ -1,17 +1,58 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import $ from 'jquery'
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import TopBar from './top-bar';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+var need_loaded = 1;
+var userSid, userName;
+
+class MainContent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userSid: userSid,
+            userName: userName,
+            open: false
+        };
+    }
+
+    render() {
+        console.log(123)
+        return (
+            <React.StrictMode>
+                <TopBar
+                    name={this.state.userName}
+                    menuOpen={this.state.open}
+                    userOpen={false}
+                />
+            </React.StrictMode>
+        );
+    }
+}
+
+function render() {
+    if (need_loaded) {
+        setTimeout(render, 100);
+    }
+    else {
+        root.render(
+            <MainContent />
+        );
+        reportWebVitals();
+    }
+}
+
+$.getJSON(
+    `/api/info/user/current`,
+    (response) => {
+        userSid = response.data.sid;
+        userName = response.data.name;
+        need_loaded--;
+    }
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+render();
