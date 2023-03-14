@@ -1,14 +1,17 @@
 from aiosqlmodel import AsyncSession
+from api import api_router
+from config import WEB_CONFIG
 from config import ENGINE
 from models import User
 from utils import permissions
-from web import gen_server
 
 from asyncio import all_tasks, new_event_loop, run
-
-from sqlmodel import SQLModel
-
 from os.path import isfile
+
+from fastapi import FastAPI
+from sqlmodel import SQLModel
+from uvicorn import Config, Server
+
 DEBUG = isfile("DEBUG")
 
 
@@ -48,7 +51,14 @@ if __name__ == "__main__":
         set_event_loop_policy(WindowsSelectorEventLoopPolicy())
     run(sql_init())
 
-    server = gen_server()
+    app = FastAPI()
+    app.mount("/api", api_router)
+    server_config = Config(
+        app=app,
+        host=WEB_CONFIG.host,
+        port=WEB_CONFIG.port,
+    )
+    server = Server(server_config)
 
     loop = new_event_loop()
     app_task = loop.create_task(server.serve())

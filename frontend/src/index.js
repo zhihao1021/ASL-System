@@ -1,15 +1,16 @@
+import axios from 'axios';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import $ from 'jquery'
-// import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './reportWebVitals';
 
-import LoginBox from './login';
-import TopBar from './top-bar';
-import SideBar from './side-bar';
+import LoginBox from './js/login';
+import TopBar from './js/top-bar';
+import SideBar from './js/side-bar';
 
 import './index.css';
 import './fonts/font.css'
 import './fonts/material-symbols.css'
+import LoginHistory from './js/login-history';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 var need_loaded = 0;
@@ -41,15 +42,26 @@ class MainContent extends React.Component {
         });
     }
 
+    showPage(i) {
+        console.log(i);
+    }
+
     render() {
         return (
             <React.StrictMode>
                 <TopBar
                     clickMenu={this.clickMenu.bind(this)}
+                    showPage={this.showPage.bind(this)}
                     menuOpen={this.state.menuOpen}
                     name={this.state.userName}
                 />
-                <SideBar open={this.state.menuOpen} />
+                <SideBar
+                    showPage={this.showPage.bind(this)}
+                    open={this.state.menuOpen}
+                />
+                <div id="content">
+                    <LoginHistory />
+                </div>
                 <CopyRight />
             </React.StrictMode>
         );
@@ -64,7 +76,7 @@ function render() {
         root.render(
             <MainContent />
         );
-        // reportWebVitals();
+        reportWebVitals();
     }
 }
 
@@ -74,19 +86,16 @@ function renderLogin() {
     );
 }
 
-$.getJSON({
-    url: `/api/info/user/current`,
-    success: (response) => {
-        userSid = response.data.sid;
-        userName = response.data.name;
+axios.get(
+    "/api/info/user/current"
+)
+.then(
+    (response) => {
+        userSid = response.data.data.sid;
+        userName = response.data.data.name;
         render();
-    },
-    error: (response) => {
-        if (response.status === 403) {
-            renderLogin()
-        }
-        else {
-            setTimeout(window.location.reload, 1000);
-        }
     }
-});
+)
+.catch(
+    renderLogin
+)

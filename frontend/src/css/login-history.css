@@ -1,0 +1,151 @@
+#login-history {
+    /* display: flex; */
+    font-family: "Noto Sans TC";
+    overflow: hidden;
+}
+
+#login-history .tool-bar {
+    margin: 1vh auto;
+    margin-top: 2vh;
+    display: flex;
+    justify-content: flex-end;
+    width: calc(88vw + 6px);
+    height: 4vh;
+    gap: 1vw;
+}
+
+#login-history .tool-bar button {
+    height: 3.5vh;
+    width: 10vh;
+    line-height: 3.5vh;
+    font-size: 1.7vh;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    border-color: #888888;
+    color: #888888;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+#login-history .tool-bar button:first-child:hover {
+    border-color: #FF4422;
+    color: #FF4422;
+}
+
+#login-history .tool-bar button:last-child:hover {
+    border-color: #22CC77;
+    color: #22CC77;
+}
+
+#login-history .login-content {
+    margin: 1vh auto;
+    width: 90vw;
+    height: calc(100% - 7vh);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+}
+
+#login-history .login-history-box {
+    position: relative;
+    margin: 0px 1vh;
+    width: calc(100% - 2vh -2px);
+    border-style: solid;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: #888888;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+#login-history .login-history-box.current {
+    border-color: #22CC77;
+}
+
+#login-history .login-history-box.current::after {
+    content: "目前";
+    position: absolute;
+    font-size: 1.7vh;
+    top: -1px;
+    right: -1px;
+    height: 2.5vh;
+    line-height: 2.5vh;
+    width: 6vh;
+    text-align: center;
+    border-radius: 0px 8px 0px 8px;
+    color: #FFFFFF;
+    background-color: #22CC77;
+}
+
+#login-history .login-history-box .content-box {
+    display: flex;
+    height: 5vh;
+    font-size: 2vh;
+    align-items: center;
+}
+
+#login-history .login-history-box .content-box hr {
+    margin: 1px;
+    height: 60%;
+    width: 1px;
+    background-color: #AAAAAA;
+    border-style: none;
+    transition: background-color 0.5s;
+}
+
+#login-history .login-history-box .content-box p {
+    margin: 0.5vh 1vmax;
+}
+
+#login-history .login-history-box .content-box p:first-child {
+    width: 7em;
+}
+
+#login-history .login-history-box .logout-button {
+    background-color: transparent;
+    margin: 1vmin 1vmax;
+    font-size: 2vh;
+    border-style: solid;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: #888888;
+    color: #888888;
+    cursor: pointer;
+    user-select: none;
+    width: 8vh;
+    height: 3.5vh;
+    line-height: 3.5vh;
+    background-color: #FF000000;
+    transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+}
+
+#login-history .login-history-box .logout-button:disabled {
+    cursor: none;
+    border-color: #CCCCCC;
+    color: #CCCCCC;
+    pointer-events: none;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    #login-history .login-history-box:not(.current):hover {
+        color: #FFFFFF;
+        background-color: #888888;
+    }
+
+    #login-history .login-history-box:not(.current):hover hr {
+        background-color: #FFFFFF;
+    }
+
+    #login-history .login-history-box:not(.current):hover .logout-button {
+        border-color: #FFFFFF;
+        color: #FFFFFF;
+    }
+
+    #login-history .login-history-box:not(.current):hover .logout-button:hover {
+        color: #888888;
+        background-color: #FFFFFF;
+    }
+}
