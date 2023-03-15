@@ -2,8 +2,6 @@ from aiosqlmodel import AsyncSession
 from api import api_router
 from config import WEB_CONFIG
 from config import ENGINE
-from models import User
-from utils import permissions
 
 from asyncio import all_tasks, new_event_loop, run
 from os.path import isfile
@@ -23,6 +21,8 @@ async def sql_init():
 
     if DEBUG:
         async with AsyncSession(ENGINE) as session:
+            from models import User
+            from utils import permissions
             session.add(
                 User(**{
                     "sid": "000",
