@@ -18,7 +18,7 @@ def random_color(l: int = 0, u: int = 255) -> tuple[int]:
 
 
 def random_string() -> str:
-    return f"{randint(10, 25)}+{randint(10, 25)}="
+    return f"{randint(10, 50)}+{randint(10, 50)}="
 
 
 def gen_valid_code() -> tuple[str, bytes]:
