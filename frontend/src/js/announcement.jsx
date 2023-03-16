@@ -1,6 +1,8 @@
 import axios from "axios";
 import React from "react";
 
+import TitleBar from "./title-bar";
+
 import "../css/announcement.css";
 
 export default class Announcement extends React.Component {
@@ -35,12 +37,11 @@ export default class Announcement extends React.Component {
         const display = this.props.display;
         return (
             <div id="announcement" style={{"display": display ? "" : "none"}}>
-                <div className="title">
-                    <p>公告</p>
+                <TitleBar title="公告">
                     <button onClick={this.getAnnouncement.bind(this)}>
                         重新整理
                     </button>
-                </div>
+                </TitleBar>
                 <hr />
                 <ul>
                     {this.state.announcements}

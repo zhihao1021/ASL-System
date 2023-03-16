@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 
 import Announcement from "./js/announcement";
+import Leave from "./js/leave";
 import LoginHistory from "./js/login-history";
 import MessageBox from "./js/message-box";
 import Other from "./js/other";
@@ -17,10 +18,21 @@ import "./fonts/font.css"
 import "./fonts/material-symbols.css"
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-var need_loaded = 0;
+const year = new Date().getFullYear()
+const hashMap = [
+    "announcement",
+    "account",
+    "login-history",
+    "leave",
+    "authorize",
+    "query",
+    "other",
+    "setting",
+    "management",
+]
+var needLoaded = 0;
 var userSid, userName;
 
-const year = new Date().getFullYear()
 
 function CopyRight() {
     return (
@@ -38,18 +50,21 @@ class MainContent extends React.Component {
             userName: userName,
             menuOpen: false,
             userOpen: false,
-            now_display: 0,
-            message_level: "error",
-            message_title: "Test",
-            message_context: "Test",
-            message_display: true,
+            nowDisplay: getHashIndex(),
+            messageLevel: "error",
+            messageTitle: "Test",
+            messageContext: "Test",
+            messageDisplay: false,
         };
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 this.setState({
-                    message_display: false
+                    messageDisplay: false
                 });
             }
+        });
+        window.addEventListener("hashchange", () => {
+            this.showPage(getHashIndex());
         });
     }
 
@@ -73,28 +88,32 @@ class MainContent extends React.Component {
     }
 
     showPage(i) {
+        if (i === this.state.nowDisplay) {
+            return
+        }
         console.log(i);
+        setIndexHash(i);
         this.setState({
-            now_display: i,
+            nowDisplay: i,
         });
         this.closeMenu();
     }
 
-    messageShow(title, context, level) {
+    showMessage(title, context, level) {
         this.setState({
-            message_level: level,
-            message_title: title,
-            message_context: context,
-            message_display: true,
+            messageLevel: level,
+            messageTitle: title,
+            messageContext: context,
+            messageDisplay: true,
         });
     }
 
-    messageClose(event) {
+    closeMessage(event) {
         const id = event.target.id;
         const classList = event.target.classList;
         if (id === "message-box" || classList.contains("close")) {
             this.setState({
-                message_display: false
+                messageDisplay: false
             });
         }
     }
@@ -116,17 +135,27 @@ class MainContent extends React.Component {
                     open={this.state.menuOpen}
                 />
                 <MessageBox
-                    close={this.messageClose.bind(this)}
-                    title={this.state.message_title}
-                    context={this.state.message_context}
-                    level={this.state.message_level}
-                    display={this.state.message_display}
+                    close={this.closeMessage.bind(this)}
+                    title={this.state.messageTitle}
+                    context={this.state.messageContext}
+                    level={this.state.messageLevel}
+                    display={this.state.messageDisplay}
                 // onKeyDown={(e)=>{console.log(e)}}
                 />
                 <div id="content" onClick={this.closeMenu.bind(this)}>
-                    <Announcement display={this.state.now_display === 0} />
-                    <LoginHistory display={this.state.now_display === 2} />
-                    <Other display={this.state.now_display === 6} />
+                    <Announcement
+                        display={this.state.nowDisplay === 0}
+                    />
+                    <Leave
+                        display={this.state.nowDisplay === 3}
+                    />
+                    <LoginHistory
+                        showMessage={this.showMessage.bind(this)}
+                        display={this.state.nowDisplay === 2}
+                    />
+                    <Other
+                        display={this.state.nowDisplay === 6}
+                    />
                 </div>
                 <CopyRight />
                 {/* </React.StrictMode> */}
@@ -136,7 +165,7 @@ class MainContent extends React.Component {
 }
 
 function render() {
-    if (need_loaded) {
+    if (needLoaded) {
         setTimeout(render, 100);
     }
     else {
@@ -147,10 +176,14 @@ function render() {
     }
 }
 
-function renderLogin() {
-    root.render(
-        <LoginBox school="嘉義市嘉華中學" />
-    );
+function getHashIndex() {
+    const hash = window.location.hash.slice(1);
+    return Math.max(0, hashMap.indexOf(hash));
+}
+
+function setIndexHash(index) {
+    const hash = hashMap[index];
+    window.location.hash = hash === undefined ? "" : hash;
 }
 
 axios.get(
@@ -164,5 +197,5 @@ axios.get(
         }
     )
     .catch(
-        renderLogin
+        () => { root.render(<LoginBox school="嘉義市嘉華中學" />); }
     );

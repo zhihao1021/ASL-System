@@ -1,6 +1,8 @@
 import axios from "axios";
 import React from "react";
 
+import TitleBar from "./title-bar";
+
 import "../css/login-history.css";
 
 export default class LoginHistory extends React.Component {
@@ -10,6 +12,8 @@ export default class LoginHistory extends React.Component {
             sessions: [],
             data: [],
         };
+        this.showMessage = props.showMessage;
+        this.display = false;
     }
 
     componentDidMount() {
@@ -18,9 +22,15 @@ export default class LoginHistory extends React.Component {
 
     logout(session) {
         axios.get(`/api/logout/${session}`)
-        .finally(
-            this.reload.bind(this)
-        );
+            .then(
+                () => { this.showMessage("登出成功", "已成功登出。", "info"); }
+            )
+            .catch(
+                () => { this.showMessage("登出失敗", "未成功登出。", "error"); }
+            )
+            .finally(
+                this.reload.bind(this)
+            );
     }
 
     logoutAll() {
@@ -28,13 +38,14 @@ export default class LoginHistory extends React.Component {
         function __logout(index = 0) {
             let session = sessions[index];
             if (session === undefined) {
+                this.showMessage("登出成功", "已全部登出。", "info");
                 this.reload.bind(this)();
             }
             else {
                 axios.get(`/api/logout/${session}`)
-                .finally(
-                    __logout.bind(this, ++index)
-                );
+                    .finally(
+                        __logout.bind(this, ++index)
+                    );
             }
         }
         __logout.bind(this)();
@@ -42,48 +53,53 @@ export default class LoginHistory extends React.Component {
 
     reload() {
         axios.get("/api/info/user/current/login-history")
-        .then(
-            (response) => {
-                const data = response.data.data;
-                this.setState({
-                    sessions: data.filter(
-                        (login_data) => {
-                            return !login_data.current;
-                        }
-                    )
-                    .map(
-                        (login_data) => {
-                            return login_data.session;
-                        }
-                    ),
-                    data: data.map((login_data, index) => {
-                        return (
-                            <LoginHistoryBox
-                                key={index}
-                                current={login_data.current}
-                                ip={login_data.ip}
-                                last_login={login_data.last_login}
-                                logoutFunc={this.logout.bind(this, login_data.session)}
-                            />
-                        );
-                    }),
-                });
-            }
-        );
+            .then(
+                (response) => {
+                    const data = response.data.data;
+                    this.setState({
+                        sessions: data.filter(
+                            (loginData) => {
+                                return !loginData.current;
+                            }
+                        )
+                            .map(
+                                (loginData) => {
+                                    return loginData.session;
+                                }
+                            ),
+                        data: data.map((loginData, index) => {
+                            return (
+                                <LoginHistoryBox
+                                    key={index}
+                                    current={loginData.current}
+                                    ip={loginData.ip}
+                                    lastLogin={loginData.last_login}
+                                    logoutFunc={this.logout.bind(this, loginData.session)}
+                                />
+                            );
+                        }),
+                    });
+                }
+            );
     }
 
     render() {
         const display = this.props.display;
+        if (display && !this.display) {
+            this.reload();
+        }
+        this.display = display;
         return (
-            <div id="login-history" style={{"display": display ? "" : "none"}}>
-                <div className="tool-bar">
+            <div id="login-history" style={{ "display": display ? "" : "none" }}>
+                <TitleBar title="登入紀錄">
                     <button className="logout-all" onClick={this.logoutAll.bind(this)}>
                         全部登出
                     </button>
                     <button className="reload" onClick={this.reload.bind(this)}>
                         重新整理
                     </button>
-                </div>
+                </TitleBar>
+                <hr />
                 <div className="login-content">
                     {this.state.data}
                 </div>
@@ -95,12 +111,12 @@ export default class LoginHistory extends React.Component {
 class LoginHistoryBox extends React.Component {
     constructor(props) {
         super(props);
-        let last_login = props.last_login;
-        last_login = last_login.split(".", 1)[0].split("+", 1)[0];
+        let lastLogin = props.lastLogin;
+        lastLogin = lastLogin.split(".", 1)[0].split("+", 1)[0];
         this.state = {
             current: props.current,
             ip: props.ip,
-            last_login: last_login,
+            lastLogin: lastLogin,
             logoutFunc: props.logoutFunc,
         };
     }
@@ -118,7 +134,7 @@ class LoginHistoryBox extends React.Component {
                 <div className="content-box">
                     <p>上次活動時間</p>
                     <hr />
-                    <p>{this.state.last_login}</p>
+                    <p>{this.state.lastLogin}</p>
                 </div>
                 <button
                     className="logout-button"

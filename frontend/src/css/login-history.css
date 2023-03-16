@@ -4,40 +4,9 @@
     overflow: hidden;
 }
 
-#login-history .tool-bar {
-    margin: 1vh auto;
-    margin-top: 2vh;
-    display: flex;
-    justify-content: flex-end;
-    width: calc(88vw + 6px);
-    height: 4vh;
-    gap: 1vw;
-}
-
-#login-history .tool-bar button {
-    height: 3.5vh;
-    width: 10vh;
-    line-height: 3.5vh;
-    font-size: 1.7vh;
-    border-radius: 6px;
-    border-style: solid;
-    border-width: 1px;
-    background-color: transparent;
-    border-color: #888888;
-    color: #888888;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.3s, border-color 0.3s;
-}
-
-#login-history .tool-bar button:first-child:hover {
+#login-history .title-bar button:first-of-type:hover {
     border-color: #FF4422;
     color: #FF4422;
-}
-
-#login-history .tool-bar button:last-child:hover {
-    border-color: #22CC77;
-    color: #22CC77;
 }
 
 #login-history .login-content {
@@ -148,11 +117,4 @@
         color: #888888;
         background-color: #FFFFFF;
     }
-}
-
-@media (max-aspect-ratio: 1/1) {
-    #login-history .tool-bar {
-        width: calc(88vw + 6px - 2vh);
-    }
-    
 }

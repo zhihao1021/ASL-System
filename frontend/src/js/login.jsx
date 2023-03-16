@@ -9,15 +9,15 @@ export default class LoginBox extends React.Component {
         super(props);
         this.state = {
             school: props.school,               // 標題: 校名
-            valid_src: "/api/login/valid-code", // 驗證碼網址
-            message_dsplay: false,              // 錯誤框顯示
+            validSrc: "/api/login/valid-code", // 驗證碼網址
+            messageDisplay: false,              // 錯誤框顯示
             message: ""                         // 錯誤框訊息
         };
         this.account = React.createRef();
         this.password = React.createRef();
-        this.valid_code = React.createRef();
+        this.validCode = React.createRef();
 
-        this.empty_state = 0b1000;
+        this.emptyState = 0b1000;
         // 檢查碼
         // 0: 是否未進行第一次輸入
         // 1: 帳號是否為空
@@ -34,7 +34,7 @@ export default class LoginBox extends React.Component {
         // 取得輸入框class
         let class_name = element.classList[0];
         // 已進行第一次輸入
-        this.empty_state = this.empty_state & 0b0111;
+        this.emptyState = this.emptyState & 0b0111;
 
         // 檢查元素是否為空
         if (element.value === "") {
@@ -44,13 +44,13 @@ export default class LoginBox extends React.Component {
             // 設置檢查碼
             switch (class_name) {
                 case "account":
-                    this.empty_state |= 0b0100;
+                    this.emptyState |= 0b0100;
                     break;
                 case "password":
-                    this.empty_state |= 0b0010;
+                    this.emptyState |= 0b0010;
                     break;
                 case "valid-code":
-                    this.empty_state |= 0b0001;
+                    this.emptyState |= 0b0001;
                     break;
                 default:
             }
@@ -62,40 +62,40 @@ export default class LoginBox extends React.Component {
             // 設置檢查碼
             switch (class_name) {
                 case "account":
-                    this.empty_state &= 0b0011;
+                    this.emptyState &= 0b0011;
                     break;
                 case "password":
-                    this.empty_state &= 0b0101;
+                    this.emptyState &= 0b0101;
                     break;
                 case "valid-code":
-                    this.empty_state &= 0b0110;
+                    this.emptyState &= 0b0110;
                     break;
                 default:
             }
         }
 
         // 更新訊息框
-        if (this.empty_state >= 0b0100) {
+        if (this.emptyState >= 0b0100) {
             this.setState({
-                message_dsplay: true,
+                messageDisplay: true,
                 message: "帳號未輸入。"
             });
         }
-        else if (this.empty_state >= 0b0010) {
+        else if (this.emptyState >= 0b0010) {
             this.setState({
-                message_dsplay: true,
+                messageDisplay: true,
                 message: "密碼未輸入。"
             });
         }
-        else if (this.empty_state >= 0b0001) {
+        else if (this.emptyState >= 0b0001) {
             this.setState({
-                message_dsplay: true,
+                messageDisplay: true,
                 message: "驗證碼未輸入。"
             });
         }
         else {
             this.setState({
-                message_dsplay: false,
+                messageDisplay: false,
                 message: ""
             });
         }
@@ -104,7 +104,7 @@ export default class LoginBox extends React.Component {
     // 刷新驗證碼
     reloadValidCode() {
         this.setState({
-            valid_src: `/api/login/valid-code?d=${Date.now()}`
+            validSrc: `/api/login/valid-code?d=${Date.now()}`
         });
     }
 
@@ -112,21 +112,21 @@ export default class LoginBox extends React.Component {
     auth() {
         let account = this.account.current;
         let password = this.password.current;
-        let valid_code = this.valid_code.current;
+        let validCode = this.validCode.current;
 
-        [account, password, valid_code].forEach((element) => {
+        [account, password, validCode].forEach((element) => {
             this.checkInputEmpty(element);
         });
 
         // 聚焦至元素
-        if (this.empty_state >= 0b0100) {
+        if (this.emptyState >= 0b0100) {
             account.focus();
         }
-        else if (this.empty_state >= 0b0010) {
+        else if (this.emptyState >= 0b0010) {
             password.focus();
         }
-        else if (this.empty_state >= 0b0001) {
-            valid_code.focus();
+        else if (this.emptyState >= 0b0001) {
+            validCode.focus();
         }
         else {
             // 進行驗證
@@ -135,7 +135,7 @@ export default class LoginBox extends React.Component {
                 {
                     "account": account.value,
                     "password": password.value,
-                    "valid_code": valid_code.value,
+                    "valid_code": validCode.value,
                 },
             )
             .then(
@@ -143,7 +143,7 @@ export default class LoginBox extends React.Component {
             )
             .catch(
                 (result) => {
-                    this.auth_error.bind(this, result.response)()
+                    this.authError.bind(this, result.response)()
                 }
             );
         }
@@ -151,20 +151,20 @@ export default class LoginBox extends React.Component {
     }
 
     // 驗證失敗
-    auth_error(error) {
+    authError(error) {
         let account = this.account.current;
         let password = this.password.current;
-        let valid_code = this.valid_code.current;
+        let validCode = this.validCode.current;
 
         // 分辨錯誤並清除密碼
         // 查無帳號
         if (error.status === 400) {
             password.value = "";
             this.setState({
-                message_dsplay: true,
+                messageDisplay: true,
                 message: "驗證碼錯誤。"
             });
-            valid_code.focus();
+            validCode.focus();
         }
         // 驗證碼錯誤
         else if (error.status === 404) {
@@ -172,7 +172,7 @@ export default class LoginBox extends React.Component {
             account.value = "";
             password.value = "";
             this.setState({
-                message_dsplay: true,
+                messageDisplay: true,
                 message: "帳號有誤或不存在。"
             });
             account.focus();
@@ -181,13 +181,13 @@ export default class LoginBox extends React.Component {
         else if (error.status === 403) {
             password.value = "";
             this.setState({
-                message_dsplay: true,
+                messageDisplay: true,
                 message: "密碼錯誤。"
             });
             password.focus();
         }
         // 清除驗證碼
-        valid_code.value = "";
+        validCode.value = "";
         // 刷新驗證碼
         this.reloadValidCode();
     }
@@ -205,12 +205,12 @@ export default class LoginBox extends React.Component {
                     <input ref={this.password} type="password" className="password"
                         placeholder="密碼" onChange={this.checkInputEmpty.bind(this)} />
                     <div id="valid-box">
-                        <input ref={this.valid_code} type="number" className="valid-code"
+                        <input ref={this.validCode} type="number" className="valid-code"
                             placeholder="驗證碼" onChange={this.checkInputEmpty.bind(this)} />
-                        <img id="valid-img" src={this.state.valid_src} title="點擊刷新"
+                        <img id="valid-img" src={this.state.validSrc} title="點擊刷新"
                             onClick={this.reloadValidCode.bind(this)} alt="Valid Code" />
                     </div>
-                    <div className="message-box" style={{ "display": this.state.message_dsplay ? "initial" : "none" }}>{this.state.message}</div>
+                    <div className="message-box" style={{ "display": this.state.messageDisplay ? "initial" : "none" }}>{this.state.message}</div>
                     <button id="login-button" onClick={this.auth.bind(this)}>登入</button>
                     <div id="login-copyright">
                         Copyright © {new Date().getFullYear()} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank" rel="noreferrer">莊智皓</a>

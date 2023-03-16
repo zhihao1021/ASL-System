@@ -20,7 +20,7 @@ class SettingAnnouncement extends React.Component {
         this.state = {
             context: ""
         };
-        this.edit_block = React.createRef();
+        this.editBlock = React.createRef();
     }
 
     getAnnouncement() {
@@ -38,7 +38,7 @@ class SettingAnnouncement extends React.Component {
         axios.put(
             "/api/announce?raw=true",
             {
-                context: this.edit_block.current.textContent,
+                context: this.editBlock.current.textContent,
             }
         )
         .then(
@@ -56,7 +56,7 @@ class SettingAnnouncement extends React.Component {
                 <div className="title">變更公告</div>
                 <hr />
                 <div
-                    ref={this.edit_block}
+                    ref={this.editBlock}
                     className="edit-block"
                     contentEditable
                 />

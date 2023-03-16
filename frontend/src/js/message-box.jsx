@@ -2,11 +2,10 @@ import React from "react";
 
 import "../css/message-box.css";
 
-function get_color(level) {
+function getColor(level) {
     switch (level) {
         case "info":
-            console.log(level)
-            return "#5BE52B"
+            return "#44BB00"
         case "warning":
             return "#FFF823"
         case "error":
@@ -37,7 +36,7 @@ export default class MessageBox extends React.Component {
                     <div className="close">close</div>
                     <div
                         className="title"
-                        style={{ backgroundColor: get_color(level) }}
+                        style={{ backgroundColor: getColor(level) }}
                     >
                         {title}
                     </div>
