@@ -97,6 +97,15 @@
     border-color: #000000;
 }
 
+#login-box input.empty {
+    color: #FF0000;
+    border-color: #FF0000 !important;
+}
+
+#login-box input.empty::placeholder {
+    color: #FF0000;
+}
+
 #login-box .message-box {
     margin: 1vmin auto;
     font-size: min(2vmin, 1.5vw);
@@ -151,24 +160,24 @@
     background-color: #999999;
 }
 
-input.empty {
-    color: #FF0000;
-    border-color: #FF0000 !important;
-}
-
-input.empty::placeholder {
-    color: #FF0000;
-}
-
 #login-copyright {
     position: absolute;
     font-size: 1.2vmin;
     bottom: 6px;
     user-select: none;
 }
+
 #login-copyright a {
     color: inherit;
     text-decoration: none;
+}
+
+#login-body .loading-box {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: #333333;
+    z-index: 2;
 }
 
 @media (max-aspect-ratio: 1/1) {

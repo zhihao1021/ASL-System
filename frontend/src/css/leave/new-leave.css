@@ -2,17 +2,44 @@
     margin: 2vh auto;
     width: fit-content;
     min-width: 65vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #leave .new-leave .flow {
     position: relative;
     width: 100%;
     height: 2vh;
+    margin-top: 6vh;
     border-radius: 1vh;
     border-style: solid;
     border-width: 1px;
     border-color: #88888888;
     box-shadow: inset 0px 0px 0.5vh -0.2vh #000000;
+}
+
+#leave .new-leave .flow .tag {
+    position: absolute;
+    top: -3.8vh;
+    left: calc(var(--pos) - 3em);
+    width: 6em;
+    font-size: 2vh;
+    text-align: center;
+    color: #88888888;
+    cursor: pointer;
+    pointer-events: none;
+    user-select: none;
+    transition: color 0.3s;
+}
+
+#leave .new-leave .flow .tag.activate {
+    color: #222222;
+    pointer-events: initial;
+}
+
+#leave .new-leave .flow .tag.activate:hover {
+    color: #FF8800 ;
 }
 
 #leave .new-leave .flow::before {
@@ -28,6 +55,8 @@
 }
 
 #leave .new-leave .page {
+    position: absolute;
+    top: 17vh;
     opacity: 0%;
     margin: 2vh auto;
     pointer-events: none;
@@ -39,17 +68,29 @@
     pointer-events: initial;
 }
 
-#leave .new-leave .input-block {
-    display: flex;
-    font-size: 3vh;
-    gap: 2vh;
-    margin: auto;
-    justify-content: center;
+
+#leave .new-leave .page .option {
+    height: 4vh;
+    width: 15em;
+    margin: 0.5vh auto;
+    color: #777777;
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 0.8vh;
+    border-color: #777777;
+    background-color: #77777700;
+    font-size: 2.5vh;
+    line-height: 4vh;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s, background-color 0.3s;
 }
 
-#leave .new-leave .input-block * {
-    width: fit-content;
-    /* flex: 1; */
+#leave .new-leave .page .option.selected,
+#leave .new-leave .page .option:hover {
+    color: #FFFFFF;
+    background-color: #777777;
 }
 
 @media (max-aspect-ratio: 1/1) {

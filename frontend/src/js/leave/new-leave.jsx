@@ -3,13 +3,24 @@ import React from "react";
 
 import "../../css/leave/new-leave.css";
 
+const flowMap = [
+    "選擇假別",
+    "起始時間",
+    "結束時間",
+    "請假事由",
+    "上傳附件",
+    "內容確認",
+    "完成"
+]
+
 export default class NewLeave extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             proc: 10,
             display: 0,
-            options: [],
+            typeOptions: [],
+            typeSelect: -1,
         };
         this.step = 0;
     }
@@ -22,43 +33,61 @@ export default class NewLeave extends React.Component {
         axios.get("/api/leave/type")
             .then(
                 (response) => {
-                    const list = response.data.data.map(
-                        (tpyeString, index) => {
-                            return (
-                                <option key={index} value={index}>
-                                    {tpyeString}
-                                </option>
-                            )
-                        }
-                    );
                     this.setState({
-                        options: list
+                        typeOptions: response.data.data
                     });
                 }
             )
     }
 
-    changePage(i) {
-        this.setState((state) => {
-            return {
-                proc: 15 * (state.display + i) + 10,
-                display: state.display + i,
-            }
-        })
+    setPage(i) {
+        this.setState({
+            proc: 15 * i + 10,
+            display: i,
+        });
     }
 
     render() {
         const display = this.props.display;
+        const flow = flowMap.map(
+            (flowName, index) => {
+                let pos = 10 + 15 * index;
+                pos = pos === 100 ? "100% - 1em" : `${pos}%`;
+                return (
+                    <div
+                        key={index}
+                        onClick={this.setPage.bind(this, index)}
+                        className={`tag ${this.state.display >= index ? "activate" : ""}`}
+                        style={{ "--pos": pos }}
+                    >
+                        {flowName}
+                    </div>
+                );
+            }
+        );
+        const typeOptions = this.state.typeOptions.map(
+            (tpyeString, index) => {
+                return (
+                    <div
+                        key={index}
+                        className={`option ${this.state.typeSelect === index ? "selected" : ""}`}
+                        onClick={() => {this.setState({typeSelect: index}); this.setPage(1)}}
+                    >
+                        {tpyeString}
+                    </div>
+                )
+            }
+        );
         return (
             <div className="new-leave" style={{ "display": display ? "" : "none" }}>
-                <div className="flow" style={{ "--proc": `${this.state.proc}%` }}></div>
+                <div className="flow" style={{ "--proc": `${this.state.proc}%` }}>
+                    {flow}
+                </div>
                 <Page className="select-type" display={this.state.display === 0}>
-                    <div className="input-block">
-                        <div>假別</div>
-                        <select>{this.state.options}</select>
-                    </div>
-                    <div className="button-bar">
-                        <button className="next" onClick={this.changePage.bind(this, 1)}>下一頁</button>
+                    {typeOptions}
+                </Page>
+                <Page className="start-time" display={this.state.display === 1}>
+                    <div className="datetime-box">
                     </div>
                 </Page>
             </div>

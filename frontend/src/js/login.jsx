@@ -1,6 +1,8 @@
 import axios from "axios";
 import React from "react";
 
+import Loading from "./loading";
+
 import "../css/login.css";
 
 
@@ -8,10 +10,11 @@ export default class LoginBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            school: props.school,               // 標題: 校名
+            school: props.school,              // 標題: 校名
             validSrc: "/api/login/valid-code", // 驗證碼網址
-            messageDisplay: false,              // 錯誤框顯示
-            message: ""                         // 錯誤框訊息
+            messageDisplay: false,             // 錯誤框顯示
+            message: "",                       // 錯誤框訊息
+            display: false,
         };
         this.account = React.createRef();
         this.password = React.createRef();
@@ -130,6 +133,9 @@ export default class LoginBox extends React.Component {
         }
         else {
             // 進行驗證
+            this.setState({
+                display: true
+            })
             axios.post(
                 "/api/login/auth",
                 {
@@ -138,14 +144,21 @@ export default class LoginBox extends React.Component {
                     "valid_code": validCode.value,
                 },
             )
-            .then(
-                () => { window.location.reload() }
-            )
-            .catch(
-                (result) => {
-                    this.authError.bind(this, result.response)()
-                }
-            );
+                .then(
+                    () => { window.location.reload() }
+                )
+                .catch(
+                    (result) => {
+                        this.authError.bind(this, result.response)()
+                    }
+                )
+                .finally(
+                    () => {
+                        this.setState({
+                            display: false
+                        })
+                    }
+                );
         }
 
     }
@@ -196,6 +209,7 @@ export default class LoginBox extends React.Component {
         return (
             <div id="login-body">
                 <img id="background" src="/static/img/background.jpg" alt="Background" />
+                <Loading title="Loading" display={this.state.display} />
                 <div id="login-box">
                     <div className="title">{this.state.school}</div>
                     <hr />
