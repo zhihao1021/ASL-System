@@ -149,3 +149,10 @@
         background-color: #FFFFFF;
     }
 }
+
+@media (max-aspect-ratio: 1/1) {
+    #login-history .tool-bar {
+        width: calc(88vw + 6px - 2vh);
+    }
+    
+}

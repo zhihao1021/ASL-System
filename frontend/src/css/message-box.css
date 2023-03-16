@@ -1,0 +1,71 @@
+#message-box {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    background-color: #00000090;
+    opacity: 0%;
+    pointer-events: none;
+    transition: opacity 0.5s;
+    font-family: "Noto Sans TC";
+}
+
+#message-box .box {
+    position: absolute;
+    height: 45vh;
+    width: 45vw;
+    top: -32vh;
+    left: calc(50% - 20vw);
+    margin: 0px;
+    border-radius: 1vh;
+    background-color: #FFFFFF;
+    overflow: hidden;
+    transition: top 0.8s;
+}
+
+#message-box .box .close {
+    position: absolute;
+    top: 0.5vh;
+    right: 0.5vh;
+    color: #DDDDDD88;
+    font-family: "Material Symbols";
+    font-size: 3vh;
+    cursor: pointer;
+    transition: color 0.5s;
+}
+
+#message-box .box .close:hover {
+    color: #FFFFFF;
+}
+
+#message-box .box .title {
+    font-size: 3.5vh;
+    height: 8vh;
+    line-height: 8vh;
+    padding-left: 2vh;
+}
+
+#message-box .box .content {
+    height: calc(100% - 12vh);
+    overflow: auto;
+    margin: 2vh;
+}
+
+#message-box.display {
+    pointer-events: initial;
+    opacity: 100%;
+}
+
+#message-box.display .box {
+    top: 2vh;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    #message-box .box {
+        position: relative;
+        width: 90vw;
+        left: calc(50% - 45vw);
+    }
+}

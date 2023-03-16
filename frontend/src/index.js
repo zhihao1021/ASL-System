@@ -1,18 +1,22 @@
-import axios from 'axios';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
+import axios from "axios";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import reportWebVitals from "./reportWebVitals";
 
-import LoginBox from './js/login';
-import TopBar from './js/top-bar';
-import SideBar from './js/side-bar';
+import Announcement from "./js/announcement";
+import LoginHistory from "./js/login-history";
+import MessageBox from "./js/message-box";
+import Other from "./js/other";
+import SideBar from "./js/side-bar";
+import TopBar from "./js/top-bar";
 
-import './index.css';
-import './fonts/font.css'
-import './fonts/material-symbols.css'
-import LoginHistory from './js/login-history';
+import LoginBox from "./js/login";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import "./index.css";
+import "./fonts/font.css"
+import "./fonts/material-symbols.css"
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 var need_loaded = 0;
 var userSid, userName;
 
@@ -32,8 +36,21 @@ class MainContent extends React.Component {
         this.state = {
             userSid: userSid,
             userName: userName,
-            menuOpen: false
+            menuOpen: false,
+            userOpen: false,
+            now_display: 0,
+            message_level: "error",
+            message_title: "Test",
+            message_context: "Test",
+            message_display: true,
         };
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                this.setState({
+                    message_display: false
+                });
+            }
+        });
     }
 
     clickMenu() {
@@ -42,28 +59,78 @@ class MainContent extends React.Component {
         });
     }
 
+    clickUserMenu() {
+        this.setState((state) => {
+            return { userOpen: !state.userOpen }
+        });
+    }
+
+    closeMenu() {
+        this.setState({
+            menuOpen: false,
+            userOpen: false,
+        })
+    }
+
     showPage(i) {
         console.log(i);
+        this.setState({
+            now_display: i,
+        });
+        this.closeMenu();
+    }
+
+    messageShow(title, context, level) {
+        this.setState({
+            message_level: level,
+            message_title: title,
+            message_context: context,
+            message_display: true,
+        });
+    }
+
+    messageClose(event) {
+        const id = event.target.id;
+        const classList = event.target.classList;
+        if (id === "message-box" || classList.contains("close")) {
+            this.setState({
+                message_display: false
+            });
+        }
     }
 
     render() {
         return (
-            <React.StrictMode>
+            // <React.StrictMode>
+            <div id="body">
                 <TopBar
-                    clickMenu={this.clickMenu.bind(this)}
                     showPage={this.showPage.bind(this)}
-                    menuOpen={this.state.menuOpen}
+                    clickMenu={this.clickMenu.bind(this)}
+                    clickUserMenu={this.clickUserMenu.bind(this)}
                     name={this.state.userName}
+                    menuOpen={this.state.menuOpen}
+                    userOpen={this.state.userOpen}
                 />
                 <SideBar
                     showPage={this.showPage.bind(this)}
                     open={this.state.menuOpen}
                 />
-                <div id="content">
-                    <LoginHistory />
+                <MessageBox
+                    close={this.messageClose.bind(this)}
+                    title={this.state.message_title}
+                    context={this.state.message_context}
+                    level={this.state.message_level}
+                    display={this.state.message_display}
+                // onKeyDown={(e)=>{console.log(e)}}
+                />
+                <div id="content" onClick={this.closeMenu.bind(this)}>
+                    <Announcement display={this.state.now_display === 0} />
+                    <LoginHistory display={this.state.now_display === 2} />
+                    <Other display={this.state.now_display === 6} />
                 </div>
                 <CopyRight />
-            </React.StrictMode>
+                {/* </React.StrictMode> */}
+            </div>
         );
     }
 }
@@ -89,13 +156,13 @@ function renderLogin() {
 axios.get(
     "/api/info/user/current"
 )
-.then(
-    (response) => {
-        userSid = response.data.data.sid;
-        userName = response.data.data.name;
-        render();
-    }
-)
-.catch(
-    renderLogin
-)
+    .then(
+        (response) => {
+            userSid = response.data.data.sid;
+            userName = response.data.data.name;
+            render();
+        }
+    )
+    .catch(
+        renderLogin
+    );

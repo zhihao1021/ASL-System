@@ -1,0 +1,23 @@
+#other {
+    overflow: hidden;
+    overflow-y: auto;
+    margin: 1vh auto;
+    height: 100%;
+    margin-bottom: calc(1vh + 18px);
+    width: 90vw;
+}
+
+#other .block .title {
+    padding-left: 0.2em;
+    font-size: 3vh;
+    height: 5vh;
+    line-height: 5vh;
+}
+
+#other .block hr {
+    margin: 1px;
+    width: 100%;
+    height: 1px;
+    background-color: #AAAAAA;
+    border-style: none;
+}

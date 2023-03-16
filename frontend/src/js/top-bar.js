@@ -8,17 +8,11 @@ export default class TopBar extends React.Component {
         super(props);
 
         this.state = {
-            clickMenu: props.clickMenu,
-            showPage: props.showPage,
-            userOpen: false,
             name: props.name,
-        }
-    }
-
-    clickUserMenu() {
-        this.setState((state) => {
-            return { userOpen: !state.userOpen }
-        });
+        };
+        this.showPage = props.showPage;
+        this.clickMenu = props.clickMenu;
+        this.clickUserMenu = props.clickUserMenu;
     }
 
     logout() {
@@ -30,24 +24,25 @@ export default class TopBar extends React.Component {
 
     render() {
         const menuOpen = this.props.menuOpen;
+        const userOpen = this.props.userOpen;
         return (
             <div id="top-bar">
                 <div
                     className={`menu ms ${menuOpen ? "open" : ""}`}
-                    onClick={this.state.clickMenu}
+                    onClick={this.clickMenu}
                 />
-                <img src="/static/img/logo.png" alt="Logo" onClick={() => { this.state.showPage(0) }} />
+                <img src="/static/img/logo.png" alt="Logo" onClick={() => { this.showPage(0) }} />
                 <div className="empty" />
-                <div className="user-tag" onClick={this.clickUserMenu.bind(this)}>
+                <div className="user-tag" onClick={this.clickUserMenu}>
                     <img src="/api/info/user/current/icon" alt="User Logo" />
                     <div>{this.state.name}</div>
                 </div>
-                <div className={`user-menu ${this.state.userOpen ? "open" : ""}`}>
-                    <div className="user-menu-tag" onClick={() => { this.state.showPage(1) }}>
+                <div className={`user-menu ${userOpen ? "open" : ""}`}>
+                    <div className="user-menu-tag" onClick={() => { this.showPage(1) }}>
                         <p className="ms">account_circle</p>
                         <p>帳號</p>
                     </div>
-                    <div className="user-menu-tag" onClick={() => { this.state.showPage(2) }}>
+                    <div className="user-menu-tag" onClick={() => { this.showPage(2) }}>
                         <p className="ms">history</p>
                         <p>登入紀錄</p>
                     </div>
@@ -57,6 +52,6 @@ export default class TopBar extends React.Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }

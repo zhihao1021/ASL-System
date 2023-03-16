@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 
-import "../css/login-history.css"
+import "../css/login-history.css";
 
 export default class LoginHistory extends React.Component {
     constructor(props) {
@@ -9,7 +9,7 @@ export default class LoginHistory extends React.Component {
         this.state = {
             sessions: [],
             data: [],
-        }
+        };
     }
 
     componentDidMount() {
@@ -69,12 +69,13 @@ export default class LoginHistory extends React.Component {
                     }),
                 });
             }
-        )
+        );
     }
 
     render() {
+        const display = this.props.display;
         return (
-            <div id="login-history">
+            <div id="login-history" style={{"display": display ? "" : "none"}}>
                 <div className="tool-bar">
                     <button className="logout-all" onClick={this.logoutAll.bind(this)}>
                         全部登出
@@ -87,7 +88,7 @@ export default class LoginHistory extends React.Component {
                     {this.state.data}
                 </div>
             </div>
-        )
+        );
     }
 }
 
@@ -101,7 +102,7 @@ class LoginHistoryBox extends React.Component {
             ip: props.ip,
             last_login: last_login,
             logoutFunc: props.logoutFunc,
-        }
+        };
     }
 
     render() {
@@ -127,6 +128,6 @@ class LoginHistoryBox extends React.Component {
                     登出
                 </button>
             </div>
-        )
+        );
     }
 }

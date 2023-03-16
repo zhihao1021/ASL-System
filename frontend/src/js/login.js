@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 
-import "../css/login.css"
+import "../css/login.css";
 
 
 export default class LoginBox extends React.Component {
@@ -210,7 +210,7 @@ export default class LoginBox extends React.Component {
                         <img id="valid-img" src={this.state.valid_src} title="點擊刷新"
                             onClick={this.reloadValidCode.bind(this)} alt="Valid Code" />
                     </div>
-                    <div id="message-box" style={{ "display": this.state.message_dsplay ? "initial" : "none" }}>{this.state.message}</div>
+                    <div className="message-box" style={{ "display": this.state.message_dsplay ? "initial" : "none" }}>{this.state.message}</div>
                     <button id="login-button" onClick={this.auth.bind(this)}>登入</button>
                     <div id="login-copyright">
                         Copyright © {new Date().getFullYear()} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank" rel="noreferrer">莊智皓</a>

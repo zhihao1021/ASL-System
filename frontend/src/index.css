@@ -22,13 +22,16 @@ body {
   margin: 1px;
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: #88888888;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background-color: #888888;
 }
@@ -43,8 +46,11 @@ body {
   width: 100%;
 }
 
-#content > div {
-  height: 100%;
+#content>div {
+  font-family: "Noto Sans TC";
+  margin: 1vh auto;
+  height: calc(100% - 2vh);
+  width: 90vw;
 }
 
 #copyright {

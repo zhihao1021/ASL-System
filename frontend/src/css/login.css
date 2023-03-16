@@ -97,7 +97,7 @@
     border-color: #000000;
 }
 
-#message-box {
+#login-box .message-box {
     margin: 1vmin auto;
     font-size: min(2vmin, 1.5vw);
     width: 80%;
@@ -192,7 +192,7 @@ input.empty::placeholder {
         width: 85%;
     }
 
-    #message-box {
+    #login-box .message-box {
         margin: 1vh auto;
         font-size: 4.5vw;
         width: 85%;
