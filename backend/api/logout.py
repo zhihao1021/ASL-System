@@ -2,7 +2,6 @@ from .responses import response_403
 
 from curd import CURDSession
 from models import CustomResponse
-from typing import Optional
 from urllib.parse import unquote
 
 from fastapi import APIRouter, status, Cookie
@@ -20,7 +19,7 @@ curd_session = CURDSession()
     response_model=CustomResponse,
     description="Logout the user whose sid equal to the given sid(\"current\" to query current user's)."
 )
-async def logout_user(session_id: str, session: Optional[str] = Cookie(None)):
+async def logout_user(session_id: str, session: str = Cookie(None)):
     session_id = unquote(session_id)
     login_session = await curd_session.get_by_session(session)
     session_id = session if session_id == "current" else session_id

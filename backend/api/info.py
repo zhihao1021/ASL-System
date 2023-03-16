@@ -3,7 +3,6 @@ from .responses import response_403, response_404
 from config import NOWTIME
 from curd import CURDSession, CURDUser
 from models import CustomResponse, Session
-from typing import Optional
 from utils import permissions
 
 from datetime import datetime
@@ -27,7 +26,7 @@ curd_user = CURDUser()
     response_model=CustomResponse,
     description="Get the data of user whose sid equal to the given sid(\"current\" to query current user's)."
 )
-async def get_user(sid: str, session: Optional[str] = Cookie(None)):
+async def get_user(sid: str, session: str = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     sid = login_session.sid if sid == "current" else sid
     login_user = await curd_user.get_by_sid(login_session.sid)
@@ -58,7 +57,7 @@ async def get_user(sid: str, session: Optional[str] = Cookie(None)):
     response_model=CustomResponse,
     description="Get the icon of user whose sid equal to the given sid(\"current\" to query current user's)."
 )
-async def get_user_icon(sid: str, session: Optional[str] = Cookie(None)):
+async def get_user_icon(sid: str, session: str = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     sid = login_session.sid if sid == "current" else sid
     login_user = await curd_user.get_by_sid(login_session.sid)
@@ -94,7 +93,7 @@ async def get_user_icon(sid: str, session: Optional[str] = Cookie(None)):
     response_model=CustomResponse,
     description="Get the Login History of user whose sid equal to the given sid(\"current\" to query current user's)."
 )
-async def get_user_login_history(session: Optional[str] = Cookie(None)):
+async def get_user_login_history(session: str = Cookie(None)):
     def encode_dict(d: Session):
         result = d.dict()
         result["current"] = d.session == session

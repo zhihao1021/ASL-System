@@ -1,5 +1,6 @@
 from .announce import router as announce_router
 from .info import router as info_router
+from .leave import router as leave_router
 from .login import router as login_router
 from .logout import router as logout_router
 from .responses import response_403
@@ -14,12 +15,14 @@ api_router.include_router(login_router, prefix="/login", tags=["login"])
 
 api_router.include_router(announce_router, prefix="/announce", tags=["announce"])
 api_router.include_router(info_router, prefix="/info", tags=["info"])
+api_router.include_router(leave_router, prefix="/leave", tags=["leave"])
 api_router.include_router(logout_router, prefix="/logout", tags=["logout"])
 
 NEED_AUTH = (
     "/api/announce",
     "/api/docs",
     "/api/info",
+    "/api/leave",
     "/api/logout",
     "/api/openapi.json",
 )

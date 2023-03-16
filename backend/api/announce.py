@@ -1,5 +1,3 @@
-from .responses import response_403, response_404
-
 from curd import CURDSession, CURDUser
 from models import CustomResponse
 from typing import Optional

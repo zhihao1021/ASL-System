@@ -6,7 +6,7 @@ from datetime import date, datetime
 
 from sqlmodel import Column, Field as SQLField, String
 
-#TODO Unfinish
+
 class LeaveBase(IDBase):
     sid: str = SQLField(
         nullable=False, foreign_key="UserData.sid", description="學號")

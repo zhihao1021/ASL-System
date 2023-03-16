@@ -25,21 +25,15 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
             result = await db_session.exec(query_stat)
 
             return result.all()
-    
-    async def get_by_sid(
+        
+    async def get_by_status(
         self,
-        sid: str,
-    ) -> Optional[list[Session]]:
+        status: int
+    ) -> list[Leave]:
+        if status == None:
+            return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Session).where(Session.sid == sid)
+            query_stat = select(Leave).where(Leave.status >= status)
             result = await db_session.exec(query_stat)
 
             return result.all()
-
-    async def update_time(
-        self,
-        obj: Session,
-    ) -> Session:
-        obj_update = SessionUpdate()
-        obj_update.last_login = NOWTIME()
-        return await self.update(obj, obj_update)
