@@ -159,10 +159,12 @@ class MainContent extends React.Component {
                     />
                     <LoginHistory
                         showMessage={this.showMessage.bind(this)}
-                        display={this.state.nowDisplay === 2}
                         loading={this.setLoading.bind(this)}
+                        display={this.state.nowDisplay === 2}
                     />
                     <Other
+                        showMessage={this.showMessage.bind(this)}
+                        loading={this.setLoading.bind(this)}
                         display={this.state.nowDisplay === 6}
                     />
                 </div>

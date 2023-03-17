@@ -21,3 +21,44 @@
     background-color: #AAAAAA;
     border-style: none;
 }
+
+#other .block.announcement .edit-block {
+    font-size: 2vh;
+    outline: none;
+    width: calc(100% - 12px - 0.4em);
+    padding: 0.2em;
+    margin: 1vh auto;
+    border-style: solid;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: #AAAAAA;
+    min-height: 5em;
+}
+
+#other .block.announcement .tool-bar {
+    display: flex;
+    gap: 0.5em;
+    margin: auto 5px;
+}
+#other .block.announcement button {
+    height: 3.5vh;
+    width: 8vh;
+    font-size: 1.7vh;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    border-color: #888888;
+    color: #888888;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s, border-color 0.3s;
+}
+#other .block.announcement button:first-child:hover {
+    color: #FF0000;
+    border-color: #FF0000;
+}
+#other .block.announcement button:last-child:hover {
+    color: #22CC77;
+    border-color: #22CC77;
+}
