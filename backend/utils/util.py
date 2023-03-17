@@ -3,26 +3,30 @@ from base64 import b64encode
 from uuid import uuid1
 from traceback import format_exception as tformat_exception
 from typing import Union
+from string import ascii_letters
 from sys import version_info
 
 import inspect
 from pydantic import BaseModel
 
 
-def text_encode(text: Union[str, bytes], path_safe=False) -> str:
+URL_MAP = (ascii_letters + "0123456789").encode()
+
+def text_encode(text: Union[str, bytes], raw: bool = False) -> str:
     """
     將明文加密。
     """
     text = text.encode() if type(text) == str else text
-    result = b64encode(sha256(text).digest()).decode()
-    return result.replace("/", "$") if path_safe else result
+    result = b64encode(sha256(text).digest())
+    return result if raw else result.decode()
 
 
 def gen_session_id() -> str:
     """
     產生Session ID。
     """
-    return text_encode(uuid1().bytes, path_safe=True)
+    result = text_encode(uuid1().bytes, raw=True)
+    return bytes(map(lambda x: URL_MAP[x % 62], result)).decode()
 
 
 def format_exception(exc: Exception) -> list[str]:

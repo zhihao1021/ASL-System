@@ -7,7 +7,6 @@ from swap import VALID_CODE_DICT
 from utils import gen_session_id, gen_valid_code
 from typing import Optional
 
-
 from fastapi import APIRouter, Cookie, Request, Response, status
 from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel

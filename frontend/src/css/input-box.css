@@ -1,0 +1,62 @@
+.input-box {
+    position: relative;
+    margin-top: 0.4em;
+    font-family: "Noto Sans TC";
+    cursor: text;
+    user-select: none;
+    pointer-events: none;
+}
+
+.input-box input {
+    width: 100%;
+    /* height: 100%; */
+    /* line-height: 100%; */
+    font-size: 1em;
+    outline: none;
+    border: none;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #AAAAAA;
+    background-color: transparent;
+    pointer-events: initial;
+    transition: border-color 0.3s;
+}
+
+.input-box input:focus {
+    border-bottom-color: #000000;
+}
+
+.input-box::before {
+    position: absolute;
+    content: var(--content);
+    top: calc(50% - 0.5em);
+    left: 0.05em;
+    font-size: 1em;
+    line-height: 1em;
+    height: 1em;
+    color: #AAAAAA;
+    background-color: transparent;
+    transition: color 0.3s, top 0.3s, font-size 0.3s;
+}
+
+.input-box.necessary.empty.check::before,
+.input-box:not(.empty)::before,
+.input-box:has(input:focus)::before {
+    color: #000000;
+    top: -0.55em;
+    font-size: 0.5em;
+}
+
+.input-box.necessary.empty.check::before,
+.input-box.necessary.empty.check input,
+.input-box.necessary.empty:not(.first)::before,
+.input-box.necessary.empty:not(.first) input{
+    color: #FF8080;
+    border-bottom-color: #FF8080;
+}
+
+.input-box.necessary.empty:not(.first):has(input:focus) input,
+.input-box.necessary.empty:not(.first):has(input:focus)::before {
+    color: #FF0000;
+    border-bottom-color: #FF0000;
+}

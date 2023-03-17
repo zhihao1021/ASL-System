@@ -13,6 +13,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#body > .loading-box {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  background-color: #888888AA;
+  z-index: 3;
+}
+
 #root {
   position: relative;
   height: 100%;

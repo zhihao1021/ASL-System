@@ -71,7 +71,7 @@ export default class NewLeave extends React.Component {
                     <div
                         key={index}
                         className={`option ${this.state.typeSelect === index ? "selected" : ""}`}
-                        onClick={() => {this.setState({typeSelect: index}); this.setPage(1)}}
+                        onClick={() => { this.setState({ typeSelect: index }); this.setPage(1) }}
                     >
                         {tpyeString}
                     </div>

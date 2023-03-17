@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 
 import Loading from "./loading";
+import InputBox from "./input-box";
 
 import "../css/login.css";
 
@@ -15,6 +16,7 @@ export default class LoginBox extends React.Component {
             messageDisplay: false,             // 錯誤框顯示
             message: "",                       // 錯誤框訊息
             display: false,
+            check: false
         };
         this.account = React.createRef();
         this.password = React.createRef();
@@ -35,17 +37,14 @@ export default class LoginBox extends React.Component {
         // 元素
         let element = ele.nodeType ? ele : ele.target;
         // 取得輸入框class
-        let class_name = element.classList[0];
+        let className = element.parentElement.classList[0];
         // 已進行第一次輸入
         this.emptyState = this.emptyState & 0b0111;
 
         // 檢查元素是否為空
         if (element.value === "") {
-            // 新增紅框
-            element.classList.add("empty");
-
             // 設置檢查碼
-            switch (class_name) {
+            switch (className) {
                 case "account":
                     this.emptyState |= 0b0100;
                     break;
@@ -59,11 +58,8 @@ export default class LoginBox extends React.Component {
             }
         }
         else {
-            // 移除紅框
-            element.classList.remove("empty");
-
             // 設置檢查碼
-            switch (class_name) {
+            switch (className) {
                 case "account":
                     this.emptyState &= 0b0011;
                     break;
@@ -121,6 +117,10 @@ export default class LoginBox extends React.Component {
             this.checkInputEmpty(element);
         });
 
+        this.setState({
+            check: true
+        })
+
         // 聚焦至元素
         if (this.emptyState >= 0b0100) {
             account.focus();
@@ -145,20 +145,28 @@ export default class LoginBox extends React.Component {
                 },
             )
                 .then(
-                    () => { window.location.reload() }
+                    () => {
+                        this.setState({
+                            display: false
+                        });
+                        window.location.reload()
+                    }
                 )
                 .catch(
                     (result) => {
-                        this.authError.bind(this, result.response)()
+                        this.setState({
+                            display: false
+                        });
+                        this.authError(result.response);
                     }
                 )
                 .finally(
                     () => {
                         this.setState({
                             display: false
-                        })
+                        });
                     }
-                );
+                )
         }
 
     }
@@ -214,13 +222,35 @@ export default class LoginBox extends React.Component {
                     <div className="title">{this.state.school}</div>
                     <hr />
                     <div className="title">線上請假系統</div>
-                    <input ref={this.account} autoFocus={true} type="text" className="account"
-                        placeholder="帳號" onChange={this.checkInputEmpty.bind(this)} />
-                    <input ref={this.password} type="password" className="password"
-                        placeholder="密碼" onChange={this.checkInputEmpty.bind(this)} />
+                    <InputBox
+                        cref={this.account}
+                        title="帳號"
+                        necessary={true}
+                        type="text"
+                        autoFocus={true}
+                        onChangeFunc={this.checkInputEmpty.bind(this)}
+                        className="account"
+                        check={this.state.check}
+                    />
+                    <InputBox
+                        cref={this.password}
+                        title="密碼"
+                        necessary={true}
+                        type="password"
+                        onChangeFunc={this.checkInputEmpty.bind(this)}
+                        className="password"
+                        check={this.state.check}
+                    />
                     <div id="valid-box">
-                        <input ref={this.validCode} type="number" className="valid-code"
-                            placeholder="驗證碼" onChange={this.checkInputEmpty.bind(this)} />
+                        <InputBox
+                            cref={this.validCode}
+                            title="驗證碼"
+                            necessary={true}
+                            type="number"
+                            onChangeFunc={this.checkInputEmpty.bind(this)}
+                            className="valid-code"
+                            check={this.state.check}
+                        />
                         <img id="valid-img" src={this.state.validSrc} title="點擊刷新"
                             onClick={this.reloadValidCode.bind(this)} alt="Valid Code" />
                     </div>

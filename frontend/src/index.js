@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 
 import Announcement from "./js/announcement";
 import Leave from "./js/leave";
+import Loading from "./js/loading";
 import LoginHistory from "./js/login-history";
 import MessageBox from "./js/message-box";
 import Other from "./js/other";
@@ -55,6 +56,7 @@ class MainContent extends React.Component {
             messageTitle: "Test",
             messageContext: "Test",
             messageDisplay: false,
+            loading: false,
         };
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
@@ -142,6 +144,7 @@ class MainContent extends React.Component {
                     display={this.state.messageDisplay}
                 // onKeyDown={(e)=>{console.log(e)}}
                 />
+                <Loading scale={0.5} display={this.state.loading} title="Loading..." />
                 <div id="content" onClick={this.closeMenu.bind(this)}>
                     <Announcement
                         display={this.state.nowDisplay === 0}
