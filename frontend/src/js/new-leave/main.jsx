@@ -1,7 +1,11 @@
 import axios from "axios";
 import React from "react";
 
-import "../../css/leave/new-leave.css";
+import Page from "./page";
+import DateBox from "./date-box";
+import ButtonBar from "./button-bar";
+
+import "../../css/new-leave/main.css";
 
 const flowMap = [
     "選擇假別",
@@ -21,8 +25,23 @@ export default class NewLeave extends React.Component {
             display: 0,
             typeOptions: [],
             typeSelect: -1,
+            startDateCheck: false,
+            endDateCheck: false,
         };
-        this.step = 0;
+
+        this.startDate = [
+            React.createRef(),
+            React.createRef(),
+            React.createRef(),
+            React.createRef(),
+        ];
+        this.endDate = [
+            React.createRef(),
+            React.createRef(),
+            React.createRef(),
+            React.createRef(),
+        ];
+        this.date = new Date();
     }
 
     componentDidMount() {
@@ -45,6 +64,35 @@ export default class NewLeave extends React.Component {
             proc: 15 * i + 10,
             display: i,
         });
+    }
+
+    checkDate(index) {
+        let list;
+        if (index === 0) {
+            list = this.startDate;
+            this.setState({
+                startDateCheck: true
+            })
+        }
+        else {
+            list = this.endDate;
+            this.setState({
+                endDateCheck: true
+            })
+        }
+        let firstEmpty = null;
+        list.forEach((ref) => {
+            if (ref.current.value === "") {
+                if (firstEmpty === null) {
+                    firstEmpty = ref;
+                }
+            }
+        });
+        if (firstEmpty === null) {
+            return true;
+        }
+        firstEmpty.current.focus();
+        return false;
     }
 
     render() {
@@ -87,28 +135,13 @@ export default class NewLeave extends React.Component {
                     {typeOptions}
                 </Page>
                 <Page className="start-time" display={this.state.display === 1}>
-                    <div className="datetime-box">
-                    </div>
+                    <DateBox refList={this.startDate} prefix="start" check={this.state.startDateCheck} />
+                    <ButtonBar last={0} next={2} nextClick={this.checkDate.bind(this, 0)} setPage={this.setPage.bind(this)} />
                 </Page>
-            </div>
-        );
-    }
-}
-
-class Page extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            className: props.className,
-        };
-    }
-
-    render() {
-        const display = this.props.display;
-        const children = this.props.children;
-        return (
-            <div className={`page ${this.state.className} ${display ? "display" : ""}`}>
-                {children}
+                <Page className="end-time" display={this.state.display === 2}>
+                    <DateBox refList={this.endDate} prefix="end" check={this.state.endDateCheck} />
+                    <ButtonBar last={1} next={3} nextClick={this.checkDate.bind(this, 1)} setPage={this.setPage.bind(this)} />
+                </Page>
             </div>
         );
     }

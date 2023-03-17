@@ -1,6 +1,6 @@
 import React from "react";
 
-import NewLeave from "./leave/new-leave";
+import NewLeave from "./new-leave/main";
 
 import TitleBar from "./title-bar";
 

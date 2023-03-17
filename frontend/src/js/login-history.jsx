@@ -14,6 +14,7 @@ export default class LoginHistory extends React.Component {
         };
         this.showMessage = props.showMessage;
         this.display = false;
+        this.setLoading=props.loading;
     }
 
     componentDidMount() {
@@ -21,6 +22,7 @@ export default class LoginHistory extends React.Component {
     }
 
     logout(session) {
+        this.setLoading(true);
         axios.get(`/api/logout/${session}`)
             .then(
                 () => { this.showMessage("登出成功", "已成功登出。", "info"); }
@@ -29,17 +31,22 @@ export default class LoginHistory extends React.Component {
                 () => { this.showMessage("登出失敗", "未成功登出。", "error"); }
             )
             .finally(
-                this.reload.bind(this)
+                () => {
+                    this.setLoading(false);
+                    this.reload();
+                }
             );
     }
 
     logoutAll() {
+        this.setLoading(true);
         const sessions = this.state.sessions;
         function __logout(index = 0) {
             let session = sessions[index];
             if (session === undefined) {
                 this.showMessage("登出成功", "已全部登出。", "info");
-                this.reload.bind(this)();
+                this.setLoading(false);
+                this.reload();
             }
             else {
                 axios.get(`/api/logout/${session}`)

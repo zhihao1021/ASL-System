@@ -1,0 +1,34 @@
+#leave .new-leave .button-bar {
+    margin: 2.5vh auto;
+    width: 100%;
+    display: flex;
+}
+
+#leave .new-leave .button-bar .empty {
+    flex: 1;
+}
+
+#leave .new-leave .button-bar button {
+    height: 3.2vh;
+    width: 8vh;
+    font-size: 1.5vh;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    border-color: #888888;
+    color: #888888;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+#leave .new-leave .button-bar button:hover:nth-child(1) {
+    color: #FF0000;
+    border-color: #FF0000;
+}
+
+#leave .new-leave .button-bar button:hover:nth-last-child(1) {
+    color: #22CC77;
+    border-color: #22CC77;
+}

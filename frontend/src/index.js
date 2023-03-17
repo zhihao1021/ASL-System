@@ -120,6 +120,12 @@ class MainContent extends React.Component {
         }
     }
 
+    setLoading(show) {
+        this.setState({
+            loading: show,
+        });
+    }
+
     render() {
         return (
             // <React.StrictMode>
@@ -142,7 +148,6 @@ class MainContent extends React.Component {
                     context={this.state.messageContext}
                     level={this.state.messageLevel}
                     display={this.state.messageDisplay}
-                // onKeyDown={(e)=>{console.log(e)}}
                 />
                 <Loading scale={0.5} display={this.state.loading} title="Loading..." />
                 <div id="content" onClick={this.closeMenu.bind(this)}>
@@ -155,6 +160,7 @@ class MainContent extends React.Component {
                     <LoginHistory
                         showMessage={this.showMessage.bind(this)}
                         display={this.state.nowDisplay === 2}
+                        loading={this.setLoading.bind(this)}
                     />
                     <Other
                         display={this.state.nowDisplay === 6}

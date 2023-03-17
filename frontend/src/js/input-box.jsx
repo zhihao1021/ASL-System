@@ -18,6 +18,16 @@ export default class InputBox extends React.Component {
         if (this.necessary) {
             this.title += "*";
         }
+        this.default = props.default;
+    }
+
+    componentDidMount() {
+        if (this.default !== undefined) {
+            this.ref.current.value = this.default;
+            this.setState({
+                empty: false
+            })
+        }
     }
 
     componentDidUpdate() {
@@ -42,7 +52,7 @@ export default class InputBox extends React.Component {
                 empty: true
             });
         }
-        if (this.onChangeFunc != undefined) {
+        if (this.onChangeFunc !== undefined) {
             this.onChangeFunc(event);
         }
     }

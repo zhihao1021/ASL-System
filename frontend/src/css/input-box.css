@@ -8,7 +8,7 @@
 }
 
 .input-box input {
-    width: 100%;
+    width: calc(100% - 4px);
     /* height: 100%; */
     /* line-height: 100%; */
     font-size: 1em;
@@ -27,6 +27,7 @@
 }
 
 .input-box::before {
+    font-family: "Microsoft JhengHei";
     position: absolute;
     content: var(--content);
     top: calc(50% - 0.5em);
