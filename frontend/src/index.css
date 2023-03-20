@@ -11,6 +11,7 @@ body {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: "MSJH", sans-serif;
 }
 
 input::-webkit-outer-spin-button,
@@ -66,7 +67,6 @@ input[type=number] {
 }
 
 #content>div {
-  font-family: "Noto Sans TC";
   margin: 1vh auto;
   height: calc(100% - 2vh);
   width: 90vw;
@@ -80,7 +80,6 @@ input[type=number] {
   left: 2px;
   bottom: 2px;
   user-select: none;
-  font-family: "Noto Sans TC";
 }
 
 #copyright a {

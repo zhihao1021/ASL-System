@@ -45,8 +45,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    /* font-family: "Noto Sans TC", sans-serif; */
-    font-family: "Microsoft JhengHei";
+    font-family: "MSJH", sans-serif;
     align-items: center;
     z-index: 1;
 }

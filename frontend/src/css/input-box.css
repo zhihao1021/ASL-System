@@ -27,10 +27,9 @@
 }
 
 .input-box::before {
-    font-family: "Microsoft JhengHei";
     position: absolute;
     content: var(--content);
-    top: calc(50% - 0.5em);
+    top: calc(50% - 0.6em);
     left: 0.05em;
     font-size: 1em;
     line-height: 1em;
@@ -44,7 +43,7 @@
 .input-box:not(.empty)::before,
 .input-box:has(input:focus)::before {
     color: #000000;
-    top: -0.55em;
+    top: -0.8em;
     font-size: 0.5em;
 }
 

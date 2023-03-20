@@ -15,8 +15,7 @@ import TopBar from "./js/top-bar";
 import LoginBox from "./js/login";
 
 import "./index.css";
-import "./fonts/font.css"
-import "./fonts/material-symbols.css"
+import "./fonts/fonts.css"
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const year = new Date().getFullYear()
