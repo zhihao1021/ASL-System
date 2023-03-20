@@ -5,16 +5,37 @@ export default class Page extends React.Component {
         super(props);
         this.state = {
             className: props.className,
+            mount: props.display,
+            willUnmount: false,
         };
     }
 
+    componentDidUpdate() {
+        if (this.state.mount !== this.props.display) {
+            this.setState({
+                mount: this.props.display,
+                willUnmount: !this.props.display
+            });
+        }
+    }
+
     render() {
-        const display = this.props.display;
         const children = this.props.children;
-        return (
-            <div className={`page ${this.state.className} ${display ? "display" : ""}`}>
-                {children}
-            </div>
-        );
+        if (this.state.mount) {
+            return (
+                <div className={`page ${this.state.className}`}>
+                    {children}
+                </div>
+            );
+        }
+        else if (this.state.willUnmount) {
+            setTimeout(()=>{this.setState({willUnmount: false})}, 100)
+            return (
+                <div className={`page unmount ${this.state.className}`}>
+                    {children}
+                </div>
+            );
+        }
+        return;
     }
 }

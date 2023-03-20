@@ -29,19 +29,24 @@ export default class NewLeave extends React.Component {
             endDateCheck: false,
         };
 
-        this.startDate = [
+        this.startData = [0, 0, 0, 0]
+        this.startRef = [
             React.createRef(),
             React.createRef(),
             React.createRef(),
             React.createRef(),
         ];
-        this.endDate = [
+        this.endData = [0, 0, 0, 0]
+        this.endRef = [
             React.createRef(),
             React.createRef(),
             React.createRef(),
             React.createRef(),
         ];
         this.date = new Date();
+        this.reason = React.createRef();
+        this.filesInput = React.createRef();
+        this.files = undefined;
     }
 
     componentDidMount() {
@@ -69,13 +74,13 @@ export default class NewLeave extends React.Component {
     checkDate(index) {
         let list;
         if (index === 0) {
-            list = this.startDate;
+            list = this.startRef;
             this.setState({
                 startDateCheck: true
             })
         }
         else {
-            list = this.endDate;
+            list = this.endRef;
             this.setState({
                 endDateCheck: true
             })
@@ -93,6 +98,23 @@ export default class NewLeave extends React.Component {
         }
         firstEmpty.current.focus();
         return false;
+    }
+
+    saveData(index) {
+        if (index === 0) {
+            this.startRef.forEach((ref, index) => {
+                this.startData[index] = ref.current.value;
+            });
+        }
+        else {
+            this.endRef.forEach((ref, index) => {
+                this.endData[index] = ref.current.value;
+            });
+        }
+    }
+
+    saveFiles() {
+        this.files = this.filesInput.current.files;
     }
 
     render() {
@@ -135,14 +157,79 @@ export default class NewLeave extends React.Component {
                     {typeOptions}
                 </Page>
                 <Page className="start-time" display={this.state.display === 1}>
-                    <DateBox refList={this.startDate} prefix="start" check={this.state.startDateCheck} />
-                    <ButtonBar last={0} next={2} nextClick={this.checkDate.bind(this, 0)} setPage={this.setPage.bind(this)} />
+                    <DateBox
+                        refList={this.startRef}
+                        prefix="start"
+                        check={this.state.startDateCheck}
+                        defaultData={this.startData}
+                        onUnmount={this.saveData.bind(this, 0)}
+                    />
+                    <ButtonBar
+                        now={1}
+                        nextClick={this.checkDate.bind(this, 0)}
+                        setPage={this.setPage.bind(this)}
+                    />
                 </Page>
                 <Page className="end-time" display={this.state.display === 2}>
-                    <DateBox refList={this.endDate} prefix="end" check={this.state.endDateCheck} />
-                    <ButtonBar last={1} next={3} nextClick={this.checkDate.bind(this, 1)} setPage={this.setPage.bind(this)} />
+                    <DateBox
+                        refList={this.endRef}
+                        prefix="end"
+                        check={this.state.endDateCheck}
+                        defaultData={this.endData}
+                        onUnmount={this.saveData.bind(this, 1)}
+                    />
+                    <ButtonBar
+                        now={2}
+                        nextClick={this.checkDate.bind(this, 1)}
+                        setPage={this.setPage.bind(this)}
+                    />
+                </Page>
+                <Page className="reason" display={this.state.display === 3}>
+                    <div
+                        ref={this.reason}
+                        className="reason-block"
+                        contentEditable
+                    />
+                    <ButtonBar
+                        now={3}
+                        setPage={this.setPage.bind(this)}
+                    />
+                </Page>
+                <Page className="appendix" display={this.state.display === 4}>
+                    <FilesInput cref={this.filesInput} files={this.files} onUnmount={this.saveFiles.bind(this)} />
+                    <ButtonBar
+                        now={4}
+                        setPage={this.setPage.bind(this)}
+                    />
                 </Page>
             </div>
         );
+    }
+}
+
+class FilesInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = props.cref;
+        this.files = props.files;
+        this.onUnmount = props.onUnmount;
+    }
+
+    componentDidMount() {
+        if (this.files) {
+            this.ref.current.files = this.files;
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.onUnmount) {
+            this.onUnmount();
+        }
+    }
+
+    render() {
+        return (
+            <input ref={this.ref} type="file" multiple/>
+        )
     }
 }

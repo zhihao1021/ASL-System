@@ -3,61 +3,61 @@ import React from "react";
 export default class ButtonBar extends React.Component {
     constructor(props) {
         super(props)
-        this.last = props.last;
-        this.next = props.next;
+        this.now = props.now;
         this.lastClick = props.lastClick;
         this.nextClick = props.nextClick;
         this.setPage = props.setPage;
+        this.onKeyDown = (event) => {
+            if (event.key === "Enter" && event.target.contentEditable !== "true") {
+                this.onNextClick();
+            }
+        }
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            document.addEventListener("keydown", this.onKeyDown);
+        }, 510);
+    }
+    
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.onKeyDown);
     }
 
     onLastClick() {
         if (this.lastClick !== undefined) {
             if (this.lastClick()) {
-                this.setPage(this.last);
+                this.setPage(this.now - 1);
             }
         }
         else {
-            this.setPage(this.last);
+            this.setPage(this.now - 1);
         }
     }
 
     onNextClick() {
         if (this.nextClick !== undefined) {
             if (this.nextClick()) {
-                this.setPage(this.next);
+                this.setPage(this.now + 1);
             }
         }
         else {
-            this.setPage(this.next);
+            this.setPage(this.now + 1);
         }
     }
 
     render() {
-        let list = [];
-        let index = 0;
-        if (this.last !== undefined) {
-            list.push(
+        return (
+            <div className="button-bar">
                 <button
-                    key={index++}
                     className="last"
                     onClick={this.onLastClick.bind(this)}
                 >上一頁</button>
-            );
-        }
-        list.push(<div key={index++} className="empty" />);
-        if (this.next !== undefined) {
-            list.push(
+                <div className="empty" />
                 <button
-                    key={index++}
                     className="next"
                     onClick={this.onNextClick.bind(this)}
                 >下一頁</button>
-            );
-        }
-
-        return (
-            <div className="button-bar">
-                {list}
             </div>
         )
     }

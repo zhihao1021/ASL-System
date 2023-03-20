@@ -11,5 +11,11 @@
 @media (max-aspect-ratio: 1/1) {
     #leave .new-leave .datetime-box {
         flex-direction: column;
+        align-items: center;
+        width: 8em;
+    }
+
+    #leave .new-leave .datetime-box .input-box {
+        max-width: 6em;
     }
 }

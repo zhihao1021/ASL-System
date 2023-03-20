@@ -55,8 +55,10 @@
     border-bottom-color: #FF8080;
 }
 
-.input-box.necessary.empty:not(.first):has(input:focus) input,
-.input-box.necessary.empty:not(.first):has(input:focus)::before {
+.input-box.necessary.empty.check:has(input:focus)::before,
+.input-box.necessary.empty.check input:focus,
+.input-box.necessary.empty:not(.first):has(input:focus)::before,
+.input-box.necessary.empty:not(.first) input:focus {
     color: #FF0000;
     border-bottom-color: #FF0000;
 }
