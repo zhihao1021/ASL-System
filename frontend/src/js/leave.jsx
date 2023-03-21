@@ -12,6 +12,10 @@ export default class Leave extends React.Component {
         this.state = {
             display: 0,
         };
+        this.showMessage = props.showMessage;
+        this.loading = props.loading
+        this.name = props.name;
+        this.sid = props.sid;
     }
 
     render() {
@@ -23,7 +27,13 @@ export default class Leave extends React.Component {
                     <button onClick={() => { this.setState({ display: 1 }) }}>查看資料</button>
                 </TitleBar>
                 <hr />
-                <NewLeave display={this.state.display === 0} />
+                <NewLeave
+                    showMessage={this.showMessage}
+                    loading={this.loading}
+                    name={this.name}
+                    sid={this.sid}
+                    display={this.state.display === 0}
+                />
             </div>
         )
     }

@@ -1,0 +1,38 @@
+#leave .new-leave .confirm-data {
+    max-height: 60vh;
+    width: 55vw;
+    overflow: auto;
+    font-size: 2.5vh;
+}
+
+#leave .new-leave .confirm-data .title {
+    margin: 0.3em 0px;
+}
+
+#leave .new-leave .confirm-data p,
+#leave .new-leave .confirm-data ul {
+    margin: 0.3em 0px;
+}
+
+#leave .new-leave .confirm-data .reason {
+    margin-left: 1.5em;;
+    word-break: break-all;
+}
+
+#leave .new-leave .confirm-data img {
+    max-width: 100%;
+    object-fit: contain;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    #leave .new-leave .confirm-data p {
+        display: inline;
+    }
+}
+
+@media (max-aspect-ratio: 1/1) {
+    #leave .new-leave .confirm-data {
+        font-size: 5vw;
+        width: 75vw;
+    }
+}

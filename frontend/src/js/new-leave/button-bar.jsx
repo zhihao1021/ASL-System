@@ -15,15 +15,9 @@ export default class ButtonBar extends React.Component {
     }
 
     componentDidMount() {
-        setTimeout(() => {
-            document.addEventListener("keydown", this.onKeyDown);
-        }, 510);
+        document.addEventListener("keydown", this.onKeyDown);
     }
     
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.onKeyDown);
-    }
-
     onLastClick() {
         if (this.lastClick !== undefined) {
             if (this.lastClick()) {
@@ -34,15 +28,17 @@ export default class ButtonBar extends React.Component {
             this.setPage(this.now - 1);
         }
     }
-
+    
     onNextClick() {
         if (this.nextClick !== undefined) {
             if (this.nextClick()) {
                 this.setPage(this.now + 1);
+                document.removeEventListener("keydown", this.onKeyDown);
             }
         }
         else {
             this.setPage(this.now + 1);
+            document.removeEventListener("keydown", this.onKeyDown);
         }
     }
 

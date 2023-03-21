@@ -3,6 +3,7 @@
 @import url(./date-box.css);
 @import url(./option.css);
 @import url(./button-bar.css);
+@import url(./confirm.css);
 
 #leave .new-leave {
     margin: 2vh auto;

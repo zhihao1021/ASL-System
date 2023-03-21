@@ -29,7 +29,7 @@ export default class Page extends React.Component {
             );
         }
         else if (this.state.willUnmount) {
-            setTimeout(()=>{this.setState({willUnmount: false})}, 100)
+            setTimeout(()=>{this.setState({willUnmount: false})}, 500)
             return (
                 <div className={`page unmount ${this.state.className}`}>
                     {children}

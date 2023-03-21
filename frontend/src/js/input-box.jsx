@@ -15,9 +15,9 @@ export default class InputBox extends React.Component {
             empty: true,
         }
         this.first = true;
-        if (this.necessary) {
-            this.title += "*";
-        }
+        // if (this.necessary) {
+        //     this.title += "*";
+        // }
         this.default = props.default;
     }
 
