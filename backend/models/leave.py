@@ -20,7 +20,6 @@ class LeaveBase(IDBase):
     end_lesson: int = SQLField(nullable=False, description="結束節次")
     remark: str = SQLField("", nullable=False, description="備註")
     status: int = SQLField(0b0000, nullable=False, description="狀態")
-# 0000 草稿
 # 0001 送出
 # 0010 導師核准
 # 0100 教官核准

@@ -15,8 +15,13 @@
 }
 
 #leave .new-leave .confirm-data .reason {
-    margin-left: 1.5em;;
+    margin-left: 1.5em;
     word-break: break-all;
+}
+
+#leave .new-leave .confirm-data .img-content {
+    max-width: calc(100% - 1.5em);
+    margin-left: 1.5em;
 }
 
 #leave .new-leave .confirm-data img {

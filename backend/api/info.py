@@ -67,7 +67,7 @@ async def get_user_icon(sid: str, session: str = Cookie(None)):
         if user is None:
             status_code, response = response_404("User")
         else:
-            file_path = f"saves/{sid}/icon"
+            file_path = f"saves/user/{sid}/icon"
             if isfile(file_path):
                 async with aopen(file_path, mode="rb") as img_file:
                     img_content = await img_file.read()

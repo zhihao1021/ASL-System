@@ -8,14 +8,19 @@ export default class ButtonBar extends React.Component {
         this.nextClick = props.nextClick;
         this.setPage = props.setPage;
         this.onKeyDown = (event) => {
-            if (event.key === "Enter" && event.target.contentEditable !== "true") {
+            if (event.key === "Enter" && this.props.display && event.target.contentEditable !== "true") {
                 this.onNextClick();
             }
-        }
+        };
+        this.final = props.final;
     }
 
     componentDidMount() {
         document.addEventListener("keydown", this.onKeyDown);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.onKeyDown);
     }
     
     onLastClick() {
@@ -53,7 +58,7 @@ export default class ButtonBar extends React.Component {
                 <button
                     className="next"
                     onClick={this.onNextClick.bind(this)}
-                >下一頁</button>
+                >{this.final ? "完成" : "下一頁"}</button>
             </div>
         )
     }

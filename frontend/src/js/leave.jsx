@@ -18,6 +18,12 @@ export default class Leave extends React.Component {
         this.sid = props.sid;
     }
 
+    setPage(i) {
+        this.setState({
+            display: i
+        });
+    }
+
     render() {
         const display = this.props.display;
         return (
@@ -33,6 +39,7 @@ export default class Leave extends React.Component {
                     name={this.name}
                     sid={this.sid}
                     display={this.state.display === 0}
+                    setPage={this.setPage.bind(this)}
                 />
             </div>
         )

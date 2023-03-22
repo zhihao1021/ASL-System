@@ -1,0 +1,50 @@
+#leave .new-leave .finish-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: fit-content;
+    width: 4em;
+    font-size: 4vmax;
+    padding-bottom: 1vh;
+    animation: opac 3s ease-out 7.5s;
+}
+
+#leave .new-leave .finish-box::after {
+    position: absolute;
+    content: "";
+    left: 0px;
+    bottom: 0px;
+    height: 0.5vh;
+    background-color: #666666;
+    border-radius: 0.25vh;
+    animation: process 9s ease-in-out;
+}
+
+#leave .new-leave .finished p {
+    line-height: 1.2em;
+    margin: auto 0.2em;
+    user-select: none;
+    color: #666666;
+}
+
+@keyframes process {
+    0% {
+        width: 100%;
+    }
+
+    100% {
+        width: 0%;
+    }
+}
+
+
+@keyframes opac {
+    0% {
+        opacity: 100%;
+    }
+
+    100% {
+        opacity: 0%;
+    }
+}

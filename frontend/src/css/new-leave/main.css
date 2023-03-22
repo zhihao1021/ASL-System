@@ -4,6 +4,7 @@
 @import url(./option.css);
 @import url(./button-bar.css);
 @import url(./confirm.css);
+@import url(./finished.css);
 
 #leave .new-leave {
     margin: 2vh auto;

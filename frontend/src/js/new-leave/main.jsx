@@ -21,37 +21,56 @@ export default class NewLeave extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            typeOptions: [],
             proc: 10,
             display: 0,
-            typeOptions: [],
             typeSelect: -1,
             startDateCheck: false,
             endDateCheck: false,
             files: undefined
         };
 
-        this.startData = [0, 0, 0, 0]
         this.startRef = [
             React.createRef(),
             React.createRef(),
             React.createRef(),
             React.createRef(),
         ];
-        this.endData = [0, 0, 0, 0]
         this.endRef = [
             React.createRef(),
             React.createRef(),
             React.createRef(),
             React.createRef(),
         ];
-        this.date = new Date();
         this.reason = React.createRef();
-        this.reasonContent = "";
         this.filesInput = React.createRef();
         this.showMessage = props.showMessage;
         this.loading = props.loading;
         this.name = props.name;
         this.sid = props.sid;
+        this.setParentPage = props.setPage;
+
+        this.startData = [0, 0, 0, 0];
+        this.endData = [0, 0, 0, 0];
+        this.date = new Date();
+        this.reasonContent = "";
+        this.finish = false;
+    }
+
+    dataInit() {
+        this.setState({
+            proc: 10,
+            display: 0,
+            typeSelect: -1,
+            startDateCheck: false,
+            endDateCheck: false,
+            files: undefined
+        });
+        this.startData = [0, 0, 0, 0];
+        this.endData = [0, 0, 0, 0];
+        this.date = new Date();
+        this.reasonContent = "";
+        this.finish = false;
     }
 
     componentDidMount() {
@@ -142,6 +161,11 @@ export default class NewLeave extends React.Component {
         })
     }
 
+    sendData() {
+        this.finish = true;
+        return true;
+    }
+
     render() {
         const display = this.props.display;
         const flow = flowMap.map(
@@ -152,7 +176,7 @@ export default class NewLeave extends React.Component {
                     <div
                         key={index}
                         onClick={this.setPage.bind(this, index)}
-                        className={`tag ${this.state.display >= index ? "activate" : ""}`}
+                        className={`tag ${this.state.display >= index && !this.finish ? "activate" : ""}`}
                         style={{ "--pos": pos }}
                     >
                         {flowName}
@@ -198,6 +222,7 @@ export default class NewLeave extends React.Component {
                         now={1}
                         nextClick={this.checkDate.bind(this, 0)}
                         setPage={this.setPage.bind(this)}
+                        display={this.state.display === 1}
                     />
                 </Page>
                 <Page className="end-time" display={this.state.display === 2}>
@@ -212,6 +237,7 @@ export default class NewLeave extends React.Component {
                         now={2}
                         nextClick={this.checkDate.bind(this, 1)}
                         setPage={this.setPage.bind(this)}
+                        display={this.state.display === 2}
                     />
                 </Page>
                 <Page className="reason" display={this.state.display === 3}>
@@ -223,6 +249,7 @@ export default class NewLeave extends React.Component {
                     <ButtonBar
                         now={3}
                         setPage={this.setPage.bind(this)}
+                        display={this.state.display === 3}
                     />
                 </Page>
                 <Page className="appendix" display={this.state.display === 4}>
@@ -238,6 +265,7 @@ export default class NewLeave extends React.Component {
                         now={4}
                         nextClick={this.checkFiles.bind(this)}
                         setPage={this.setPage.bind(this)}
+                        display={this.state.display === 4}
                     />
                 </Page>
                 <Page className="confirm" display={this.state.display === 5}>
@@ -270,12 +298,20 @@ export default class NewLeave extends React.Component {
                         <div className="title">請假事由</div>
                         <div className="reason">{this.reasonContent || "無"}</div>
                         <div className="title">附件</div>
-                        {imgList}
+                        <div className="img-content">
+                            {imgList.length === 0 ? "無" : imgList}
+                        </div>
                     </div>
                     <ButtonBar
                         now={5}
+                        nextClick={this.sendData.bind(this)}
                         setPage={this.setPage.bind(this)}
+                        final={true}
+                        display={this.state.display === 5}
                     />
+                </Page>
+                <Page className="finished" display={this.state.display === 6}>
+                    <FinishPage init={this.dataInit.bind(this)} />
                 </Page>
             </div>
         );
@@ -336,6 +372,28 @@ class TextDivInput extends React.Component {
                 className="reason-block"
                 contentEditable
             />
+        )
+    }
+}
+
+class FinishPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.init = props.init;
+    }
+
+    componentDidMount() {
+        if (this.init) {
+            setTimeout(this.init, 10000);
+        }
+    }
+
+    render() {
+        return (
+            <div className="finish-box">
+                <p className="ms">task_alt</p>
+                <p>完成</p>
+            </div>
         )
     }
 }
