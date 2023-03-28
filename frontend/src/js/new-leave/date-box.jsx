@@ -11,7 +11,7 @@ export default class DateBox extends React.Component {
         let defaultData = props.defaultData || [];
         this.data = [
             ["西元", "year", defaultData[0] || date.getFullYear()],
-            ["月", "month", defaultData[1] || date.getMonth()],
+            ["月", "month", defaultData[1] || date.getMonth() + 1],
             ["日", "date", defaultData[2] || date.getDate()],
             ["節次", "lesson", defaultData[3] || ""],
         ];
@@ -36,7 +36,7 @@ export default class DateBox extends React.Component {
 
     render() {
         const check = this.props.check;
-        const list = this.data.map((data, index) => {
+        const list = this.data.slice(0, 3).map((data, index) => {
             return (
                 <InputBox
                     key={index}
@@ -50,9 +50,20 @@ export default class DateBox extends React.Component {
                 />
             )
         })
+        const options = this.props.lessonList.map((value, index)=>{
+            return (
+                <option key={index} value={index} >{value}</option>
+            )
+        });
         return (
             <div className="datetime-box">
                 {list}
+                <select
+                    ref={this.refList[3]}
+                    defaultValue={this.data[3][2]}
+                >
+                    {options}
+                </select>
             </div>
         )
     }

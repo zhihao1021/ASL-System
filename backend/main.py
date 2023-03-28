@@ -21,8 +21,11 @@ async def sql_init():
 
     if DEBUG:
         async with AsyncSession(ENGINE) as session:
-            from models import User
+            from models import User, Class
             from utils import permissions
+            session.add(
+                Class(class_name="測試")
+            )
             session.add(
                 User(**{
                     "sid": "000",
@@ -38,7 +41,8 @@ async def sql_init():
                     "name": "alice",
                     "account": "alice",
                     "password": "alice",
-                    "role": permissions.STUDENT_ROLE
+                    "role": permissions.STUDENT_ROLE,
+                    "class_id": 0
                 })
             )
 

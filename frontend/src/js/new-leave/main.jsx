@@ -22,12 +22,14 @@ export default class NewLeave extends React.Component {
         super(props);
         this.state = {
             typeOptions: [],
+            lessonOptions: [],
             proc: 10,
             display: 0,
             typeSelect: -1,
             startDateCheck: false,
             endDateCheck: false,
-            files: undefined
+            files: undefined,
+            finish: false,
         };
 
         this.startRef = [
@@ -48,13 +50,12 @@ export default class NewLeave extends React.Component {
         this.loading = props.loading;
         this.name = props.name;
         this.sid = props.sid;
+        this.userClass = props.userClass;
         this.setParentPage = props.setPage;
 
         this.startData = [0, 0, 0, 0];
         this.endData = [0, 0, 0, 0];
-        this.date = new Date();
         this.reasonContent = "";
-        this.finish = false;
     }
 
     dataInit() {
@@ -64,28 +65,37 @@ export default class NewLeave extends React.Component {
             typeSelect: -1,
             startDateCheck: false,
             endDateCheck: false,
-            files: undefined
+            files: undefined,
+            finish: false,
         });
         this.startData = [0, 0, 0, 0];
         this.endData = [0, 0, 0, 0];
-        this.date = new Date();
         this.reasonContent = "";
-        this.finish = false;
     }
 
     componentDidMount() {
         this.getLeaveType();
+        this.getLeaveLesson();
     }
 
     getLeaveType() {
-        axios.get("/api/leave/type")
-            .then(
-                (response) => {
-                    this.setState({
-                        typeOptions: response.data.data
-                    });
-                }
-            )
+        axios.get("/api/leave/type").then(
+            (response) => {
+                this.setState({
+                    typeOptions: response.data.data
+                });
+            }
+        )
+    }
+    
+    getLeaveLesson() {
+        axios.get("/api/leave/lesson").then(
+            (response) => {
+                this.setState({
+                    lessonOptions: response.data.data
+                });
+            }
+        )
     }
 
     setPage(i) {
@@ -162,7 +172,32 @@ export default class NewLeave extends React.Component {
     }
 
     sendData() {
-        this.finish = true;
+        this.loading(true);
+        let form = new FormData();
+        form.append("leave_type", this.state.typeSelect);
+        form.append("start_date", this.startData.slice(0, 3).map((value) => { return value.toString().padStart(2, "0") }).join("-"));
+        form.append("end_date", this.endData.slice(0, 3).map((value) => { return value.toString().padStart(2, "0") }).join("-"));
+        form.append("start_lesson", this.startData[3]);
+        form.append("end_lesson", this.endData[3]);
+        Array.from(this.state.files).forEach((file) => {
+            form.append("files", file)
+        });
+        form.append("remark", this.reasonContent);
+        axios.postForm(
+            "/api/leave",
+            form
+        ).then(() => {
+            this.setState({
+                finish: true
+            });
+        }).catch((err) => {
+            this.setPage(this.state.display - 1);
+            this.showMessage("發生錯誤", "發生錯誤，請重新檢查填寫容是否正確。", "error");
+        }).finally(
+            () => {
+                this.loading(false);
+            }
+        );
         return true;
     }
 
@@ -176,7 +211,7 @@ export default class NewLeave extends React.Component {
                     <div
                         key={index}
                         onClick={this.setPage.bind(this, index)}
-                        className={`tag ${this.state.display >= index && !this.finish ? "activate" : ""}`}
+                        className={`tag ${this.state.display >= index && !this.state.finish ? "activate" : ""}`}
                         style={{ "--pos": pos }}
                     >
                         {flowName}
@@ -217,6 +252,7 @@ export default class NewLeave extends React.Component {
                         check={this.state.startDateCheck}
                         defaultData={this.startData}
                         onUnmount={this.saveDate.bind(this, 0)}
+                        lessonList={this.state.lessonOptions}
                     />
                     <ButtonBar
                         now={1}
@@ -232,6 +268,7 @@ export default class NewLeave extends React.Component {
                         check={this.state.endDateCheck}
                         defaultData={this.endData}
                         onUnmount={this.saveDate.bind(this, 1)}
+                        lessonList={this.state.lessonOptions}
                     />
                     <ButtonBar
                         now={2}
@@ -260,7 +297,7 @@ export default class NewLeave extends React.Component {
                             <li>每個檔案不可超過10MB。</li>
                         </ul>
                     </div>
-                    <FilesInput cref={this.filesInput} files={this.files} onUnmount={this.saveFiles.bind(this)} />
+                    <FilesInput cref={this.filesInput} files={this.state.files} onUnmount={this.saveFiles.bind(this)} />
                     <ButtonBar
                         now={4}
                         nextClick={this.checkFiles.bind(this)}
@@ -278,6 +315,9 @@ export default class NewLeave extends React.Component {
                             <li>
                                 <p>學號：{this.sid}</p>
                             </li>
+                            <li>
+                                <p>班級：{this.userClass}</p>
+                            </li>
                         </ul>
                         <div className="title">請假資料</div>
                         <ul>
@@ -286,13 +326,11 @@ export default class NewLeave extends React.Component {
                             </li>
                             <li>
                                 <p>開始時間：</p>
-                                <p>{this.startData[0]}年{this.startData[1]}月{this.startData[2]}日 第
-                                    {this.startData[3]}節</p>
+                                <p>{this.startData[0]}年{this.startData[1]}月{this.startData[2]}日 {this.state.lessonOptions[this.startData[3]]}</p>
                             </li>
                             <li>
                                 <p>結束時間：</p>
-                                <p>{this.endData[0]}年{this.endData[1]}月{this.endData[2]}日 第
-                                    {this.endData[3]}節</p>
+                                <p>{this.endData[0]}年{this.endData[1]}月{this.endData[2]}日 {this.state.lessonOptions[this.endData[3]]}</p>
                             </li>
                         </ul>
                         <div className="title">請假事由</div>
@@ -310,7 +348,7 @@ export default class NewLeave extends React.Component {
                         display={this.state.display === 5}
                     />
                 </Page>
-                <Page className="finished" display={this.state.display === 6}>
+                <Page className="finished" display={this.state.display === 6 && this.state.finish}>
                     <FinishPage init={this.dataInit.bind(this)} />
                 </Page>
             </div>

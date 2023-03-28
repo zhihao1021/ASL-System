@@ -1,7 +1,7 @@
 from .base import CURDBase
 
 from aiosqlmodel import AsyncSession
-from config import ENGINE, NOWTIME
+from config import ENGINE
 from models import Leave
 from schemas import LeaveCreate, LeaveUpdate
 
@@ -25,7 +25,7 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
             result = await db_session.exec(query_stat)
 
             return result.all()
-        
+
     async def get_by_status(
         self,
         status: int
@@ -33,7 +33,7 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
         if status == None:
             return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Leave).where(Leave.status >= status)
+            query_stat = select(Leave).where(Leave.status == status)
             result = await db_session.exec(query_stat)
 
             return result.all()

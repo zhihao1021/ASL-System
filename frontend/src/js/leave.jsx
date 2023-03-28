@@ -1,6 +1,7 @@
 import React from "react";
 
 import NewLeave from "./new-leave/main";
+import OldLeave from "./old-leave/main";
 
 import TitleBar from "./title-bar";
 
@@ -16,6 +17,7 @@ export default class Leave extends React.Component {
         this.loading = props.loading
         this.name = props.name;
         this.sid = props.sid;
+        this.userClass = props.userClass
     }
 
     setPage(i) {
@@ -38,8 +40,12 @@ export default class Leave extends React.Component {
                     loading={this.loading}
                     name={this.name}
                     sid={this.sid}
+                    userClass={this.userClass}
                     display={this.state.display === 0}
                     setPage={this.setPage.bind(this)}
+                />
+                <OldLeave
+                    display={this.state.display === 1}
                 />
             </div>
         )

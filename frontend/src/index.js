@@ -31,7 +31,7 @@ const hashMap = [
     "management",
 ]
 var needLoaded = 0;
-var userSid, userName;
+var userSid, userName, userClass = undefined, classId;
 
 
 function CopyRight() {
@@ -46,8 +46,6 @@ class MainContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userSid: userSid,
-            userName: userName,
             menuOpen: false,
             userOpen: false,
             nowDisplay: getHashIndex(),
@@ -133,7 +131,7 @@ class MainContent extends React.Component {
                     showPage={this.showPage.bind(this)}
                     clickMenu={this.clickMenu.bind(this)}
                     clickUserMenu={this.clickUserMenu.bind(this)}
-                    name={this.state.userName}
+                    name={userName}
                     menuOpen={this.state.menuOpen}
                     userOpen={this.state.userOpen}
                 />
@@ -158,9 +156,11 @@ class MainContent extends React.Component {
                         loading={this.setLoading.bind(this)}
                         name={userName}
                         sid={userSid}
+                        userClass={userClass}
                         display={this.state.nowDisplay === 3}
                     />
                     <LoginHistory
+                        loading={this.setLoading.bind(this)}
                         showMessage={this.showMessage.bind(this)}
                         display={this.state.nowDisplay === 2}
                     />
@@ -199,16 +199,38 @@ function setIndexHash(index) {
     window.location.hash = hash === undefined ? "" : hash;
 }
 
-axios.get(
-    "/api/info/user/current"
-)
-    .then(
-        (response) => {
-            userSid = response.data.data.sid;
-            userName = response.data.data.name;
+function getData(index = 0) {
+    switch (index) {
+        case 0:
+            axios.get(
+                "/api/info/user/current"
+            ).then(
+                (response) => {
+                    userSid = response.data.data.sid;
+                    userName = response.data.data.name;
+                    classId = response.data.data.class_id;
+                    getData(index + 1);
+                }
+            ).catch(
+                () => { root.render(<LoginBox school="嘉義市嘉華中學" />); }
+            );
+            break;
+        case 1:
+            if (classId) {
+                axios.get(
+                    `/api/class/${classId}`
+                ).then(
+                    (response) => {
+                        userClass = response.data.data.class_name;
+                    }
+                );
+            }
+            userClass = userClass || "無";
+            getData(index + 1);
+            break;
+        default:
             render();
-        }
-    )
-    .catch(
-        () => { root.render(<LoginBox school="嘉義市嘉華中學" />); }
-    );
+    }
+}
+
+getData();

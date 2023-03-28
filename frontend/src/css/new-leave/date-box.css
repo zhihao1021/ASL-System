@@ -8,6 +8,13 @@
     max-width: 4em;
 }
 
+#leave .new-leave .datetime-box select {
+    font-size: 2vh;
+    outline: none;
+    padding: 0px 0.5vw;
+    cursor: pointer;
+}
+
 @media (max-aspect-ratio: 1/1) {
     #leave .new-leave .datetime-box {
         flex-direction: column;
@@ -17,5 +24,11 @@
 
     #leave .new-leave .datetime-box .input-box {
         max-width: 6em;
+    }
+
+    #leave .new-leave .datetime-box select {
+        width: 100%;
+        max-width: 15vh;
+        padding: 0.7vh 0.5vw;
     }
 }
