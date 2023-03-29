@@ -15,7 +15,7 @@ body {
 }
 
 input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
+input::-webkit-inner-spin-button {
   appearance: none;
 }
 
@@ -23,7 +23,7 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-#body > .loading-box {
+#body>.loading-box {
   position: absolute;
   top: 0px;
   left: 0px;

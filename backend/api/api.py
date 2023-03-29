@@ -45,7 +45,10 @@ async def api_filter(request: Request, call_next):
                 status_code,
                 headers={"cache-control": "max-age=0"}
             )
-        await curd_session.update_time(login_session)
+        try:
+            await curd_session.update_time(login_session)
+        except:
+            pass
 
     response: Response = await call_next(request)
     if not response.headers.get("cache-control"):

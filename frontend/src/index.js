@@ -17,19 +17,11 @@ import LoginBox from "./js/login";
 import "./index.css";
 import "./fonts/fonts.css"
 
+import { getHashIndex } from "./utils";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const year = new Date().getFullYear()
-const hashMap = [
-    "announcement",
-    "account",
-    "login-history",
-    "leave",
-    "authorize",
-    "query",
-    "other",
-    "setting",
-    "management",
-]
+
 var needLoaded = 0;
 var userSid, userName, userClass = undefined, classId;
 
@@ -91,7 +83,6 @@ class MainContent extends React.Component {
             return
         }
         console.log(i);
-        setIndexHash(i);
         this.setState({
             nowDisplay: i,
         });
@@ -187,16 +178,6 @@ function render() {
         );
         reportWebVitals();
     }
-}
-
-function getHashIndex() {
-    const hash = window.location.hash.slice(1);
-    return Math.max(0, hashMap.indexOf(hash));
-}
-
-function setIndexHash(index) {
-    const hash = hashMap[index];
-    window.location.hash = hash === undefined ? "" : hash;
 }
 
 function getData(index = 0) {

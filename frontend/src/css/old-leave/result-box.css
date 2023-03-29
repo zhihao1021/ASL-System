@@ -1,0 +1,9 @@
+#leave .old-leave .result-box {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0.5vh 0.25vw;
+    border-style: solid;
+    border-radius: 4px;
+    border-color: #AAAAAA;
+    border-width: 1px;
+}

@@ -37,6 +37,12 @@ class SettingAnnouncement extends React.Component {
     componentDidMount() {
         this.getAnnouncement();
     }
+    
+    componentDidUpdate(props) {
+        if (!props.display && this.props.display) {
+            window.location.hash = "other";
+        }
+    }
 
     getAnnouncement() {
         axios.get("/api/announce?raw=true")

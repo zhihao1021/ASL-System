@@ -21,6 +21,12 @@ export default class LoginHistory extends React.Component {
         this.reload();
     }
 
+    componentDidUpdate(props) {
+        if (!props.display && this.props.display) {
+            window.location.hash = "login-history";
+        }
+    }
+
     logout(session) {
         this.setLoading(true);
         axios.get(`/api/logout/${session}`)

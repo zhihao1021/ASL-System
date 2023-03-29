@@ -21,8 +21,6 @@ export default class NewLeave extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOptions: [],
-            lessonOptions: [],
             proc: 10,
             display: 0,
             typeSelect: -1,
@@ -51,7 +49,6 @@ export default class NewLeave extends React.Component {
         this.name = props.name;
         this.sid = props.sid;
         this.userClass = props.userClass;
-        this.setParentPage = props.setPage;
 
         this.startData = [0, 0, 0, 0];
         this.endData = [0, 0, 0, 0];
@@ -71,31 +68,6 @@ export default class NewLeave extends React.Component {
         this.startData = [0, 0, 0, 0];
         this.endData = [0, 0, 0, 0];
         this.reasonContent = "";
-    }
-
-    componentDidMount() {
-        this.getLeaveType();
-        this.getLeaveLesson();
-    }
-
-    getLeaveType() {
-        axios.get("/api/leave/type").then(
-            (response) => {
-                this.setState({
-                    typeOptions: response.data.data
-                });
-            }
-        )
-    }
-    
-    getLeaveLesson() {
-        axios.get("/api/leave/lesson").then(
-            (response) => {
-                this.setState({
-                    lessonOptions: response.data.data
-                });
-            }
-        )
     }
 
     setPage(i) {
@@ -203,6 +175,8 @@ export default class NewLeave extends React.Component {
 
     render() {
         const display = this.props.display;
+        const typeOptions = this.props.typeOptions;
+        const lessonOptions = this.props.lessonOptions;
         const flow = flowMap.map(
             (flowName, index) => {
                 let pos = 10 + 15 * index;
@@ -219,7 +193,7 @@ export default class NewLeave extends React.Component {
                 );
             }
         );
-        const typeOptions = this.state.typeOptions.map(
+        const typeOptionsElement = typeOptions.map(
             (tpyeString, index) => {
                 return (
                     <div
@@ -243,7 +217,7 @@ export default class NewLeave extends React.Component {
                     {flow}
                 </div>
                 <Page className="select-type" display={this.state.display === 0}>
-                    {typeOptions}
+                    {typeOptionsElement}
                 </Page>
                 <Page className="start-time" display={this.state.display === 1}>
                     <DateBox
@@ -252,7 +226,7 @@ export default class NewLeave extends React.Component {
                         check={this.state.startDateCheck}
                         defaultData={this.startData}
                         onUnmount={this.saveDate.bind(this, 0)}
-                        lessonList={this.state.lessonOptions}
+                        lessonList={lessonOptions}
                     />
                     <ButtonBar
                         now={1}
@@ -268,7 +242,7 @@ export default class NewLeave extends React.Component {
                         check={this.state.endDateCheck}
                         defaultData={this.endData}
                         onUnmount={this.saveDate.bind(this, 1)}
-                        lessonList={this.state.lessonOptions}
+                        lessonList={lessonOptions}
                     />
                     <ButtonBar
                         now={2}
@@ -322,15 +296,15 @@ export default class NewLeave extends React.Component {
                         <div className="title">請假資料</div>
                         <ul>
                             <li>
-                                <p>假別：{this.state.typeOptions[this.state.typeSelect]}</p>
+                                <p>假別：{typeOptions[this.state.typeSelect]}</p>
                             </li>
                             <li>
                                 <p>開始時間：</p>
-                                <p>{this.startData[0]}年{this.startData[1]}月{this.startData[2]}日 {this.state.lessonOptions[this.startData[3]]}</p>
+                                <p>{this.startData[0]}年{this.startData[1]}月{this.startData[2]}日 {lessonOptions[this.startData[3]]}</p>
                             </li>
                             <li>
                                 <p>結束時間：</p>
-                                <p>{this.endData[0]}年{this.endData[1]}月{this.endData[2]}日 {this.state.lessonOptions[this.endData[3]]}</p>
+                                <p>{this.endData[0]}年{this.endData[1]}月{this.endData[2]}日 {lessonOptions[this.endData[3]]}</p>
                             </li>
                         </ul>
                         <div className="title">請假事由</div>

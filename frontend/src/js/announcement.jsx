@@ -17,6 +17,12 @@ export default class Announcement extends React.Component {
         this.getAnnouncement();
     }
 
+    componentDidUpdate(props) {
+        if (!props.display && this.props.display) {
+            window.location.hash = "announcement";
+        }
+    }
+
     getAnnouncement() {
         axios.get("/api/announce")
         .then(

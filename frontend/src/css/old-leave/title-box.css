@@ -1,0 +1,19 @@
+.title-box {
+    position: relative;
+    font-size: 2.2vh;
+    margin: 8px;
+    margin-top: calc(1em + 4px);
+    min-width: 4em;
+}
+
+.title-box .sub-title {
+    position: absolute;
+    top: -1.2em;
+    font-size: 1.6vh;
+    display: flex;
+    align-items: center;
+}
+
+.title-box .sub-title p {
+    margin: auto 1px;
+}
