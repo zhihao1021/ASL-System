@@ -1,3 +1,5 @@
+from .responses import response_403, response_404
+
 from curd import CURDLeave, CURDSession, CURDUser
 from models import CustomResponse, Leave
 from schemas import LeaveCreate
@@ -45,8 +47,17 @@ async def add_leave(
     login_session = await curd_session.get_by_session(session)
 
     try:
+        files = list(filter(lambda file: file.size <=
+                     10000000 and file.content_type.startswith("image/"), files or []))
+
         start_date = date.fromisoformat(start_date)
         end_date = date.fromisoformat(end_date)
+        if end_date < start_date:
+            raise ValueError
+        elif end_date == start_date:
+            if end_lesson < start_lesson:
+                raise ValueError
+
         leave = LeaveCreate(**{
             "sid": login_session.sid,
             "type": leave_type,
@@ -54,7 +65,8 @@ async def add_leave(
             "end_date": end_date,
             "start_lesson": start_lesson,
             "end_lesson": end_lesson,
-            "remark": remark
+            "remark": remark,
+            "files": len(files)
         })
         leave = await curd_leave.create(leave)
 
@@ -105,6 +117,36 @@ async def get_leave(session: str = Cookie(None)):
     })
 
     return response.dict()
+
+
+@router.delete(
+    "/{leave_id}",
+    response_class=ORJSONResponse,
+    response_model=CustomResponse,
+    description="Delete then leave."
+)
+async def delete_leave(leave_id: int, session: str = Cookie(None)):
+    login_session = await curd_session.get_by_session(session)
+    leave = await curd_leave.get(leave_id)
+
+    if leave is None:
+        status_code, response = response_404()
+    elif leave.sid == login_session.sid:
+        await curd_leave.delete(leave_id)
+
+        status_code = status.HTTP_204_NO_CONTENT
+        response = CustomResponse(**{
+            "status": status_code,
+            "success": True,
+            "data": ""
+        })
+    else:
+        status_code, response = response_403()
+
+    return ORJSONResponse(
+        response.dict(),
+        status_code
+    )
 
 
 @router.get(

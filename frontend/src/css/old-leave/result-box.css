@@ -1,9 +1,29 @@
 #leave .old-leave .result-box {
     display: flex;
     flex-wrap: wrap;
-    margin: 0.5vh 0.25vw;
+    margin: 0.5vh min(1vh, 2vw);
     border-style: solid;
     border-radius: 4px;
     border-color: #AAAAAA;
     border-width: 1px;
+}
+
+#leave .old-leave .result-box button {
+    font-size: 2.2vh;
+    width: 1.7em;
+    height: 1.7em;
+    margin: auto 0.5vw;
+    padding: 0px;
+    text-align: center;
+    border-style: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #666666;
+    background-color: transparent;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#leave .old-leave .result-box button:hover {
+    color: #000000  ;
+    background-color: #CCCCCC;
 }

@@ -3,7 +3,8 @@
     font-size: 2.2vh;
     margin: 8px;
     margin-top: calc(1em + 4px);
-    min-width: 4em;
+    min-width: 3em;
+    width: max-content;
 }
 
 .title-box .sub-title {
@@ -16,4 +17,30 @@
 
 .title-box .sub-title p {
     margin: auto 1px;
+}
+
+.title-box .content {
+    word-break: keep-all;
+}
+
+.title-box:last-child .content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    .title-box:nth-last-child(1),
+    .title-box:nth-last-child(2) {
+        flex: 1;
+    }
+}
+
+@media (max-aspect-ratio: 1/1) {
+    .title-box {
+        width: calc(50% - 16px);
+    }
+
+    .title-box:last-child {
+        width: calc(100% - 16px);
+    }
 }

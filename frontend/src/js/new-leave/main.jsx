@@ -124,6 +124,7 @@ export default class NewLeave extends React.Component {
     }
 
     checkFiles() {
+        console.log(this.filesInput.current.files[0])
         if (this.filesInput.current.files.length > 3) {
             this.showMessage("檔案不符合限制", "不得選擇超過3個檔案。", "error");
             return false;

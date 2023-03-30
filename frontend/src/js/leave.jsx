@@ -15,6 +15,7 @@ export default class Leave extends React.Component {
             display: window.location.hash === "#old-leave" ? 1 : 0,
             typeOptions: [],
             lessonOptions: [],
+            leaveData: [],
         };
         this.showMessage = props.showMessage;
         this.loading = props.loading
@@ -28,6 +29,7 @@ export default class Leave extends React.Component {
     componentDidMount() {
         this.getLeaveType();
         this.getLeaveLesson();
+        this.getLeaveData();
     }
 
     componentDidUpdate() {
@@ -52,6 +54,10 @@ export default class Leave extends React.Component {
             display: i
         });
         window.location.hash = i === 0 ? "new-leave" : "old-leave";
+
+        if (i === 1) {
+            this.getLeaveData();
+        }
     }
 
     getLeaveType() {
@@ -69,6 +75,16 @@ export default class Leave extends React.Component {
             (response) => {
                 this.setState({
                     lessonOptions: response.data.data
+                });
+            }
+        )
+    }
+
+    getLeaveData() {
+        axios.get("/api/leave/").then(
+            (response)=>{
+                this.setState({
+                    leaveData: response.data.data.reverse()
                 });
             }
         )
@@ -97,6 +113,7 @@ export default class Leave extends React.Component {
                     display={this.state.display === 1}
                     typeOptions={this.state.typeOptions}
                     lessonOptions={this.state.lessonOptions}
+                    data={this.state.leaveData}
                 />
             </div>
         )

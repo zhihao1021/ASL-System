@@ -31,6 +31,7 @@ export default class ResultBox extends React.Component {
         const startLesson = this.props.startLesson;
         const endLesson = this.props.endLesson;
         const remark = this.props.remark;
+        const files = this.props.files;
         const type = this.props.type;
         const status = this.props.status;
         return (
@@ -47,12 +48,16 @@ export default class ResultBox extends React.Component {
                 <TitleBox icon="calendar_month" title="結束日期">
                     <div className="content">{endDate} {endLesson}</div>
                 </TitleBox>
-                <TitleBox icon="info" title="備註">
-                    <div className="content">{remark || "無"}</div>
+                <TitleBox icon="attachment" title="附件">
+                    <div className="content">{files === 0 ? "無" : `${files}個`}</div>
                 </TitleBox>
                 <TitleBox icon="question_mark" title="當前狀態">
                     <div className="content">{getStatus(status)}</div>
                 </TitleBox>
+                <TitleBox icon="info" title="備註">
+                    <div className="content">{remark || "無"}</div>
+                </TitleBox>
+                <button className="ms">delete</button>
             </div>
         )
     }
