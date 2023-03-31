@@ -8,7 +8,7 @@ from utils import format_exception, LEAVE_TYPE, LESSON, permissions
 
 from asyncio import create_task, gather
 from datetime import date
-from os import makedirs
+from os import listdir, makedirs, remove, removedirs
 from os.path import isdir, join, splitext
 
 from aiofiles import open as aopen
@@ -133,6 +133,18 @@ async def delete_leave(leave_id: int, session: str = Cookie(None)):
         status_code, response = response_404()
     elif leave.sid == login_session.sid:
         await curd_leave.delete(leave_id)
+
+        files_path = f"saves/leave/{leave.id}"
+        if isdir(files_path):
+            for file in listdir(files_path):
+                try:
+                    remove(join(files_path, file))
+                except:
+                    pass
+            try:
+                removedirs(files_path)
+            except:
+                pass
 
         status_code = status.HTTP_204_NO_CONTENT
         response = CustomResponse(**{
