@@ -4,7 +4,7 @@ from config import WEB_CONFIG
 from config import ENGINE
 
 from asyncio import all_tasks, new_event_loop, run
-from os import getenv
+from os import getenv, getpid
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -98,6 +98,9 @@ async def sql_init():
             await session.commit()
 
 if __name__ == "__main__":
+    with open("PID", mode="w") as pid_file:
+        pid_file.write(str(getpid()))
+
     from platform import system
     if system() == "Windows":
         from asyncio import set_event_loop_policy, WindowsSelectorEventLoopPolicy

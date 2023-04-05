@@ -28,6 +28,9 @@ curd_user = CURDUser()
 )
 async def get_user(sid: str, session: str = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
+    headers = {
+        "cache-control": "max-age=0" if sid == "current" else "max-age=0"
+    }
     sid = login_session.sid if sid == "current" else sid
     login_user = await curd_user.get_by_sid(login_session.sid)
 
@@ -51,7 +54,7 @@ async def get_user(sid: str, session: str = Cookie(None)):
     return ORJSONResponse(
         response.dict(),
         status_code,
-        headers={"cache-control": "max-age=600"}
+        headers=headers
     )
 
 
