@@ -4,6 +4,7 @@ from config import NOWTIME
 
 from datetime import date, datetime
 
+from pydantic import validator
 from sqlmodel import Column, Field as SQLField, String
 
 
@@ -21,6 +22,7 @@ class LeaveBase(IDBase):
     remark: str = SQLField("", nullable=False, description="備註")
     status: int = SQLField(0b0001, nullable=False, description="狀態")
     files: int = SQLField(0, ge=0, nullable=False, description="檔案數量")
+    reject_reason: str = SQLField("", nullable=True, description="拒絕原因")
 # 0001 送出
 # 0010 導師核准
 # 0100 教官核准

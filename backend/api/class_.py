@@ -25,6 +25,16 @@ async def get_class(class_id: int):
             "success": True,
             "data": data.dict()
         })
+    elif class_id == -1:
+        status_code = status.HTTP_200_OK
+        response = CustomResponse(**{
+            "status": status_code,
+            "success": True,
+            "data": {
+                "id": -1,
+                "class_name": "None"
+            }
+        })
     else:
         status_code = status.HTTP_404_NOT_FOUND
         response = CustomResponse(**{
@@ -33,4 +43,8 @@ async def get_class(class_id: int):
             "data": None
         })
 
-    return ORJSONResponse(response.dict(), status_code)
+    return ORJSONResponse(
+        response.dict(),
+        status_code,
+        headers={"cache-control": "max-age=600"}
+    )

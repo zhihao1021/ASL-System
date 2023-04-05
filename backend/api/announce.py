@@ -6,7 +6,7 @@ from utils import permissions
 from os.path import isfile
 
 from aiofiles import open as aopen
-from fastapi import APIRouter, status, Cookie
+from fastapi import APIRouter, Cookie, Form, status
 from fastapi.responses import ORJSONResponse
 
 
@@ -47,11 +47,11 @@ async def get_announcement(raw: bool=False):
     response_model=CustomResponse,
     description="Update the announncements."
 )
-async def update_announcement(context: str, session: Optional[str] = Cookie(None)):
+async def update_announcement(context: str = Form(None), session: Optional[str] = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     login_user = await curd_user.get_by_sid(login_session.sid)
     if login_user.role >= permissions.GS_ROLE:
-        context = context.strip()
+        context = context.replace("\r\n", "\n").strip()
         async with aopen("announcements.txt", mode="w") as ann_file:
             await ann_file.write(context)
         status_code = status.HTTP_200_OK

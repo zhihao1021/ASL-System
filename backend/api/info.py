@@ -36,18 +36,22 @@ async def get_user(sid: str, session: str = Cookie(None)):
         if user is None:
             status_code, response = response_404("User")
         else:
-            status_code = status.HTTP_200_OK
-            response = CustomResponse(**{
-                "status": status_code,
-                "success": True,
-                "data": user.dict()
-            })
+            if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != user.class_id:
+                status_code, response = response_403()
+            else:
+                status_code = status.HTTP_200_OK
+                response = CustomResponse(**{
+                    "status": status_code,
+                    "success": True,
+                    "data": user.dict()
+                })
     else:
         status_code, response = response_403()
 
     return ORJSONResponse(
         response.dict(),
         status_code,
+        headers={"cache-control": "max-age=600"}
     )
 
 
@@ -67,17 +71,20 @@ async def get_user_icon(sid: str, session: str = Cookie(None)):
         if user is None:
             status_code, response = response_404("User")
         else:
-            file_path = f"saves/user/{sid}/icon"
-            if isfile(file_path):
-                async with aopen(file_path, mode="rb") as img_file:
-                    img_content = await img_file.read()
-                img_type = what(None, img_content) or "jpeg"
-                response = FileResponse(
-                    file_path, media_type=f"image/{img_type}")
+            if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != user.class_id:
+                status_code, response = response_403()
             else:
-                response = FileResponse(
-                    "default_files/user_icon.png", media_type="image/png")
-            return response
+                file_path = f"saves/user/{sid}/icon"
+                if isfile(file_path):
+                    async with aopen(file_path, mode="rb") as img_file:
+                        img_content = await img_file.read(32)
+                    img_type = what(None, img_content) or "jpeg"
+                    response = FileResponse(
+                        file_path, media_type=f"image/{img_type}")
+                else:
+                    response = FileResponse(
+                        "default_files/user_icon.png", media_type="image/png")
+                return response
     else:
         status_code, response = response_403()
 

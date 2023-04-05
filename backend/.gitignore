@@ -129,9 +129,6 @@ dmypy.json
 .pyre/
 
 data.db*
-node_modules
-package-lock.json
 saves
-DEBUG
-OFFLINE
 announcements.txt
+config.json

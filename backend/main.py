@@ -4,13 +4,15 @@ from config import WEB_CONFIG
 from config import ENGINE
 
 from asyncio import all_tasks, new_event_loop, run
-from os.path import isfile
+from os import getenv
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 from uvicorn import Config, Server
 
-DEBUG = isfile("DEBUG")
+load_dotenv(".env")
+DEBUG = getenv("DEBUG", False) == "true"
 
 
 async def sql_init():
@@ -23,9 +25,8 @@ async def sql_init():
         async with AsyncSession(ENGINE) as session:
             from models import User, Class
             from utils import permissions
-            session.add(
-                Class(class_name="測試")
-            )
+            session.add(Class(class_name="01"))
+            session.add(Class(class_name="02"))
             session.add(
                 User(**{
                     "sid": "000",
@@ -38,11 +39,59 @@ async def sql_init():
             session.add(
                 User(**{
                     "sid": "001",
-                    "name": "alice",
-                    "account": "alice",
-                    "password": "alice",
+                    "name": "student-1",
+                    "account": "student-1",
+                    "password": "student-1",
                     "role": permissions.STUDENT_ROLE,
-                    "class_id": 0
+                    "class_id": 1
+                })
+            )
+            session.add(
+                User(**{
+                    "sid": "002",
+                    "name": "student-2",
+                    "account": "student-2",
+                    "password": "student-2",
+                    "role": permissions.STUDENT_ROLE,
+                    "class_id": 2
+                })
+            )
+            session.add(
+                User(**{
+                    "sid": "003",
+                    "name": "teacher-1",
+                    "account": "teacher-1",
+                    "password": "teacher-1",
+                    "role": permissions.TEACHER_ROLE,
+                    "class_id": 1
+                })
+            )
+            session.add(
+                User(**{
+                    "sid": "004",
+                    "name": "teacher-2",
+                    "account": "teacher-2",
+                    "password": "teacher-2",
+                    "role": permissions.TEACHER_ROLE,
+                    "class_id": 2
+                })
+            )
+            session.add(
+                User(**{
+                    "sid": "005",
+                    "name": "a-1",
+                    "account": "a-1",
+                    "password": "a-1",
+                    "role": permissions.AUX_ROLE,
+                })
+            )
+            session.add(
+                User(**{
+                    "sid": "006",
+                    "name": "a-2",
+                    "account": "a-2",
+                    "password": "a-2",
+                    "role": permissions.AA_ROLE,
                 })
             )
 

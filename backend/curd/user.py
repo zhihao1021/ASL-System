@@ -37,3 +37,15 @@ class CURDUser(CURDBase[User, UserCreate, UserUpdate]):
             result = await db_session.exec(query_stat)
 
             return result.first()
+    
+    async def get_by_class_id(
+        self,
+        class_id: int,
+    ) -> list[User]:
+        if class_id == None:
+            return []
+        async with AsyncSession(ENGINE) as db_session:
+            query_stat = select(User).where(User.class_id == class_id)
+            result = await db_session.exec(query_stat)
+
+            return result.all()

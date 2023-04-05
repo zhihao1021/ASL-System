@@ -35,6 +35,7 @@ else:
         },
         "timezone": 8,
     }
+    Json.dump_nowait("config.json", config)
 
 WEB_CONFIG = WebConfig(**config.get("web", {}))
 SQLALCHEMY_CONFIG = SQLAlchemyConfig(**config.get("sqlalchemy", {}))
