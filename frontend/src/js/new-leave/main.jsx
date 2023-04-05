@@ -53,6 +53,8 @@ export default class NewLeave extends React.Component {
         this.startData = [0, 0, 0, 0];
         this.endData = [0, 0, 0, 0];
         this.reasonContent = "";
+
+        this.getLeaveData = props.getLeaveData;
     }
 
     dataInit() {
@@ -124,7 +126,6 @@ export default class NewLeave extends React.Component {
     }
 
     checkFiles() {
-        console.log(this.filesInput.current.files[0])
         if (this.filesInput.current.files.length > 3) {
             this.showMessage("檔案不符合限制", "不得選擇超過3個檔案。", "error");
             return false;
@@ -152,7 +153,7 @@ export default class NewLeave extends React.Component {
         form.append("end_date", this.endData.slice(0, 3).map((value) => { return value.toString().padStart(2, "0") }).join("-"));
         form.append("start_lesson", this.startData[3]);
         form.append("end_lesson", this.endData[3]);
-        Array.from(this.state.files).forEach((file) => {
+        Array.from(this.state.files || []).forEach((file) => {
             form.append("files", file)
         });
         form.append("remark", this.reasonContent);
@@ -163,12 +164,13 @@ export default class NewLeave extends React.Component {
             this.setState({
                 finish: true
             });
-        }).catch((err) => {
+        }).catch(() => {
             this.setPage(this.state.display - 1);
             this.showMessage("發生錯誤", "發生錯誤，請重新檢查填寫容是否正確。", "error");
         }).finally(
             () => {
                 this.loading(false);
+                this.getLeaveData();
             }
         );
         return true;

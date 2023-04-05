@@ -14,7 +14,9 @@
 
 .ms-o {
     font-family: 'Material Symbols Outlined';
+    user-select: none;
 }
 .ms {
     font-family: 'Material Symbols';
+    user-select: none;
 }

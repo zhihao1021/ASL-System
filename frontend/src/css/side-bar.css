@@ -24,6 +24,28 @@
     transition: left 0.5s, background-color 0.5s, color 0.5s;
 }
 
+#side-bar .side-tag:nth-of-type(1) {
+    border-color: #FF0000;
+}
+#side-bar .side-tag:nth-of-type(2) {
+    border-color: #FF8800;
+}
+#side-bar .side-tag:nth-of-type(3) {
+    border-color: #FFFF00;
+}
+#side-bar .side-tag:nth-of-type(4) {
+    border-color: #00FF00;
+}
+#side-bar .side-tag:nth-of-type(5) {
+    border-color: #00FFFF;
+}
+#side-bar .side-tag:nth-of-type(6) {
+    border-color: #0066FF;
+}
+#side-bar .side-tag:nth-of-type(7) {
+    border-color: #8800FF;
+}
+
 #side-bar .side-tag .tag {
     display: flex;
     align-items: center;

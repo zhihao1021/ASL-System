@@ -9,7 +9,12 @@ export default class ButtonBar extends React.Component {
         this.setPage = props.setPage;
         this.onKeyDown = (event) => {
             if (event.key === "Enter" && this.props.display && event.target.contentEditable !== "true") {
-                this.onNextClick();
+                if (event.shiftKey) {
+                    this.onLastClick();
+                }
+                else {
+                    this.onNextClick();
+                }
             }
         };
         this.final = props.final;
@@ -38,7 +43,6 @@ export default class ButtonBar extends React.Component {
         if (this.nextClick !== undefined) {
             if (this.nextClick()) {
                 this.setPage(this.now + 1);
-                document.removeEventListener("keydown", this.onKeyDown);
             }
         }
         else {

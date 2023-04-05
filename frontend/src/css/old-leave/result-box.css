@@ -1,29 +1,88 @@
 #leave .old-leave .result-box {
     display: flex;
-    flex-wrap: wrap;
-    margin: 0.5vh min(1vh, 2vw);
+    position: relative;
+    flex: 0;
+    margin: 0.5vh 4px;
+    margin-left: 0px;
+    color: #666666;
     border-style: solid;
     border-radius: 4px;
-    border-color: #AAAAAA;
+    border-color: #FFBB77;
     border-width: 1px;
-}
-
-#leave .old-leave .result-box button {
-    font-size: 2.2vh;
-    width: 1.7em;
-    height: 1.7em;
-    margin: auto 0.5vw;
-    padding: 0px;
-    text-align: center;
-    border-style: none;
-    border-radius: 50%;
+    user-select: none;
     cursor: pointer;
-    color: #666666;
-    background-color: transparent;
-    transition: background-color 0.3s, color 0.3s;
+    transition: color 0.3s, border-color 0.3s;
+    background-color: #FFFFFF;
 }
 
-#leave .old-leave .result-box button:hover {
-    color: #000000  ;
-    background-color: #CCCCCC;
+#leave .old-leave .result-box.accept {
+    border-color: #99FFDD;
+}
+#leave .old-leave .result-box.reject {
+    border-color: #FF8888;
+}
+
+#leave .old-leave .result-box::before {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    font-size: 1.5vh;
+    text-align: center;
+    width: 3.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    color: #FFFFFF;
+    border-radius: 0px 4px;
+    transition: background-color 0.3s;
+}
+
+#leave .old-leave .result-box::before {
+    content: "等待";
+    background-color: #FFBB77;
+}
+#leave .old-leave .result-box.accept::before {
+    content: "通過";
+    background-color: #99FFDD;
+}
+#leave .old-leave .result-box.reject::before {
+    content: "退回";
+    background-color: #FF8888;
+}
+
+#leave .old-leave .result-box:hover,
+#leave .old-leave .result-box.select {
+    color: #000000;
+    border-color: #FF8800;
+}
+#leave .old-leave .result-box.accept:hover,
+#leave .old-leave .result-box.accept.select {
+    border-color: #22CC77;
+}
+#leave .old-leave .result-box.reject:hover,
+#leave .old-leave .result-box.reject.select {
+    border-color: #FF0000;
+}
+
+#leave .old-leave .result-box:hover::before,
+#leave .old-leave .result-box.select::before {
+    background-color: #FF8800;
+}
+#leave .old-leave .result-box.accept:hover::before,
+#leave .old-leave .result-box.accept.select::before {
+    background-color: #22CC77;
+}
+#leave .old-leave .result-box.reject:hover::before,
+#leave .old-leave .result-box.reject.select::before {
+    background-color: #FF0000;
+}
+
+#leave .old-leave .result-box:first-child {
+    margin-top: 0px;
+}
+#leave .old-leave .result-box:last-child {
+    margin-bottom: 0px;
+}
+
+#leave .old-leave .result-box {
+    flex-wrap: wrap;
 }

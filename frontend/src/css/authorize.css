@@ -1,0 +1,176 @@
+#authorize .results {
+    /* background-color: red; */
+    margin: 1vh 0px;
+    height: calc(100% - 10vh);
+    position: relative;
+    overflow: hidden;
+}
+
+#authorize .results .empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    height: calc(100% - 2px);
+    width: calc(100% - 2px);
+    color: #AAAAAA;
+    background-color: #FFFFFF;
+}
+
+#authorize .results .empty .ms {
+    font-size: 20vh;
+}
+
+#authorize .results .empty .title {
+    font-size: 4vh;
+    user-select: none;
+}
+
+#authorize .results .result-box {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #AAAAAA;
+    font-size: 2.2vh;
+    overflow-y: auto;
+    height: calc(100% - 2px);
+    width: calc(100% - 2px);
+    background-color: #FFFFFF;
+    transition: left 1s;
+}
+
+#authorize .results .result-box.finish {
+    left: calc(-100% - 2px);
+}
+
+#authorize .results .result-box .title:first-of-type {
+    margin-top: 1vh;
+}
+
+#authorize .results .result-box .title {
+    margin: 0.2vh 1.2em;
+}
+
+#authorize .results .result-box ul {
+    margin: 0.2vh 1.2em;
+    padding-left: 1.5em;
+}
+
+#authorize .results .result-box p {
+    margin: 0.5em 0px;
+    text-indent: -5em;
+    padding-left: 4.7em;
+}
+
+#authorize .results .result-box .reason,
+#authorize .results .result-box .img-content {
+    margin: 0.3em 1em 0.3em 5.2vh;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+#authorize .results .result-box .img-content img {
+    max-width: 100%;
+    object-fit: contain;
+}
+
+#authorize .results .result-box .operation {
+    width: calc(100% - 4vh);
+    margin: 1vh 2vh 2vh 2vh;
+    font-size: 1.7vh;
+}
+
+#authorize .results .result-box .operation hr {
+    height: 0px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #AAAAAA;
+}
+
+#authorize .results .result-box .operation div {
+    position: relative;
+    height: 0px;
+    margin-top: 0px;
+    color: #AAAAAA00;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #AAAAAA00;
+    border-radius: 4px;
+    outline: none;
+    pointer-events: none;
+    user-select: none;
+    transition: height 0.5s, color 0.5s, border-color 0.5s, margin-top 0.5s;
+}
+
+#authorize .results .result-box .operation div::before {
+    content: "拒絕原因(非必填)";
+    position: absolute;
+    top: 0px;
+    font-size: 1.5vh;
+    color: #00000000;
+    user-select: none;
+    pointer-events: none;
+    transition: top 0.5s, color 0.5s;
+}
+
+
+#authorize .results .result-box .operation div.rejecting {
+    margin-top: 2.5vh;
+    height: 5em;
+    color: #AAAAAA;
+    border-color: #AAAAAA;
+    pointer-events: initial;
+    user-select: initial;
+}
+
+#authorize .results .result-box .operation div.rejecting::before {
+    top: -2.2vh;
+    color: #AAAAAA;
+}
+
+#authorize .results .result-box .operation div.rejecting:focus {
+    color: #000000;
+    border-color: #000000;
+}
+
+#authorize .results .result-box .operation div.rejecting:focus::before {
+    color: #000000;
+}
+
+#authorize .results .result-box .operation button {
+    font-size: inherit;
+    width: 100%;
+    height: 3.5vh;
+    margin: 4px 0px;
+    display: block;
+    color: #AAAAAA;
+    background-color: #FFFFFF;
+    border-style: solid;
+    border-color: #AAAAAA;
+    border-width: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+#authorize .results .result-box .operation button.accept:hover {
+    color: #22BB66;
+    border-color: #22BB66;
+}
+
+#authorize .results .result-box .operation button.skip:hover,
+#authorize .results .result-box .operation button.accept.rejecting:hover {
+    color: #000000;
+    border-color: #000000;
+}
+
+#authorize .results .result-box .operation button.reject:hover {
+    color: #FF0000;
+    border-color: #FF0000;
+}
+

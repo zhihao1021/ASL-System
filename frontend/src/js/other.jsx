@@ -10,6 +10,12 @@ export default class Other extends React.Component {
         this.loading = props.loading;
     }
 
+    componentDidUpdate(props) {
+        if (!props.display && this.props.display) {
+            window.location.hash = "other";
+        }
+    }
+
     render() {
         const display = this.props.display;
         return (
@@ -37,12 +43,6 @@ class SettingAnnouncement extends React.Component {
     componentDidMount() {
         this.getAnnouncement();
     }
-    
-    componentDidUpdate(props) {
-        if (!props.display && this.props.display) {
-            window.location.hash = "other";
-        }
-    }
 
     getAnnouncement() {
         axios.get("/api/announce?raw=true")
@@ -55,15 +55,18 @@ class SettingAnnouncement extends React.Component {
 
     sendAnnouncement() {
         this.loading(true);
+        let data = new FormData();
+        data.append("context", this.editBlock.current.textContent)
         axios.put(
-            `/api/announce?context=${this.editBlock.current.textContent}`,
+            `/api/announce`,
+            data
         )
         .then(
             (response) => {
                 this.setState({
                     context: response.data.data
                 });
-                this.showMessage("更改成功", "公告更改成功。", "info");
+                this.showMessage("更改成功", "公告更改成功。", "success");
             }
         )
         .catch(
@@ -83,6 +86,7 @@ class SettingAnnouncement extends React.Component {
             <div className="announcement block">
                 <div className="title">變更公告</div>
                 <hr />
+                <div className="description">換行時請使用"Shift"+"Enter"</div>
                 <div
                     ref={this.editBlock}
                     className="edit-block"

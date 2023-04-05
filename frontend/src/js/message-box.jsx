@@ -5,13 +5,30 @@ import "../css/message-box.css";
 function getColor(level) {
     switch (level) {
         case "info":
-            return "#44BB00"
+            return "#0088FF"
         case "warning":
             return "#FFF823"
         case "error":
             return "#FF0000"
+        case "success":
+            return "#44BB00"
         default:
             return "#0088FF"
+    }
+}
+
+function getIcon(level) {
+    switch (level) {
+        case "info":
+            return "info"
+        case "warning":
+            return "warning"
+        case "error":
+            return "report"
+        case "success":
+            return "task_alt"
+        default:
+            return "help"
     }
 }
 
@@ -39,6 +56,9 @@ export default class MessageBox extends React.Component {
                         style={{ backgroundColor: getColor(level) }}
                     >
                         {title}
+                    </div>
+                    <div className="ms">
+                        {getIcon(level)}
                     </div>
                     <div className="content">
                         {context}

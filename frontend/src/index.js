@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 
 import Announcement from "./js/announcement";
+import Authorize from "./js/authorize";
 import Leave from "./js/leave";
 import Loading from "./js/loading";
 import LoginHistory from "./js/login-history";
@@ -23,7 +24,8 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const year = new Date().getFullYear()
 
 var needLoaded = 0;
-var userSid, userName, userClass = undefined, classId;
+var userSid, userName, userClass = undefined, undefined, classId;
+var displayBlock = [true, true, true, true, true, true, true]
 
 
 function CopyRight() {
@@ -46,6 +48,8 @@ class MainContent extends React.Component {
             messageContext: "Test",
             messageDisplay: false,
             loading: false,
+            typeOptions: [],
+            lessonOptions: []
         };
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
@@ -57,6 +61,31 @@ class MainContent extends React.Component {
         window.addEventListener("hashchange", () => {
             this.showPage(getHashIndex());
         });
+    }
+
+    componentDidMount() {
+        this.getLeaveType();
+        this.getLeaveLesson();
+    }
+
+    getLeaveType() {
+        axios.get("/api/leave/type").then(
+            (response) => {
+                this.setState({
+                    typeOptions: response.data.data
+                });
+            }
+        )
+    }
+
+    getLeaveLesson() {
+        axios.get("/api/leave/lesson").then(
+            (response) => {
+                this.setState({
+                    lessonOptions: response.data.data
+                });
+            }
+        )
     }
 
     clickMenu() {
@@ -129,6 +158,7 @@ class MainContent extends React.Component {
                 <SideBar
                     showPage={this.showPage.bind(this)}
                     open={this.state.menuOpen}
+                    displayBlock={displayBlock}
                 />
                 <MessageBox
                     close={this.closeMessage.bind(this)}
@@ -139,27 +169,44 @@ class MainContent extends React.Component {
                 />
                 <Loading scale={0.5} display={this.state.loading} title="Loading..." />
                 <div id="content" onClick={this.closeMenu.bind(this)}>
-                    <Announcement
-                        display={this.state.nowDisplay === 0}
-                    />
-                    <Leave
-                        showMessage={this.showMessage.bind(this)}
-                        loading={this.setLoading.bind(this)}
-                        name={userName}
-                        sid={userSid}
-                        userClass={userClass}
-                        display={this.state.nowDisplay === 3}
-                    />
                     <LoginHistory
                         loading={this.setLoading.bind(this)}
                         showMessage={this.showMessage.bind(this)}
                         display={this.state.nowDisplay === 2}
                     />
-                    <Other
-                        showMessage={this.showMessage.bind(this)}
-                        loading={this.setLoading.bind(this)}
-                        display={this.state.nowDisplay === 6}
-                    />
+                    {displayBlock[0] ?
+                        <Announcement
+                            display={this.state.nowDisplay === 0}
+                        /> : null
+                    }
+                    {displayBlock[1] ?
+                        <Leave
+                            showMessage={this.showMessage.bind(this)}
+                            loading={this.setLoading.bind(this)}
+                            name={userName}
+                            sid={userSid}
+                            userClass={userClass}
+                            display={this.state.nowDisplay === 3}
+                            typeOptions={this.state.typeOptions}
+                            lessonOptions={this.state.lessonOptions}
+                        /> : null
+                    }
+                    {displayBlock[2] ?
+                        <Authorize
+                            showMessage={this.showMessage.bind(this)}
+                            loading={this.setLoading.bind(this)}
+                            display={this.state.nowDisplay === 4}
+                            typeOptions={this.state.typeOptions}
+                            lessonOptions={this.state.lessonOptions}
+                        /> : null
+                    }
+                    {displayBlock[4] ?
+                        <Other
+                            showMessage={this.showMessage.bind(this)}
+                            loading={this.setLoading.bind(this)}
+                            display={this.state.nowDisplay === 6}
+                        /> : null
+                    }
                 </div>
                 <CopyRight />
                 {/* </React.StrictMode> */}
@@ -190,6 +237,17 @@ function getData(index = 0) {
                     userSid = response.data.data.sid;
                     userName = response.data.data.name;
                     classId = response.data.data.class_id;
+                    let role = response.data.data.role;
+                    if (role === 1) {
+                        displayBlock[2] = false;
+                        displayBlock[3] = false;
+                        displayBlock[4] = false;
+                        displayBlock[6] = false;
+                    }
+                    else if (role !== 32) {
+                        displayBlock[1] = false;
+                        displayBlock[6] = false;
+                    }
                     getData(index + 1);
                 }
             ).catch(
@@ -203,11 +261,11 @@ function getData(index = 0) {
                 ).then(
                     (response) => {
                         userClass = response.data.data.class_name;
+                        userClass = userClass || "無";
+                        getData(index + 1);
                     }
                 );
             }
-            userClass = userClass || "無";
-            getData(index + 1);
             break;
         default:
             render();

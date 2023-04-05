@@ -13,12 +13,10 @@ export default class Leave extends React.Component {
         super(props);
         this.state = {
             display: window.location.hash === "#old-leave" ? 1 : 0,
-            typeOptions: [],
-            lessonOptions: [],
             leaveData: [],
         };
         this.showMessage = props.showMessage;
-        this.loading = props.loading
+        this.loading = props.loading;
         this.name = props.name;
         this.sid = props.sid;
         this.userClass = props.userClass;
@@ -27,8 +25,6 @@ export default class Leave extends React.Component {
     }
 
     componentDidMount() {
-        this.getLeaveType();
-        this.getLeaveLesson();
         this.getLeaveData();
     }
 
@@ -54,44 +50,27 @@ export default class Leave extends React.Component {
             display: i
         });
         window.location.hash = i === 0 ? "new-leave" : "old-leave";
-
-        if (i === 1) {
-            this.getLeaveData();
-        }
-    }
-
-    getLeaveType() {
-        axios.get("/api/leave/type").then(
-            (response) => {
-                this.setState({
-                    typeOptions: response.data.data
-                });
-            }
-        )
-    }
-    
-    getLeaveLesson() {
-        axios.get("/api/leave/lesson").then(
-            (response) => {
-                this.setState({
-                    lessonOptions: response.data.data
-                });
-            }
-        )
     }
 
     getLeaveData() {
-        axios.get("/api/leave/").then(
+        this.loading(true);
+        axios.get("/api/leave/sid/current").then(
             (response)=>{
                 this.setState({
-                    leaveData: response.data.data.reverse()
+                    leaveData: response.data.data
                 });
+            }
+        ).finally(
+            () => {
+                this.loading(false);
             }
         )
     }
 
     render() {
         const display = this.props.display;
+        const lessonOptions = this.props.lessonOptions;
+        const typeOptions = this.props.typeOptions;
         return (
             <div id="leave" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="請假">
@@ -106,13 +85,20 @@ export default class Leave extends React.Component {
                     sid={this.sid}
                     userClass={this.userClass}
                     display={this.state.display === 0}
-                    typeOptions={this.state.typeOptions}
-                    lessonOptions={this.state.lessonOptions}
-                    />
+                    typeOptions={typeOptions}
+                    lessonOptions={lessonOptions}
+                    getLeaveData={this.getLeaveData.bind(this)}
+                />
                 <OldLeave
+                    showMessage={this.showMessage}
+                    loading={this.loading}
+                    name={this.name}
+                    sid={this.sid}
+                    userClass={this.userClass}
                     display={this.state.display === 1}
-                    typeOptions={this.state.typeOptions}
-                    lessonOptions={this.state.lessonOptions}
+                    typeOptions={typeOptions}
+                    lessonOptions={lessonOptions}
+                    getLeaveData={this.getLeaveData.bind(this)}
                     data={this.state.leaveData}
                 />
             </div>

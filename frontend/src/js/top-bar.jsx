@@ -18,7 +18,9 @@ export default class TopBar extends React.Component {
     logout() {
         axios.get("/api/logout/current")
         .then(
-            () => {window.location.reload();}
+            () => {
+                setTimeout(() => {window.location.reload()}, 100);
+            }
         );
     }
 

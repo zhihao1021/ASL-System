@@ -143,30 +143,28 @@ export default class LoginBox extends React.Component {
                     "password": password.value,
                     "valid_code": validCode.value,
                 },
+            ).then(
+                () => {
+                    this.setState({
+                        display: false
+                    });
+                    window.location.hash = "announcement";
+                    setTimeout(() => {window.location.reload()}, 100);
+                }
+            ).catch(
+                (result) => {
+                    this.setState({
+                        display: false
+                    });
+                    this.authError(result.response);
+                }
+            ).finally(
+                () => {
+                    this.setState({
+                        display: false
+                    });
+                }
             )
-                .then(
-                    () => {
-                        this.setState({
-                            display: false
-                        });
-                        window.location.reload()
-                    }
-                )
-                .catch(
-                    (result) => {
-                        this.setState({
-                            display: false
-                        });
-                        this.authError(result.response);
-                    }
-                )
-                .finally(
-                    () => {
-                        this.setState({
-                            display: false
-                        });
-                    }
-                )
         }
 
     }

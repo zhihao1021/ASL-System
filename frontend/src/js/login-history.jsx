@@ -14,7 +14,7 @@ export default class LoginHistory extends React.Component {
         };
         this.showMessage = props.showMessage;
         this.display = false;
-        this.setLoading=props.loading;
+        this.loading = props.loading;
     }
 
     componentDidMount() {
@@ -28,72 +28,73 @@ export default class LoginHistory extends React.Component {
     }
 
     logout(session) {
-        this.setLoading(true);
+        this.loading(true);
         axios.get(`/api/logout/${session}`)
             .then(
-                () => { this.showMessage("登出成功", "已成功登出。", "info"); }
+                () => { this.showMessage("登出成功", "已成功登出。", "success"); }
             )
             .catch(
                 () => { this.showMessage("登出失敗", "未成功登出。", "error"); }
             )
             .finally(
                 () => {
-                    this.setLoading(false);
+                    this.loading(false);
                     this.reload();
                 }
             );
     }
 
     logoutAll() {
-        this.setLoading(true);
+        this.loading(true);
         const sessions = this.state.sessions;
-        function __logout(index = 0) {
-            let session = sessions[index];
-            if (session === undefined) {
-                this.showMessage("登出成功", "已全部登出。", "info");
-                this.setLoading(false);
+        Promise.all(sessions.map((value) => {
+            return axios.get(`/api/logout/${value}`);
+        })).then(
+            () => {
+                this.showMessage("登出成功", "已全部登出。", "success");
+            }
+        ).catch(
+            () => {
+                this.showMessage("登出失敗", "未全部登出。", "error");
+            }
+        ).finally(
+            () => {
+                this.loading(false);
                 this.reload();
             }
-            else {
-                axios.get(`/api/logout/${session}`)
-                    .finally(
-                        __logout.bind(this, ++index)
-                    );
-            }
-        }
-        __logout.bind(this)();
+        )
     }
 
     reload() {
-        axios.get("/api/info/user/current/login-history")
-            .then(
-                (response) => {
-                    const data = response.data.data;
-                    this.setState({
-                        sessions: data.filter(
-                            (loginData) => {
-                                return !loginData.current;
-                            }
-                        )
-                            .map(
-                                (loginData) => {
-                                    return loginData.session;
-                                }
-                            ),
-                        data: data.map((loginData, index) => {
-                            return (
-                                <LoginHistoryBox
-                                    key={index}
-                                    current={loginData.current}
-                                    ip={loginData.ip}
-                                    lastLogin={loginData.last_login}
-                                    logoutFunc={this.logout.bind(this, loginData.session)}
-                                />
-                            );
-                        }),
-                    });
-                }
-            );
+        axios.get(
+            "/api/info/user/current/login-history"
+        ).then(
+            (response) => {
+                const data = response.data.data;
+                this.setState({
+                    sessions: data.filter(
+                        (loginData) => {
+                            return !loginData.current;
+                        }
+                    ).map(
+                        (loginData) => {
+                            return loginData.session;
+                        }
+                    ),
+                    data: data.map((loginData, index) => {
+                        return (
+                            <LoginHistoryBox
+                                key={index}
+                                current={loginData.current}
+                                ip={loginData.ip}
+                                lastLogin={loginData.last_login}
+                                logoutFunc={this.logout.bind(this, loginData.session)}
+                            />
+                        );
+                    }),
+                });
+            }
+        );
     }
 
     render() {

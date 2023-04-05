@@ -14,6 +14,13 @@
     line-height: 5vh;
 }
 
+#other .block .description {
+    padding-left: 0.4em;
+    font-size: 1.5vh;
+    height: 3vh;
+    line-height: 3vh;
+}
+
 #other .block hr {
     margin: 1px;
     width: 100%;
@@ -28,11 +35,13 @@
     width: calc(100% - 12px - 0.4em);
     padding: 0.2em;
     margin: 1vh auto;
+    margin-top: 0px;
     border-style: solid;
     border-radius: 4px;
     border-width: 1px;
     border-color: #AAAAAA;
     min-height: 5em;
+    white-space: pre-wrap;
 }
 
 #other .block.announcement .tool-bar {
@@ -40,6 +49,7 @@
     gap: 0.5em;
     margin: auto 5px;
 }
+
 #other .block.announcement button {
     height: 3.5vh;
     width: 8vh;
@@ -48,16 +58,18 @@
     border-style: solid;
     border-width: 1px;
     background-color: transparent;
-    border-color: #888888;
-    color: #888888;
+    border-color: #AAAAAA;
+    color: #AAAAAA;
     cursor: pointer;
     user-select: none;
     transition: color 0.3s, border-color 0.3s;
 }
+
 #other .block.announcement button:first-child:hover {
     color: #FF0000;
     border-color: #FF0000;
 }
+
 #other .block.announcement button:last-child:hover {
     color: #22CC77;
     border-color: #22CC77;

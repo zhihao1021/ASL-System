@@ -21,9 +21,12 @@ export default class DateBox extends React.Component {
     componentDidMount() {
         let find = false;
         this.refList.forEach((ref) => {
+            if (find) {
+                return;
+            }
             if (ref.current.value === "") {
                 ref.current.focus();
-                find = true
+                find = true;
             }
         });
     }

@@ -87,7 +87,7 @@
     height: 3.5vh;
     line-height: 3.5vh;
     background-color: #FF000000;
-    transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+    transition: border-color 0.3s, color 0.3s, background-color 0.3s;
 }
 
 #login-history .login-history-box .logout-button:disabled {
@@ -98,22 +98,8 @@
 }
 
 @media (min-aspect-ratio: 1/1) {
-    #login-history .login-history-box:not(.current):hover {
+    #login-history .login-history-box:not(.current) .logout-button:hover {
         color: #FFFFFF;
         background-color: #888888;
-    }
-
-    #login-history .login-history-box:not(.current):hover hr {
-        background-color: #FFFFFF;
-    }
-
-    #login-history .login-history-box:not(.current):hover .logout-button {
-        border-color: #FFFFFF;
-        color: #FFFFFF;
-    }
-
-    #login-history .login-history-box:not(.current):hover .logout-button:hover {
-        color: #888888;
-        background-color: #FFFFFF;
     }
 }

@@ -19,20 +19,21 @@
     margin: auto 1px;
 }
 
-.title-box .content {
+.title-box .context {
     word-break: keep-all;
 }
 
-.title-box:last-child .content {
+.title-box:last-child .context {
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
-@media (min-aspect-ratio: 1/1) {
-    .title-box:nth-last-child(1),
-    .title-box:nth-last-child(2) {
-        flex: 1;
-    }
+.title-box {
+    width: calc(50% - 16px);
+}
+
+.title-box:last-child {
+    width: calc(100% - 16px);
 }
 
 @media (max-aspect-ratio: 1/1) {

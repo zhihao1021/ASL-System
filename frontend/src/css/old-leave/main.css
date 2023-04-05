@@ -1,4 +1,100 @@
 #leave .old-leave {
+    overflow-y: hidden;
+    height: calc(100% - 6vh);
+}
+
+#leave .old-leave .content {
+    height: calc(100% - 4.2vh);
+}
+
+#leave .old-leave .content .results {
+    max-height: 100%;
     overflow-y: auto;
-    max-height: calc(100% - 6vh);
+    flex: 5;
+    margin: 0px;
+}
+
+#leave .old-leave .button-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.5vh 0px;
+    gap: 0.5vh;
+}
+
+#leave .old-leave button {
+    height: 3.2vh;
+    width: 6em;
+    font-size: 1.6vh;
+    line-height: 3.2vh;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    border-color: #888888;
+    color: #888888;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+#leave .old-leave button:hover {
+    color: #000000;
+    border-color: #000000;
+}
+
+#leave .old-leave .empty {
+    flex: 1;
+}
+
+#leave .old-leave .button-bar button:first-of-type {
+    justify-self: flex-start;
+    display: none;
+}
+
+#leave .old-leave button:nth-of-type(2):hover {
+    color: #FF4422;
+    border-color: #FF4422;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    #leave .old-leave .content {
+        display: flex;
+        gap: 1vw;
+    }
+}
+
+@media (max-aspect-ratio: 1/1) {
+    #leave .old-leave .content {
+        position: relative;
+    }
+
+    #leave .old-leave .content .results {
+        opacity: 100%;
+        pointer-events: initial;
+        position: absolute;
+        transition: opacity 0.3s;
+        background-color: #FFFFFF;
+    }
+
+    #leave .old-leave .content:has(.result-box.select) .results {
+        opacity: 0%;
+        pointer-events: none;
+    }
+
+    #leave .old-leave .content .detail {
+        opacity: 0%;
+        pointer-events: none;
+        width: calc(100% - 2px);
+        background-color: #FFFFFF;
+        transition: opacity 0.3s;
+    }
+
+    #leave .old-leave .content:has(.result-box.select) .detail {
+        opacity: 100%;
+        pointer-events: initial;
+    }
+
+    #leave .old-leave:has(.result-box.select) .button-bar button:first-of-type {
+        display: block;
+    }
 }
