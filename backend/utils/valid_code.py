@@ -28,9 +28,14 @@ def gen_valid_code() -> tuple[str, bytes]:
     for i in range(randint(5, 10)):
         x1, x2, x3 = map(lambda x: randint(0, 512), range(3))
         y1, y2, y3 = map(lambda x: randint(0, 168), range(3))
+        x4, y4 = x3 + randint(-256, 256), y3 + randint(-84, 84)
+        x1, x2 = min(x1, x2), max(x1, x2)
+        y1, y2 = min(y1, y2), max(y1, y2)
+        x3, x4 = min(x3, x4), max(x3, x4)
+        y3, y4 = min(y3, y4), max(y3, y4)
         draw.line((x1, y1, x2, y2), fill=random_color(), width=randint(5, 24))
         for _ in range(randint(1, 5)):
-            draw.arc((x3, y3, x3 + randint(-256, 256), y3 + randint(-84, 84)),
+            draw.arc((x3, y3, x4, y4),
                      randint(0, 360), randint(0, 360), random_color(), randint(5, 24))
     for i, s in enumerate(answer):
         draw.text((80 * i, randint(-24, 24)), s,

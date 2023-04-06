@@ -1,4 +1,7 @@
-from utils import Json
+try:
+    from utils import Json
+except:
+    import json
 
 from asyncio import run
 from datetime import datetime, timedelta, timezone
@@ -19,7 +22,11 @@ class SQLAlchemyConfig(BaseModel):
 
 
 if isfile("config.json"):
-    config = Json.load_nowait("config.json")
+    try:
+        config = Json.load_nowait("config.json")
+    except:
+        with open("config.json") as json_file:
+            config = json.load(json_file)
 else:
     config = {
         "web": {
@@ -35,7 +42,11 @@ else:
         },
         "timezone": 8,
     }
-    Json.dump_nowait("config.json", config)
+    try:
+        Json.dump_nowait("config.json", config)
+    except:
+        with open("config.json", mode="w") as json_file:
+            json.dump(config, json_file, ensure_ascii=False, indent=2)
 
 WEB_CONFIG = WebConfig(**config.get("web", {}))
 SQLALCHEMY_CONFIG = SQLAlchemyConfig(**config.get("sqlalchemy", {}))
