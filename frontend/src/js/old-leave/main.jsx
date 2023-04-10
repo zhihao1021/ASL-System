@@ -29,10 +29,6 @@ export default class OldLeave extends React.Component {
         this.getLeaveData = props.getLeaveData;
     }
 
-    componentDidMount() {
-        this.getLeaveData();
-    }
-
     select(leave) {
         const typeOptions = this.props.typeOptions;
         const lessonOptions = this.props.lessonOptions;

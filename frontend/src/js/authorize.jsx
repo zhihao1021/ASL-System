@@ -56,7 +56,7 @@ export default class Authorize extends React.Component {
                             return axios.get(`/api/class/${data.class_id}`);
                         })).then(
                             (responses) => {
-                                responses.map((response, index) => {
+                                responses.forEach((response, index) => {
                                     const data = response.data.data;
                                     dataList[index].class_name = data.class_name;
                                 })

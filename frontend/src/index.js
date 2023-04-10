@@ -10,6 +10,7 @@ import Loading from "./js/loading";
 import LoginHistory from "./js/login-history";
 import MessageBox from "./js/message-box";
 import Other from "./js/other";
+import Query from "./js/query";
 import SideBar from "./js/side-bar";
 import TopBar from "./js/top-bar";
 
@@ -24,7 +25,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const year = new Date().getFullYear()
 
 var needLoaded = 0;
-var userSid, userName, userClass = undefined, undefined, classId;
+var userSid, userName, userClass, classId;
 var displayBlock = [true, true, true, true, true, true, true]
 
 
@@ -200,6 +201,13 @@ class MainContent extends React.Component {
                             lessonOptions={this.state.lessonOptions}
                         /> : null
                     }
+                    {displayBlock[3] ?
+                        <Query
+                            showMessage={this.showMessage.bind(this)}
+                            loading={this.setLoading.bind(this)}
+                            display={this.state.nowDisplay === 5}
+                        /> : null
+                    }
                     {displayBlock[4] ?
                         <Other
                             showMessage={this.showMessage.bind(this)}
@@ -261,7 +269,7 @@ function getData(index = 0) {
                 ).then(
                     (response) => {
                         userClass = response.data.data.class_name;
-                        userClass = userClass || "無";
+                        userClass = userClass === "None" ? "無" : userClass;
                         getData(index + 1);
                     }
                 );

@@ -13,7 +13,7 @@ from os.path import isdir, join, splitext
 
 from aiofiles import open as aopen
 from fastapi import APIRouter, Cookie, File, Form, status, UploadFile
-from fastapi.responses import FileResponse, ORJSONResponse
+from fastapi.responses import FileResponse, ORJSONResponse, Response
 
 
 router = APIRouter()
@@ -157,12 +157,7 @@ async def delete_leave(leave_id: int, session: str = Cookie(None)):
             except:
                 pass
 
-        status_code = status.HTTP_204_NO_CONTENT
-        response = CustomResponse(**{
-            "status": status_code,
-            "success": True,
-            "data": ""
-        })
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         status_code, response = response_403()
 
@@ -212,7 +207,7 @@ async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None
     "/sid/{sid}",
     response_class=ORJSONResponse,
     response_model=CustomResponse,
-    description="Get the leave by sid."
+    description="Get the leave by sid(\"current\" to query current user's)."
 )
 async def get_leave_by_sid(sid: str, session: str = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
@@ -269,7 +264,8 @@ async def get_leave_by_status(status_: int, session: str = Cookie(None)):
         if login_user.role == permissions.TEACHER_ROLE:
             students = await curd_user.get_by_class_id(login_user.class_id)
             student_sids = tuple(map(lambda student: student.sid, students))
-            leaves = list(filter(lambda leave: leave.sid in student_sids, leaves))
+            leaves = list(
+                filter(lambda leave: leave.sid in student_sids, leaves))
         status_code = status.HTTP_200_OK
         response = CustomResponse(**{
             "status": status_code,
@@ -281,7 +277,7 @@ async def get_leave_by_status(status_: int, session: str = Cookie(None)):
         })
     else:
         status_code, response = response_403()
-    
+
     return ORJSONResponse(
         response.dict(),
         status_code,

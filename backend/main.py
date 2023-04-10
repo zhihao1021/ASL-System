@@ -12,7 +12,9 @@ from sqlmodel import SQLModel
 from uvicorn import Config, Server
 
 load_dotenv(".env")
-DEBUG = getenv("DEBUG", False) == "true"
+DEBUG = getenv("DEBUG", False)
+if type(DEBUG) != bool:
+    DEBUG = DEBUG == "true"
 
 
 async def sql_init():
