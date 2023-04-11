@@ -8,8 +8,27 @@ export default class QueryBySid extends React.Component {
     constructor(props) {
         super(props);
         this.loading = props.loading;
+        this.getResult = props.getResult;
         this.inputRef = React.createRef();
         this.setSelect = props.setSelect;
+    }
+
+    componentDidMount() {
+        let element = this.inputRef.current;
+        element.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                this.send();
+            }
+        })
+    }
+
+    send() {
+        this.getResult(this.inputRef.current.value, this.reset.bind(this))
+    }
+
+    reset() {
+        this.inputRef.current.value = "";
+        this.setSelect(0);
     }
 
     render() {
@@ -31,7 +50,7 @@ export default class QueryBySid extends React.Component {
                         }
                     }}
                 />
-                <button>
+                <button onClick={this.send.bind(this)}>
                     查詢
                 </button>
             </div>

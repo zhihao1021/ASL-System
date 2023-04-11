@@ -12,14 +12,24 @@ export default class QueryByName extends React.Component {
             display: 0,
             selected: -1,
             classData: [],
-            userList: []
+            userData: []
         };
+        this.getResult = props.getResult;
         this.loading = props.loading;
         this.setSelect = props.setSelect;
     }
 
     componentDidMount() {
         this.getClass();
+    }
+
+    reset() {
+        this.setState({
+            display: 0,
+            selected: -1,
+            userData: []
+        });
+        this.setSelect(0);
     }
 
     getClass() {
@@ -31,16 +41,58 @@ export default class QueryByName extends React.Component {
                     classData: classData
                 });
             }
-        ).finally(()=>{
+        ).finally(() => {
             this.loading(false);
         })
     }
 
-    select(i) {
-        this.setState({
-            selected: i,
-        });
-        this.setSelect(2);
+    getUser() {
+        this.loading(true);
+        setTimeout(() => {
+            axios.get(`/api/class/${this.state.selected}/students`).then(
+                (response) => {
+                    const userData = response.data.data;
+                    this.setState({
+                        userData: userData
+                    });
+                }
+            ).finally(() => {
+                this.setState({
+                    display: 1
+                })
+                this.loading(false);
+            })
+        }, 500);
+    }
+
+    selectClass(i) {
+        if (this.state.selected === i) {
+            this.setState({
+                selected: -1,
+            });
+            this.setSelect(0);
+        }
+        else {
+            this.setState({
+                selected: i,
+            });
+            this.setSelect(2);
+            this.getUser();
+        }
+    }
+
+    back() {
+        if (this.state.display === 0) {
+            this.setState({
+                selected: -1,
+            });
+            this.setSelect(0);
+        }
+        else {
+            this.setState({
+                display: 0
+            })
+        }
     }
 
     render() {
@@ -49,20 +101,32 @@ export default class QueryByName extends React.Component {
             return (
                 <SelectOption
                     key={index}
-                    id={index}
                     context={data.class_name}
-                    select={this.select.bind(this)}
-                    selected={index === this.state.selected}
+                    select={this.selectClass.bind(this, data.id)}
+                    selected={data.id === this.state.selected}
+                />
+            )
+        });
+        const userList = this.state.userData.map((data, index) => {
+            return (
+                <SelectOption
+                    key={index}
+                    context={data.name}
+                    select={() => { this.getResult(data.sid, this.reset.bind(this)) }}
                 />
             )
         });
         return (
             <div className={`query-name ${selected ? "selected" : ""}`}>
                 <div className="title">
-                    依班級查詢
+                    <p>依班級查詢</p>
+                    <button onClick={this.back.bind(this)}>回上頁</button>
                 </div>
                 <div className={`select-page ${this.state.display === 0 ? "display" : ""}`}>
                     {classList}
+                </div>
+                <div className={`select-page ${this.state.display === 1 ? "display" : ""}`}>
+                    {userList}
                 </div>
             </div>
         )

@@ -29,22 +29,36 @@ export default class Query extends React.Component {
         });
     }
 
+    getResult(sid, callback) {
+        console.log(sid)
+        if (callback) {
+            callback();
+        }
+    }
+
     render() {
         const display = this.props.display;
         return (
             <div id="query" style={{ "display": display ? "" : "none" }}>
-                <TitleBar title="查詢" />
+                <TitleBar title="查詢">
+                    <button>
+                        <p className="ms">filter_alt</p>
+                        <p>篩選器</p>
+                    </button>
+                </TitleBar>
                 <hr />
                 <div className="content">
                     <div className={`query-page ${this.state.display === 0 ? "display" : ""}`}>
                         <QueryBySid
                             loading={this.loading}
+                            getResult={this.getResult.bind(this)}
                             setSelect={this.setSelect.bind(this)}
                             selected={this.state.queryDisplay === 1}
                             />
                         <hr />
                         <QueryByName
                             loading={this.loading}
+                            getResult={this.getResult.bind(this)}
                             setSelect={this.setSelect.bind(this)}
                             selected={this.state.queryDisplay === 2}
                         />

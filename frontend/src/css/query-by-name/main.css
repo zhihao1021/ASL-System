@@ -3,12 +3,55 @@
     overflow: hidden;
 }
 
-/* TODO */
+#query .query-name .title {
+    display: flex;
+}
+
+#query .query-name .title p {
+    flex: 1;
+    margin: 0px;
+}
+
+#query .query-name .title button {
+    font-size: 1.7vh;
+    height: 3.5vh;
+    width: 6em;
+    color: #AAAAAA;
+    cursor: pointer;
+    background-color: transparent;
+    border-style: solid;
+    border-color: #AAAAAA;
+    border-width: 1px;
+    border-radius: 4px;
+    align-self:last baseline;
+    opacity: 0%;
+    pointer-events: none;
+    transition: color 0.3s, border-color 0.3s, opacity 0.5s;
+}
+
+#query .query-name .title button:hover {
+    color: #000000;
+    border-color: #000000;
+}
+
+#query .query-name.selected .title button {
+    pointer-events: initial;
+    opacity: 100%;
+}
+
 #query .query-name .select-page {
     position: absolute;
+    width: 100%;
     top: 5vh;
-    width: calc(100% - 2.5vh);
+    max-height: calc(100% - 5vh);
     overflow-y: auto;
+    pointer-events: none;
+    opacity: 0%;
+    transition: opacity 0.5s;
+}
+#query .query-name .select-page.display {
+    pointer-events: initial;
+    opacity: 100%;
 }
 
 #query .query-name .select-page .select-option {

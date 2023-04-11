@@ -87,6 +87,10 @@ input[type=number] {
   text-decoration: none;
 }
 
+button {
+  user-select: none;
+}
+
 @media (min-aspect-ratio: 1/1) {
   #content {
     width: calc(100% - 4.5vh - 4px);
