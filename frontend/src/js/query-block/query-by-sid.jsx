@@ -2,7 +2,7 @@ import React from "react";
 
 import InputBox from "../input-box";
 
-import "../../css/query-by-sid/main.css"
+import "../../css/query-block/query-by-sid.css"
 
 export default class QueryBySid extends React.Component {
     constructor(props) {

@@ -1,0 +1,13 @@
+#query .query-block .query-filter {
+    margin: 0px 1vh;
+    height: 0px;
+    overflow: hidden;
+    opacity: 0%;
+    transition: margin 0.5s, height 0.5s, opacity 0.5s;
+}
+
+#query .query-block .query-filter.display {
+    margin: 0.5vh 1vh;
+    height: auto;
+    opacity: 100%;
+}

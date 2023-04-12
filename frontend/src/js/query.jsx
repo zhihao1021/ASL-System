@@ -1,7 +1,6 @@
 import React from "react";
 
-import QueryByName from "./query-by-name/main";
-import QueryBySid from "./query-by-sid/main";
+import QueryBlock from "./query-block/main";
 import TitleBar from "./title-bar";
 
 import "../css/query.css";
@@ -11,7 +10,8 @@ export default class Query extends React.Component {
         super(props);
         this.state = {
             display: 0,
-            queryDisplay: 0
+            queryDisplay: 0,
+            filterDisplay: false
         };
         this.showMessage = props.showMessage;
         this.loading = props.loading;
@@ -21,6 +21,14 @@ export default class Query extends React.Component {
         if (!props.display && this.props.display) {
             window.location.hash = "query";
         }
+    }
+
+    switchFilter() {
+        this.setState((state)=>{
+            return {
+                filterDisplay: !state.filterDisplay
+            };
+        })
     }
 
     setSelect(i) {
@@ -41,28 +49,21 @@ export default class Query extends React.Component {
         return (
             <div id="query" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="查詢">
-                    <button>
+                    <button onClick={this.switchFilter.bind(this)}>
                         <p className="ms">filter_alt</p>
                         <p>篩選器</p>
                     </button>
                 </TitleBar>
                 <hr />
                 <div className="content">
-                    <div className={`query-page ${this.state.display === 0 ? "display" : ""}`}>
-                        <QueryBySid
-                            loading={this.loading}
-                            getResult={this.getResult.bind(this)}
-                            setSelect={this.setSelect.bind(this)}
-                            selected={this.state.queryDisplay === 1}
-                            />
-                        <hr />
-                        <QueryByName
-                            loading={this.loading}
-                            getResult={this.getResult.bind(this)}
-                            setSelect={this.setSelect.bind(this)}
-                            selected={this.state.queryDisplay === 2}
-                        />
-                    </div>
+                    <QueryBlock
+                        display={this.state.display === 0}
+                        loading={this.loading}
+                        getResult={this.getResult.bind(this)}
+                        setSelect={this.setSelect.bind(this)}
+                        queryDisplay={this.state.queryDisplay}
+                        filterDisplay={this.state.filterDisplay}
+                    />
                     <div className={`results ${this.state.display === 1 ? "display" : ""}`}>
 
                     </div>

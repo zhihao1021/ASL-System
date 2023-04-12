@@ -13,7 +13,7 @@ export default class SelectOption extends React.Component {
             <div
                 className={`select-option ${selected ? "selected" : ""}`}
                 onClick={this.select}
-            >
+            >   
                 {context}
             </div>
         )

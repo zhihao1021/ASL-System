@@ -1,0 +1,129 @@
+#query .query-block {
+    display: flex;
+    flex-direction: column;
+}
+
+#query .query-block .query-page {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+
+#query .query-block .query-page>div {
+    position: absolute;
+    margin: 1vh;
+    transition: left 0.5s, right 0.5s, top 0.5s, bottom 0.5s, height 0.5s, margin 0.5s;
+    font-size: 2.5vh;
+}
+
+#query .query-block .query-page>div>.title {
+    font-size: 3vh;
+    margin-bottom: 2vh;
+}
+
+#query .query-block .query-page>hr {
+    position: absolute;
+    margin: 0px;
+    border: none;
+    background-color: #AAAAAA;
+    opacity: 100%;
+    transition: left 0.5s, top 0.5s, opacity 0.5s;
+}
+
+#query .query-block .query-page:has(.query-name.selected)>hr,
+#query .query-block .query-page:has(.query-sid.selected)>hr,
+#query .query-block .query-page:has(.query-sid):has(.query-sid input:focus)>hr {
+    opacity: 0%;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    #query .query-block .query-page>div {
+        width: calc(50% - 2.5vh);
+        height: calc(100% - 2vh);
+    }
+
+    #query .query-block .query-page>hr {
+        width: 1px;
+        height: 100%;
+        left: calc(50% - 0.5px);
+    }
+
+    #query .query-block .query-page .query-sid {
+        left: 0px;
+    }
+
+    #query .query-block .query-page .query-name {
+        right: 0px;
+    }
+
+    #query .query-block .query-page .query-name.selected,
+    #query .query-block .query-page .query-sid.selected,
+    #query .query-block .query-page .query-sid:has(input:focus) {
+        margin-left: calc(25% + 1.25vh);
+        margin-right: calc(25% + 1.25vh);
+    }
+
+    #query .query-block .query-page:has(.query-name.selected) .query-sid {
+        left: -50%;
+    }
+
+    #query .query-block .query-page:has(.query-sid.selected) .query-name,
+    #query .query-block .query-page:has(.query-sid):has(.query-sid input:focus) .query-name {
+        right: -50%;
+    }
+
+    #query .query-block .query-page:has(.query-name.selected)>hr {
+        left: 0px;
+    }
+
+    #query .query-block .query-page:has(.query-sid.selected)>hr,
+    #query .query-block .query-page:has(.query-sid):has(.query-sid input:focus)>hr {
+        left: 100%;
+    }
+}
+
+@media (max-aspect-ratio: 1/1) {
+    #query .query-block .query-page>div {
+        width: calc(100% - 2vh);
+        height: calc(50% - 2.5vh);
+    }
+
+    #query .query-block .query-page>hr {
+        width: 100%;
+        height: 1px;
+        margin: 0px;
+        top: calc(50% - 0.5px);
+    }
+
+    #query .query-block .query-page .query-sid {
+        top: 0px;
+    }
+
+    #query .query-block .query-page .query-name {
+        bottom: 0px;
+    }
+
+    #query .query-block .query-page .query-name.selected,
+    #query .query-block .query-page .query-sid.selected,
+    #query .query-block .query-page .query-sid:has(input:focus) {
+        height: calc(100% - 2vh);
+    }
+
+    #query .query-block .query-page:has(.query-name.selected) .query-sid {
+        top: -50%;
+    }
+
+    #query .query-block .query-page:has(.query-sid.selected) .query-name,
+    #query .query-block .query-page:has(.query-sid):has(.query-sid input:focus) .query-name {
+        bottom: -50%;
+    }
+
+    #query .query-block .query-page:has(.query-name.selected)>hr {
+        top: 0px;
+    }
+
+    #query .query-block .query-page:has(.query-sid.selected)>hr,
+    #query .query-block .query-page:has(.query-sid):has(.query-sid input:focus)>hr {
+        top: 100%;
+    }
+}

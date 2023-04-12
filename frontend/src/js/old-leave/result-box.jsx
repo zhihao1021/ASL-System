@@ -14,11 +14,11 @@ function getStatus(status) {
             return "等待教官核准"
         case 0b0001:
             return "等待導師核准"
-        case 0b1001:
+        case 0b11000:
             return "學務主任退回"
-        case 0b0101:
+        case 0b10100:
             return "教官退回"
-        case 0b0011:
+        case 0b10010:
             return "導師退回"
         default:
             return "未知"
@@ -27,9 +27,9 @@ function getStatus(status) {
 
 function getClassName(status) {
     switch (status) {
-        case 0b1001:
-        case 0b0101:
-        case 0b0011:
+        case 0b11000:
+        case 0b10100:
+        case 0b10010:
             return "reject"
         case 0b1000:
             return "accept"

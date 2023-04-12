@@ -3,7 +3,7 @@ import React from "react";
 
 import SelectOption from "./select-option";
 
-import "../../css/query-by-name/main.css"
+import "../../css/query-block/query-by-name.css"
 
 export default class QueryByName extends React.Component {
     constructor(props) {
