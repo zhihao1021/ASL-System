@@ -40,7 +40,6 @@ async def get_class_list(accessible: bool = True, session: str = Cookie(None)):
     return ORJSONResponse(
         response.dict(),
         status_code,
-        headers={"cache-control": "max-age=600"}
     )
 
 
