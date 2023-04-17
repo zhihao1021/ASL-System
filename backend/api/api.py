@@ -9,7 +9,7 @@ from .responses import response_403
 
 from curd import CURDSession
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import ORJSONResponse
 
 api_router = FastAPI()
@@ -54,7 +54,7 @@ async def api_filter(request: Request, call_next):
             pass
 
     response: Response = await call_next(request)
-    if not response.headers.get("cache-control"):
+    if not response.headers.get("cache-control") or response.status_code // 100 > 3:
         response.headers["cache-control"] = "max-age=5"
 
     return response
