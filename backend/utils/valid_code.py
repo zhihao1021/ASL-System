@@ -22,7 +22,9 @@ def random_string() -> str:
 
 RESIZE = 1 / 3
 
-def gen_valid_code() -> tuple[str, bytes]:
+def gen_valid_code(scale: float = RESIZE) -> tuple[str, bytes]:
+    scale = min(abs(scale), 1)
+
     img = Image.new("RGB", (512, 168), random_color(155))
     draw = ImageDraw.Draw(img)
     answer = random_string()
@@ -42,7 +44,7 @@ def gen_valid_code() -> tuple[str, bytes]:
         draw.text((80 * i, randint(-24, 24)), s,
                   random_color(0, 140), choice(FONTS), stroke_width=randint(1, 3))
         
-    img = img.resize((int(512 * RESIZE), int(480 * RESIZE)), Image.NEAREST)
+    img = img.resize((int(512 * scale), int(168 * scale)), Image.NEAREST)
     io = BytesIO()
     img.save(io, format="jpeg")
     answer = str(eval(answer.removesuffix("=")))

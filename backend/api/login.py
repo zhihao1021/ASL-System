@@ -62,8 +62,8 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
     "/valid-code",
     description="Valid Code."
 )
-def valid_code(session: Optional[str] = Cookie(None)):
-    answer, img_bytes = gen_valid_code()
+def valid_code(session: Optional[str] = Cookie(None), scale: float=0.3):
+    answer, img_bytes = gen_valid_code(scale)
     response = Response(content=img_bytes, headers={
                         "Cache-Control": "no-store"}, media_type="image/jpeg")
     if session is None:
