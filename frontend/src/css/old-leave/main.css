@@ -8,10 +8,39 @@
 }
 
 #leave .old-leave .content .results {
+    position: relative;
     max-height: 100%;
     overflow-y: auto;
     flex: 5;
     margin: 0px;
+}
+
+#leave .old-leave .content .results .icon {
+    display: flex;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    font-size: 4vh;
+    color: #AAAAAA;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    opacity: 0%;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+
+#leave .old-leave .content .results .icon .ms {
+    font-size: 20vh;
+    height: 20vh;
+    line-height: 20vh;
+}
+
+#leave .old-leave .content .results .icon.display {
+    opacity: 100%;
 }
 
 #leave .old-leave .button-bar {
@@ -42,7 +71,7 @@
     border-color: #000000;
 }
 
-#leave .old-leave .empty {
+#leave .old-leave .button-bar .empty {
     flex: 1;
 }
 
@@ -63,6 +92,10 @@
     #leave .old-leave .content {
         display: flex;
         gap: 1vw;
+    }
+
+    #leave .old-leave .content .detail {
+        flex: 3;
     }
 }
 

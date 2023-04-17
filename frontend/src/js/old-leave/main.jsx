@@ -1,8 +1,8 @@
 import axios from "axios";
 import React from "react";
 
-import DetailBox from "./detail";
-import ResultBox from "./result-box";
+import DetailBox from "../detail-box";
+import ResultBox from "../result-box";
 
 import "../../css/old-leave/main.css"
 
@@ -12,14 +12,14 @@ export default class OldLeave extends React.Component {
         super(props);
         this.state = {
             select: undefined,
-            displayData: {},
+            displayData: undefined,
         };
         this.showMessage = props.showMessage;
         this.loading = props.loading;
         this.reload = () => {
             this.setState({
                 select: undefined,
-                displayData: {}
+                displayData: undefined
             });
             this.getLeaveData();
         };
@@ -32,7 +32,13 @@ export default class OldLeave extends React.Component {
     select(leave) {
         const typeOptions = this.props.typeOptions;
         const lessonOptions = this.props.lessonOptions;
-        this.setState(() => {
+        this.setState((state) => {
+            if (state.select === leave.id) {
+                return {
+                    select: undefined,
+                    displayData: undefined
+                }
+            }
             let displayData = Object.assign({}, leave);
             displayData.start_lesson = lessonOptions[leave.start_lesson];
             displayData.end_lesson = lessonOptions[leave.end_lesson];
@@ -57,7 +63,7 @@ export default class OldLeave extends React.Component {
                 () => {
                     this.showMessage("刪除成功", "請假資料刪除成功。", "success");
                 }
-            ).catch(        
+            ).catch(
                 () => {
                     this.showMessage("刪除失敗", "請假資料刪除失敗。\n(注意: \"已完成\"之資料不可刪除)", "error");
                 }
@@ -73,7 +79,7 @@ export default class OldLeave extends React.Component {
         const display = this.props.display;
         const typeOptions = this.props.typeOptions;
         const lessonOptions = this.props.lessonOptions;
-        const list = this.props.data.map((data, index)=>{
+        const list = this.props.data.map((data, index) => {
             return (
                 <ResultBox
                     key={index}
@@ -94,13 +100,17 @@ export default class OldLeave extends React.Component {
         return (
             <div className="old-leave" style={{ "display": display ? "" : "none" }}>
                 <div className="button-bar">
-                    <button onClick={() => {this.setState({select: undefined})}}>回上頁</button>
+                    <button onClick={() => { this.setState({ select: undefined }) }}>回上頁</button>
                     <div className="empty" />
                     <button onClick={this.delete.bind(this)}>移除請假</button>
                     <button onClick={this.reload}>重新整理</button>
                 </div>
                 <div className="content">
                     <div className="results">
+                        <div className={`icon ${list.length === 0 ? "display" : ""}`}>
+                            <div className="ms">quick_reference_all</div>
+                            <div>無紀錄</div>
+                        </div>
                         {list}
                     </div>
                     <DetailBox

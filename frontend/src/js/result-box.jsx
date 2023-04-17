@@ -1,8 +1,8 @@
 import React from "react";
 
-import TitleBox from "./title-box";
+import TitleBox from "./old-leave/title-box";
 
-import "../../css/old-leave/result-box.css"
+import "../css/result-box.css"
 
 function getStatus(status) {
     switch (status) {

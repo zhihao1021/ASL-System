@@ -1,0 +1,50 @@
+#query .query-results .results {
+    position: relative;
+    overflow-y: auto;
+}
+
+#query .query-results .results .icon {
+    display: flex;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    font-size: 4vh;
+    color: #AAAAAA;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    opacity: 0%;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+
+#query .query-results .results .icon .ms {
+    font-size: 20vh;
+    height: 20vh;
+    line-height: 20vh;
+}
+
+#query .query-results.display .results .icon.display {
+    opacity: 100%;
+    pointer-events: initial;
+}
+
+@media (min-aspect-ratio: 1/1) {
+    #query .query-results {
+        display: flex;
+        gap: 1vw;
+    }
+
+    #query .query-results .results {
+        flex: 5;
+    }
+
+    #query .query-results .detail {
+        flex: 3;
+    }
+}
+
+@media (max-aspect-ratio: 1/1) {}

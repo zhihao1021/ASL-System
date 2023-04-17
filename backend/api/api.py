@@ -55,6 +55,6 @@ async def api_filter(request: Request, call_next):
 
     response: Response = await call_next(request)
     if not response.headers.get("cache-control"):
-        response.headers["cache-control"] = "max-age=1"
+        response.headers["cache-control"] = "max-age=5"
 
     return response

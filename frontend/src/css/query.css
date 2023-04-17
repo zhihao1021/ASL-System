@@ -2,6 +2,13 @@
     display: flex;
     align-items: center;
     width: 6em;
+    opacity: 0%;
+    pointer-events: none;
+    transition: opacity 0.5s, border-color 0.3s, color 0.3s;
+}
+#query:has(.query-results.display) .title-bar button {
+    opacity: 100%;
+    pointer-events: initial;
 }
 
 #query .title-bar button p.ms {

@@ -22,11 +22,13 @@ import "./fonts/fonts.css"
 import { getHashIndex } from "./utils";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-const year = new Date().getFullYear()
+const year = new Date().getFullYear();
 
 var needLoaded = 0;
 var userSid, userName, userClass, classId;
-var displayBlock = [true, true, true, true, true, true, true]
+var displayBlock = [true, true, true, true, true, true, true];
+displayBlock[5] = false;
+displayBlock[6] = false;
 
 
 function CopyRight() {
@@ -206,6 +208,8 @@ class MainContent extends React.Component {
                             showMessage={this.showMessage.bind(this)}
                             loading={this.setLoading.bind(this)}
                             display={this.state.nowDisplay === 5}
+                            typeOptions={this.state.typeOptions}
+                            lessonOptions={this.state.lessonOptions}
                         /> : null
                     }
                     {displayBlock[4] ?
