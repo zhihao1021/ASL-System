@@ -38,7 +38,7 @@ async def logout_user(session_id: str, session: str = Cookie(None)):
         else:
             status_code, response = response_403()
     else:
-        status_code, response = response_404()
+        status_code, response = response_404("Session Cookies")
 
     response = ORJSONResponse(response.dict(), status_code)
     return response

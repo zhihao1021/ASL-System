@@ -157,6 +157,7 @@ class MainContent extends React.Component {
                     name={userName}
                     menuOpen={this.state.menuOpen}
                     userOpen={this.state.userOpen}
+                    loading={this.setLoading.bind(this)}
                 />
                 <SideBar
                     showPage={this.showPage.bind(this)}

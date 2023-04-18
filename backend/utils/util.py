@@ -26,7 +26,7 @@ def gen_session_id() -> str:
     產生Session ID。
     """
     result = text_encode(uuid1().bytes, raw=True)
-    return bytes(map(lambda x: URL_MAP[x % 62], result)).decode()
+    return bytes(map(lambda x: URL_MAP[x % 62], result)).decode().replace("/", "")
 
 
 def format_exception(exc: Exception) -> list[str]:

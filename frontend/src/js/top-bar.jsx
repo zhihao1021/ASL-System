@@ -13,9 +13,11 @@ export default class TopBar extends React.Component {
         this.showPage = props.showPage;
         this.clickMenu = props.clickMenu;
         this.clickUserMenu = props.clickUserMenu;
+        this.loading = props.loading;
     }
 
     logout() {
+        this.loading(true);
         axios.get("/api/logout/current")
         .then(
             () => {
@@ -48,7 +50,7 @@ export default class TopBar extends React.Component {
                         <p className="ms">history</p>
                         <p>登入紀錄</p>
                     </div>
-                    <div className="user-menu-tag" onClick={this.logout}>
+                    <div className="user-menu-tag" onClick={this.logout.bind(this)}>
                         <p className="ms">logout</p>
                         <p>登出</p>
                     </div>
