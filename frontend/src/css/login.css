@@ -150,7 +150,7 @@
     text-decoration: none;
 }
 
-#login-body .loading-box {
+#login-body .loading-page {
     position: absolute;
     width: 100vw;
     height: 100vh;

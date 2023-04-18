@@ -14,7 +14,7 @@ export default class Loading extends React.Component {
         const scale = this.props.scale * Math.min(window.innerHeight, window.innerWidth) / 256;
         const display = this.props.display;
         return (
-            <div className={`loading-box ${display ? "display" : ""}`}>
+            <div className={`loading-page ${display ? "display" : ""}`}>
                 <div style={{transform: `scale(${scale})`}}>
                     <div className="ring-text font">{this.state.title}</div>
                     <svg className="ring">

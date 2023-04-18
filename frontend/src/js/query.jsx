@@ -15,10 +15,13 @@ export default class Query extends React.Component {
             queryDisplay: 0,
             data: [],
             userData: {},
+            pageUpdated: 0,
             querySelect: undefined
         };
         this.showMessage = props.showMessage;
         this.loading = props.loading;
+        this.sid = undefined;
+        this.updateLock = false
     }
 
     componentDidUpdate(props) {
@@ -41,6 +44,7 @@ export default class Query extends React.Component {
 
     getResult(sid, callback) {
         this.loading(true);
+        this.sid = sid;
         axios.all([
             axios.get(`/api/leave/sid/${sid}`),
             axios.get(`/api/info/user/${sid}`),
@@ -55,7 +59,8 @@ export default class Query extends React.Component {
                         this.setState({
                             display: 1,
                             data: leaveData,
-                            userData: userData
+                            userData: userData,
+                            pageUpdated: leaveData.length < 10 ? -1 : 1
                         })
                     }
                 ).finally(
@@ -73,6 +78,28 @@ export default class Query extends React.Component {
         if (callback) {
             callback();
         }
+    }
+
+    updateResultData() {
+        if (this.state.pageUpdated === -1 || this.updateLock || this.sid === undefined) {
+            return
+        }
+        this.updateLock = true;
+        axios.get(`/api/leave/sid/${this.sid}?page=${this.state.pageUpdated}`).then(
+            (response)=>{
+                const data = response.data.data;
+                this.setState((state) => {
+                    return {
+                        data: state.data.concat(data),
+                        pageUpdated: data.length < 10 ? -1 : state.pageUpdated + 1
+                    }
+                })
+            }
+        ).finally(
+            () => {
+                this.updateLock = false;
+            }
+        )
     }
 
     back() {
@@ -117,6 +144,8 @@ export default class Query extends React.Component {
                         lessonOptions={lessonOptions}
                         querySelect={this.state.querySelect}
                         setQuerySelect={this.setQuerySelect.bind(this)}
+                        updateResultData={this.updateResultData.bind(this)}
+                        hasUpdate={this.state.pageUpdated !== -1}
                     />
                 </div>
             </div>

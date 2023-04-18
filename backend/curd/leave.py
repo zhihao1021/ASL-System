@@ -7,7 +7,7 @@ from schemas import LeaveCreate, LeaveUpdate
 
 from typing import Optional
 
-from sqlmodel import select
+from sqlmodel import desc, select
 
 
 class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
@@ -17,11 +17,14 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
     async def get_by_sid(
         self,
         sid: str,
+        page: int = 0,
+        num: int = 10
     ) -> list[Leave]:
         if sid == None:
             return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Leave).where(Leave.sid == sid)
+            query_stat = select(Leave).where(Leave.sid == sid).order_by(desc(Leave.create_time)).offset(
+                max(page * num, 0)).limit(max(num, 1))
             result = await db_session.exec(query_stat)
 
             return result.all()

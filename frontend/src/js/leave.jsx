@@ -14,12 +14,14 @@ export default class Leave extends React.Component {
         this.state = {
             display: window.location.hash === "#old-leave" ? 1 : 0,
             leaveData: [],
+            pageUpdated: 0
         };
         this.showMessage = props.showMessage;
         this.loading = props.loading;
         this.name = props.name;
         this.sid = props.sid;
         this.userClass = props.userClass;
+        this.updateLock = false;
 
         window.addEventListener("hashchange", this.hashChange.bind(this));
     }
@@ -56,13 +58,37 @@ export default class Leave extends React.Component {
         this.loading(true);
         axios.get("/api/leave/sid/current").then(
             (response)=>{
+                const data = response.data.data;
                 this.setState({
-                    leaveData: response.data.data
+                    leaveData: data,
+                    pageUpdated: data.length < 10 ? -1 : 1
                 });
             }
         ).finally(
             () => {
                 this.loading(false);
+            }
+        )
+    }
+
+    updateLeaveData() {
+        if (this.state.pageUpdated === -1 || this.updateLock) {
+            return
+        }
+        this.updateLock = true;
+        axios.get(`/api/leave/sid/current?page=${this.state.pageUpdated}`).then(
+            (response)=>{
+                const data = response.data.data;
+                this.setState((state) => {
+                    return {
+                        leaveData: state.leaveData.concat(data),
+                        pageUpdated: data.length < 10 ? -1 : state.pageUpdated + 1
+                    }
+                })
+            }
+        ).finally(
+            () => {
+                this.updateLock = false;
             }
         )
     }
@@ -99,6 +125,8 @@ export default class Leave extends React.Component {
                     typeOptions={typeOptions}
                     lessonOptions={lessonOptions}
                     getLeaveData={this.getLeaveData.bind(this)}
+                    updateLeaveData={this.updateLeaveData.bind(this)}
+                    hasUpdate={this.state.pageUpdated !== -1}
                     data={this.state.leaveData}
                 />
             </div>

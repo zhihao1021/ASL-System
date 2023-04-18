@@ -3,6 +3,7 @@ import React from "react";
 
 import DetailBox from "../detail-box";
 import ResultBox from "../result-box";
+import LoadingBox from "../loading-box";
 
 import "../../css/old-leave/main.css"
 
@@ -27,6 +28,7 @@ export default class OldLeave extends React.Component {
         this.sid = props.sid;
         this.userClass = props.userClass;
         this.getLeaveData = props.getLeaveData;
+        this.updateLeaveData = props.updateLeaveData;
     }
 
     select(leave) {
@@ -49,6 +51,15 @@ export default class OldLeave extends React.Component {
                 displayData: displayData
             };
         })
+    }
+
+    scrollDown(event) {
+        const element = event.target;
+        if (element.scrollTop > element.scrollHeight - (element.clientHeight * 1.5)) {
+            if (this.props.hasUpdate) {
+                this.updateLeaveData();
+            }
+        }
     }
 
     delete() {
@@ -79,7 +90,9 @@ export default class OldLeave extends React.Component {
         const display = this.props.display;
         const typeOptions = this.props.typeOptions;
         const lessonOptions = this.props.lessonOptions;
-        const list = this.props.data.map((data, index) => {
+        const rawData = this.props.data;
+        // .slice(Math.max(0, rawData.length - 10))
+        const list = rawData.map((data, index) => {
             return (
                 <ResultBox
                     key={index}
@@ -106,12 +119,19 @@ export default class OldLeave extends React.Component {
                     <button onClick={this.reload}>重新整理</button>
                 </div>
                 <div className="content">
-                    <div className="results">
+                    <div className="results" onScroll={this.scrollDown.bind(this)}>
                         <div className={`icon ${list.length === 0 ? "display" : ""}`}>
                             <div className="ms">quick_reference_all</div>
                             <div>無紀錄</div>
                         </div>
                         {list}
+                        {
+                            this.props.hasUpdate ? (
+                                <div className="loading-update">
+                                    <LoadingBox />
+                                </div>
+                            ) : null
+                        }
                     </div>
                     <DetailBox
                         name={this.name}

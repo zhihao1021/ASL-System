@@ -209,19 +209,19 @@ async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None
     response_model=CustomResponse,
     description="Get the leave by sid(\"current\" to query current user's)."
 )
-async def get_leave_by_sid(sid: str, session: str = Cookie(None)):
+async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     sid = login_session.sid if sid == "current" else sid
     login_user = await curd_user.get_by_sid(login_session.sid)
-    leaves = await curd_leave.get_by_sid(sid)
+    leaves = await curd_leave.get_by_sid(sid, page)
     leave_user = await curd_user.get_by_sid(sid)
 
     if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
         if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
             status_code, response = response_403()
         else:
-            leaves.sort(key=lambda leave: datetime.fromisoformat(
-                leave.create_time), reverse=True)
+            # leaves.sort(key=lambda leave: datetime.fromisoformat(
+            #     leave.create_time), reverse=True)
 
             status_code = status.HTTP_200_OK
             response = CustomResponse(**{

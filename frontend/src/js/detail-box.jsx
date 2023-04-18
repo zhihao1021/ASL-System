@@ -2,7 +2,6 @@ import React from "react";
 
 import "../css/detail-box.css"
 
-
 function show_reject_reason(status) {
     return status > 1 && status & 0b0001
 }

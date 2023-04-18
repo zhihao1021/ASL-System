@@ -1,4 +1,4 @@
-.loading-box>div {
+.loading-page>div {
     display: flex;
     height: 100%;
     justify-content: center;
@@ -6,19 +6,19 @@
     user-select: none;
 }
 
-.loading-box {
+.loading-page {
     pointer-events: none;
     opacity: 0%;
     transition: opacity 0.3s;
     overflow: hidden;
 }
 
-.loading-box.display {
+.loading-page.display {
     pointer-events: initial;
     opacity: 100%;
 }
 
-.loading-box .ring-text {
+.loading-page .ring-text {
     position: fixed;
     width: 200px;
     font-size: 36px;
@@ -28,14 +28,14 @@
     font-family: "Caveat", cursive;
 }
 
-.loading-box .ring {
+.loading-page .ring {
     width: 256px;
     height: 256px;
     transform: rotateZ(-90deg);
     animation: ring_ani 3s ease infinite;
 }
 
-.loading-box .ring circle {
+.loading-page .ring circle {
     fill: none;
     stroke-width: 8px;
     stroke: #FFFFFF;
