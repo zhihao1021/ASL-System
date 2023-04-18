@@ -1,6 +1,10 @@
 #query .query-results .results {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
     position: relative;
     overflow-y: auto;
+    height: 100%;
 }
 
 #query .query-results .results .icon {
@@ -47,4 +51,22 @@
     }
 }
 
-@media (max-aspect-ratio: 1/1) {}
+@media (max-aspect-ratio: 1/1) {
+    #query .query-results .detail {
+        opacity: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: calc(100% - 2px);
+        width: calc(100% - 2px);
+        pointer-events: initial;
+        width: calc(100% - 2px);
+        background-color: #FFFFFF;
+        transition: opacity 0.5s;
+    }
+
+    #query .query-results .detail.empty {
+        opacity: 0%;
+        pointer-events: none;
+    }
+}

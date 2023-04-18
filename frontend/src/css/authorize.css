@@ -27,7 +27,7 @@
     user-select: none;
 }
 
-#authorize .results .result-box {
+#authorize .results .result-page {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -44,55 +44,55 @@
     transition: left 1s;
 }
 
-#authorize .results .result-box.finish {
+#authorize .results .result-page.finish {
     left: calc(-100% - 2px);
 }
 
-#authorize .results .result-box .title:first-of-type {
+#authorize .results .result-page .title:first-of-type {
     margin-top: 1vh;
 }
 
-#authorize .results .result-box .title {
+#authorize .results .result-page .title {
     margin: 0.2vh 1.2em;
 }
 
-#authorize .results .result-box ul {
+#authorize .results .result-page ul {
     margin: 0.2vh 1.2em;
     padding-left: 1.5em;
 }
 
-#authorize .results .result-box p {
+#authorize .results .result-page p {
     margin: 0.5em 0px;
     text-indent: -5em;
     padding-left: 4.7em;
 }
 
-#authorize .results .result-box .reason,
-#authorize .results .result-box .img-content {
+#authorize .results .result-page .reason,
+#authorize .results .result-page .img-content {
     margin: 0.3em 1em 0.3em 5.2vh;
     word-break: break-all;
     word-wrap: break-word;
 }
 
-#authorize .results .result-box .img-content img {
+#authorize .results .result-page .img-content img {
     max-width: 100%;
     object-fit: contain;
 }
 
-#authorize .results .result-box .operation {
+#authorize .results .result-page .operation {
     width: calc(100% - 4vh);
     margin: 1vh 2vh 2vh 2vh;
     font-size: 1.7vh;
 }
 
-#authorize .results .result-box .operation hr {
+#authorize .results .result-page .operation hr {
     height: 0px;
     border-width: 1px;
     border-style: solid;
     border-color: #AAAAAA;
 }
 
-#authorize .results .result-box .operation div {
+#authorize .results .result-page .operation div {
     position: relative;
     height: 0px;
     margin-top: 0px;
@@ -107,7 +107,7 @@
     transition: height 0.5s, color 0.5s, border-color 0.5s, margin-top 0.5s;
 }
 
-#authorize .results .result-box .operation div::before {
+#authorize .results .result-page .operation div::before {
     content: "拒絕原因(非必填)";
     position: absolute;
     top: 0px;
@@ -119,7 +119,7 @@
 }
 
 
-#authorize .results .result-box .operation div.rejecting {
+#authorize .results .result-page .operation div.rejecting {
     margin-top: 2.5vh;
     height: 5em;
     color: #AAAAAA;
@@ -128,21 +128,21 @@
     user-select: initial;
 }
 
-#authorize .results .result-box .operation div.rejecting::before {
+#authorize .results .result-page .operation div.rejecting::before {
     top: -2.2vh;
     color: #AAAAAA;
 }
 
-#authorize .results .result-box .operation div.rejecting:focus {
+#authorize .results .result-page .operation div.rejecting:focus {
     color: #000000;
     border-color: #000000;
 }
 
-#authorize .results .result-box .operation div.rejecting:focus::before {
+#authorize .results .result-page .operation div.rejecting:focus::before {
     color: #000000;
 }
 
-#authorize .results .result-box .operation button {
+#authorize .results .result-page .operation button {
     font-size: inherit;
     width: 100%;
     height: 3.5vh;
@@ -158,18 +158,18 @@
     transition: color 0.3s, border-color 0.3s;
 }
 
-#authorize .results .result-box .operation button.accept:hover {
+#authorize .results .result-page .operation button.accept:hover {
     color: #22BB66;
     border-color: #22BB66;
 }
 
-#authorize .results .result-box .operation button.skip:hover,
-#authorize .results .result-box .operation button.accept.rejecting:hover {
+#authorize .results .result-page .operation button.skip:hover,
+#authorize .results .result-page .operation button.accept.rejecting:hover {
     color: #000000;
     border-color: #000000;
 }
 
-#authorize .results .result-box .operation button.reject:hover {
+#authorize .results .result-page .operation button.reject:hover {
     color: #FF0000;
     border-color: #FF0000;
 }

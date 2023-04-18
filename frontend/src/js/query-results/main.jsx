@@ -9,15 +9,20 @@ export default class Results extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            select: undefined,
             displayData: undefined
         }
+        this.setQuerySelect = props.setQuerySelect;
     }
 
     componentDidUpdate(props) {
         if (props.display !== this.props.display) {
             this.setState({
-                select: undefined,
+                displayData: undefined
+            })
+            this.setQuerySelect(undefined);
+        }
+        if (props.querySelect !== undefined && this.props.querySelect === undefined) {
+            this.setState({
                 displayData: undefined
             })
         }
@@ -26,10 +31,11 @@ export default class Results extends React.Component {
     select(leave) {
         const typeOptions = this.props.typeOptions;
         const lessonOptions = this.props.lessonOptions;
+        const select = this.props.select;
         this.setState((state) => {
-            if (state.select === leave.id) {
+            if (select === leave.id) {
+                this.setQuerySelect(undefined);
                 return {
-                    select: undefined,
                     displayData: undefined
                 }
             }
@@ -38,8 +44,8 @@ export default class Results extends React.Component {
             displayData.end_lesson = lessonOptions[leave.end_lesson];
             displayData.type = typeOptions[leave.type];
 
+            this.setQuerySelect(leave.id);
             return {
-                select: leave.id,
                 displayData: displayData
             };
         })
@@ -49,6 +55,7 @@ export default class Results extends React.Component {
         const display = this.props.display;
         const typeOptions = this.props.typeOptions;
         const lessonOptions = this.props.lessonOptions;
+        const select = this.props.querySelect
         const list = this.props.data.map((data, index) => {
             return (
                 <ResultBox
@@ -62,7 +69,7 @@ export default class Results extends React.Component {
                     files={data.files}
                     type={typeOptions[data.type]}
                     status={data.status}
-                    select={this.state.select === data.id}
+                    select={select === data.id}
                     onClick={this.select.bind(this, data)}
                 />
             );

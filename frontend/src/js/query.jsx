@@ -14,7 +14,8 @@ export default class Query extends React.Component {
             display: 0,
             queryDisplay: 0,
             data: [],
-            userData: {}
+            userData: {},
+            querySelect: undefined
         };
         this.showMessage = props.showMessage;
         this.loading = props.loading;
@@ -30,6 +31,12 @@ export default class Query extends React.Component {
         this.setState({
             queryDisplay: i
         });
+    }
+
+    setQuerySelect(value) {
+        this.setState({
+            querySelect: value
+        })
     }
 
     getResult(sid, callback) {
@@ -68,6 +75,19 @@ export default class Query extends React.Component {
         }
     }
 
+    back() {
+        if (this.state.querySelect === undefined) {
+            this.setState({
+                display: 0,
+            })
+        }
+        else {
+            this.setState({
+                querySelect: undefined
+            })
+        }
+    }
+
     render() {
         const display = this.props.display;
         const lessonOptions = this.props.lessonOptions;
@@ -75,7 +95,7 @@ export default class Query extends React.Component {
         return (
             <div id="query" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="查詢">
-                    <button onClick={() => { this.setState({ display: 0 }) }}>
+                    <button onClick={this.back.bind(this)}>
                         <p className="ms">arrow_back</p>
                         <p>回上頁</p>
                     </button>
@@ -95,6 +115,8 @@ export default class Query extends React.Component {
                         userData={this.state.userData}
                         typeOptions={typeOptions}
                         lessonOptions={lessonOptions}
+                        querySelect={this.state.querySelect}
+                        setQuerySelect={this.setQuerySelect.bind(this)}
                     />
                 </div>
             </div>

@@ -62,7 +62,7 @@ export default class Authorize extends React.Component {
                                 })
                                 let list = dataList.map((data, index) => {
                                     return (
-                                        <ResultBox
+                                        <ResultPage
                                             key={index}
                                             showMessage={this.showMessage}
                                             loading={this.loading}
@@ -119,7 +119,7 @@ export default class Authorize extends React.Component {
     }
 }
 
-class ResultBox extends React.Component {
+class ResultPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -208,7 +208,7 @@ class ResultBox extends React.Component {
         const name = this.props.name;
         const className = this.props.className;
         return (
-            <div className={`result-box ${this.state.finish ? "finish" : ""}`}>
+            <div className={`result-page ${this.state.finish ? "finish" : ""}`}>
                 <div className="title">個人資料</div>
                 <ul>
                     <li>
