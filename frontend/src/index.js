@@ -261,6 +261,10 @@ function getData(index = 0) {
                         displayBlock[1] = false;
                         displayBlock[6] = false;
                     }
+
+                    if (role === 2) {
+                        displayBlock[4] = false;
+                    }
                     getData(index + 1);
                 }
             ).catch(

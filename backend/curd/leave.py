@@ -24,7 +24,8 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
             return []
         async with AsyncSession(ENGINE) as db_session:
             if page == -1:
-                query_stat = select(Leave).where(Leave.sid == sid).order_by(Leave.id)
+                query_stat = select(Leave).where(
+                    Leave.sid == sid).order_by(Leave.id)
             else:
                 query_stat = select(Leave).where(Leave.sid == sid).order_by(desc(Leave.create_time)).offset(
                     max(page * num, 0)).limit(max(num, 1))
@@ -34,12 +35,18 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
 
     async def get_by_status(
         self,
-        status: int
+        status: int,
+        ids: Optional[list[str]] = None,
+        limit: int = 10
     ) -> list[Leave]:
         if status == None:
             return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Leave).where(Leave.status == status)
+            query_stat = select(Leave).where(Leave.status == status).order_by(Leave.create_time)
+            if ids:
+                query_stat = query_stat.where(Leave.sid.in_(ids))
+            if limit != -1:
+                query_stat = query_stat.limit(max(limit, 1))
             result = await db_session.exec(query_stat)
 
             return result.all()

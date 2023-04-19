@@ -341,12 +341,11 @@ async def get_leave_by_status(status_: int, session: str = Cookie(None)):
             status_ = 0b0100
 
     if login_user.role >= permissions.TEACHER_ROLE:
-        leaves = await curd_leave.get_by_status(status_)
+        student_sids = None
         if login_user.role == permissions.TEACHER_ROLE:
             students = await curd_user.get_by_class_id(login_user.class_id)
             student_sids = tuple(map(lambda student: student.sid, students))
-            leaves = list(
-                filter(lambda leave: leave.sid in student_sids, leaves))
+        leaves = await curd_leave.get_by_status(status_, ids=student_sids)
         status_code = status.HTTP_200_OK
         response = CustomResponse(**{
             "status": status_code,

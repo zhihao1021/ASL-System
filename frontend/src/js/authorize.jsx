@@ -79,6 +79,8 @@ export default class Authorize extends React.Component {
                                             name={data.name}
                                             className={data.class_name}
                                             updateTime={Date.now()}
+                                            last={index === dataList.length - 1}
+                                            updateData={this.getData.bind(this)}
                                         />
                                     )
                                 });
@@ -130,6 +132,7 @@ class ResultPage extends React.Component {
         this.ref = React.createRef();
         this.showMessage = props.showMessage;
         this.loading = props.loading;
+        this.updateData = props.updateData;
     }
 
     componentDidUpdate(props) {
@@ -157,16 +160,19 @@ class ResultPage extends React.Component {
         this.loading(true);
         axios.put(`/api/authorize/accept/${this.props.id}`).then(
             () => {
-                this.setState({
-                    finish: true
-                });
+                if (this.props.last) {
+                    this.updateData();
+                }
+                else {
+                    this.setState({
+                        finish: true
+                    });
+                    this.loading(false);
+                }
             }
         ).catch(
             () => {
                 this.showMessage("執行失敗", "執行失敗，請嘗試重新整理頁面。", "error");
-            }
-        ).finally(
-            () => {
                 this.loading(false);
             }
         )
@@ -181,16 +187,19 @@ class ResultPage extends React.Component {
             data
         ).then(
             () => {
-                this.setState({
-                    finish: true
-                });
+                if (this.props.last) {
+                    this.updateData();
+                }
+                else {
+                    this.setState({
+                        finish: true
+                    });
+                    this.loading(false);
+                }
             }
         ).catch(
             () => {
                 this.showMessage("執行失敗", "執行失敗，請嘗試重新整理頁面。", "error");
-            }
-        ).finally(
-            () => {
                 this.loading(false);
             }
         )
