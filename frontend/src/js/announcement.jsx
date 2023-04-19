@@ -25,27 +25,28 @@ export default class Announcement extends React.Component {
 
     getAnnouncement() {
         axios.get("/api/announce")
-        .then(
-            (response) => {
-                let announcements = response.data.data.map(
-                    (string, index) => {
-                        return (<li key={index}>{string}</li>)
-                    }
-                );
-                this.setState({
-                    announcements: announcements
-                });
-            }
-        );
+            .then(
+                (response) => {
+                    let announcements = response.data.data.map(
+                        (string, index) => {
+                            return (<li key={index}>{string}</li>)
+                        }
+                    );
+                    this.setState({
+                        announcements: announcements
+                    });
+                }
+            );
     }
 
     render() {
         const display = this.props.display;
         return (
-            <div id="announcement" style={{"display": display ? "" : "none"}}>
+            <div id="announcement" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="公告">
                     <button onClick={this.getAnnouncement.bind(this)}>
-                        重新整理
+                        <p className="ms">refresh</p>
+                        <p>重新整理</p>
                     </button>
                 </TitleBar>
                 <hr />

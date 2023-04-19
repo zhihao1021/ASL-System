@@ -17,8 +17,11 @@
 }
 
 .title-bar button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 4vh;
-    width: 10vh;
+    width: 6.5em;
     line-height: 4vh;
     font-size: 1.8vh;
     border-radius: 6px;
@@ -30,6 +33,15 @@
     cursor: pointer;
     user-select: none;
     transition: color 0.3s, border-color 0.3s;
+}
+
+.title-bar button p {
+    height: 1em;
+    line-height: 1em;
+}
+.title-bar button p.ms,
+.title-bar button p.ms-o {
+    flex: 0;
 }
 
 .title-bar button:hover {

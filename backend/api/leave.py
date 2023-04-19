@@ -8,12 +8,14 @@ from utils import format_exception, LEAVE_TYPE, LESSON, permissions
 from asyncio import create_task, gather
 from datetime import date, datetime
 from imghdr import what
+from io import BytesIO
 from os import listdir, makedirs, remove, removedirs
 from os.path import isdir, join, splitext
 
 from aiofiles import open as aopen
 from fastapi import APIRouter, Cookie, File, Form, status, UploadFile
 from fastapi.responses import FileResponse, ORJSONResponse, Response
+from openpyxl import Workbook
 
 
 router = APIRouter()
@@ -232,6 +234,85 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
                     leaves
                 ))
             })
+    else:
+        status_code, response = response_403()
+
+    return ORJSONResponse(
+        response.dict(),
+        status_code,
+    )
+
+
+@router.get(
+    "/sid/{sid}/export",
+    description="Get the leave excel sheet by sid."
+)
+async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
+    login_session = await curd_session.get_by_session(session)
+    login_user = await curd_user.get_by_sid(login_session.sid)
+    leaves = await curd_leave.get_by_sid(sid, -1)
+    leave_user = await curd_user.get_by_sid(sid)
+
+    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
+        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
+            status_code, response = response_403()
+        else:
+            def export() -> BytesIO:
+                SORT_MAP = [
+                    "id",
+                    "create_time",
+                    "sid",
+                    "type",
+                    "status",
+                    "start_date",
+                    "start_lesson",
+                    "end_date",
+                    "end_lesson",
+                    "remark",
+                    "reject_reason",
+                    "files"
+                ]
+                STATUS_MAP = {
+                    0b0001: "送出",
+                    0b0010: "導師核准",
+                    0b0100: "教官核准",
+                    0b1000: "學務主任核准(完成)",
+                    0b10010: "導師拒絕",
+                    0b10100: "教官拒絕",
+                    0b11000: "學務主任拒絕",
+                }
+                wb = Workbook()
+                ws = wb.active
+                ws.append([
+                    "ID",
+                    "建立時間",
+                    "學號",
+                    "假別",
+                    "狀態",
+                    "開始日期",
+                    "開始節次",
+                    "結束日期",
+                    "結束節次",
+                    "備註",
+                    "拒絕原因",
+                ])
+                for leave in leaves:
+                    raw_data = leave.dict()
+                    raw_data["type"] = LEAVE_TYPE[raw_data["type"]]
+                    raw_data["status"] = STATUS_MAP[raw_data["status"]]
+                    raw_data["start_lesson"] = LESSON[raw_data["start_lesson"]]
+                    raw_data["end_lesson"] = LESSON[raw_data["end_lesson"]]
+                    data = list(raw_data.items())
+                    data.sort(key=lambda t: SORT_MAP.index(t[0]))
+                    values = tuple(map(lambda t: t[1], data[:-1]))
+                    ws.append(values)
+                io = BytesIO()
+                wb.save(io)
+                io.seek(0)
+
+                return io
+            
+            return Response(content=export().read(), headers={"Content-Disposition": "attachment; filename=export.xlsx"})
     else:
         status_code, response = response_403()
 

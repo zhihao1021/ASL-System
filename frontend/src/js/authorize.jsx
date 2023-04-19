@@ -103,7 +103,8 @@ export default class Authorize extends React.Component {
             <div id="authorize" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="審核">
                     <button onClick={this.getData.bind(this)}>
-                        重新整理
+                        <p className="ms">refresh</p>
+                        <p>重新整理</p>
                     </button>
                 </TitleBar>
                 <hr />

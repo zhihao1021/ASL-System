@@ -100,8 +100,14 @@ export default class Leave extends React.Component {
         return (
             <div id="leave" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="請假">
-                    <button onClick={this.setPage.bind(this, 0)}>新增請假</button>
-                    <button onClick={this.setPage.bind(this, 1)}>查看資料</button>
+                    <button onClick={this.setPage.bind(this, 0)}>
+                        <p className="ms-o">library_add</p>
+                        <p>新增請假</p>
+                    </button>
+                    <button onClick={this.setPage.bind(this, 1)}>
+                        <p className="ms">search</p>
+                        <p>查看資料</p>
+                    </button>
                 </TitleBar>
                 <hr />
                 <NewLeave

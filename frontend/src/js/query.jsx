@@ -126,6 +126,10 @@ export default class Query extends React.Component {
                         <p className="ms">arrow_back</p>
                         <p>回上頁</p>
                     </button>
+                    <button onClick={() => {window.open(`/api/leave/sid/${this.sid}/export`, "_blank").focus();}}>
+                        <p className="ms">ios_share</p>
+                        <p>匯出檔案</p>
+                    </button>
                 </TitleBar>
                 <hr />
                 <div className="content">

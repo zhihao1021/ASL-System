@@ -23,8 +23,11 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
         if sid == None:
             return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Leave).where(Leave.sid == sid).order_by(desc(Leave.create_time)).offset(
-                max(page * num, 0)).limit(max(num, 1))
+            if page == -1:
+                query_stat = select(Leave).where(Leave.sid == sid).order_by(Leave.id)
+            else:
+                query_stat = select(Leave).where(Leave.sid == sid).order_by(desc(Leave.create_time)).offset(
+                    max(page * num, 0)).limit(max(num, 1))
             result = await db_session.exec(query_stat)
 
             return result.all()
