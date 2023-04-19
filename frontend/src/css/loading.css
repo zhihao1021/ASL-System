@@ -1,16 +1,11 @@
-.loading-page>div {
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-}
-
 .loading-page {
     pointer-events: none;
     opacity: 0%;
     transition: opacity 0.3s;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .loading-page.display {
@@ -18,63 +13,21 @@
     opacity: 100%;
 }
 
-.loading-page .ring-text {
-    position: fixed;
-    width: 200px;
-    font-size: 36px;
-    text-align: center;
+.loading-page .loading-box {
+    height: 50vmin;
+    width: 50vmin;
+    font-size: 5vmin;
+}
+.loading-page .loading-box>p {
     color: #FFFFFF;
-    animation: trans 3s linear infinite;
-    font-family: "Caveat", cursive;
+    animation: trans 3s infinite;
 }
-
-.loading-page .ring {
-    width: 256px;
-    height: 256px;
-    transform: rotateZ(-90deg);
-    animation: ring_ani 3s ease infinite;
-}
-
-.loading-page .ring circle {
-    fill: none;
-    stroke-width: 8px;
-    stroke: #FFFFFF;
-    stroke-linecap: round;
-    stroke-dasharray: 753;
-    stroke-dashoffset: 853;
-    animation: ring_c_ani 3s ease infinite;
-}
-
-@keyframes ring_ani {
-    0% {
-        transform: rotateZ(-90deg);
-    }
-
-    50% {
-        transform: rotateZ(-270deg);
-    }
-
-    100% {
-        transform: rotateZ(-450deg);
-    }
-}
-
-@keyframes ring_c_ani {
-    0% {
-        stroke-dashoffset: 753;
-    }
-
-    50% {
-        stroke-dashoffset: 1506;
-    }
-
-    100% {
-        stroke-dashoffset: 2259;
-    }
+.loading-page .loading-box>div {
+    background-color: #FFFFFF;
 }
 
 @keyframes trans {
     50% {
-        color: transparent;
+        color: #FFFFFF30;
     }
 }

@@ -171,7 +171,7 @@ class MainContent extends React.Component {
                     level={this.state.messageLevel}
                     display={this.state.messageDisplay}
                 />
-                <Loading scale={0.5} display={this.state.loading} title="Loading..." />
+                <Loading display={this.state.loading}/>
                 <div id="content" onClick={this.closeMenu.bind(this)}>
                     <LoginHistory
                         loading={this.setLoading.bind(this)}
