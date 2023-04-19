@@ -130,6 +130,7 @@ if __name__ == "__main__":
         "filename": log_file,
     }
     logging_config["loggers"]["uvicorn"]["handlers"].append("file")
+    logging_config["loggers"]["uvicorn.access"]["handlers"].append("file")
 
     server_config = Config(
         app=app,
