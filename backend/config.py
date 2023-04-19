@@ -59,4 +59,7 @@ ENGINE = create_async_engine(
 )
 
 TIMEZONE = timezone(timedelta(hours=config.get("timezone", 8)))
-def NOWTIME(): return datetime.now(TIMEZONE)
+
+
+def NOWTIME() -> datetime:
+    return datetime.now(TIMEZONE)

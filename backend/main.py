@@ -1,15 +1,17 @@
 from aiosqlmodel import AsyncSession
 from api import api_router
-from config import WEB_CONFIG
-from config import ENGINE
+from config import ENGINE, NOWTIME, WEB_CONFIG
 
 from asyncio import all_tasks, new_event_loop, run
-from os import getenv, getpid
+from copy import deepcopy
+from os import getenv, getpid, makedirs
+from os.path import isdir, isfile
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 from uvicorn import Config, Server
+from uvicorn.config import LOGGING_CONFIG
 
 load_dotenv(".env")
 DEBUG = getenv("DEBUG", False)
@@ -111,10 +113,29 @@ if __name__ == "__main__":
 
     app = FastAPI()
     app.mount("/api", api_router)
+
+    if not isdir("logs"):
+        makedirs("logs")
+
+    log_file = f"logs/uvicorn-{NOWTIME().isoformat().replace(':', '_')[:-6]}.log"
+    logging_config = deepcopy(LOGGING_CONFIG)
+    logging_config["formatters"]["file"] = {
+        "()": "uvicorn.logging.DefaultFormatter",
+        "fmt": "%(levelprefix)s %(message)s",
+        "use_colors": False,
+    }
+    logging_config["handlers"]["file"] = {
+        "class": "logging.FileHandler",
+        "formatter": "file",
+        "filename": log_file,
+    }
+    logging_config["loggers"]["uvicorn"]["handlers"].append("file")
+
     server_config = Config(
         app=app,
         host=WEB_CONFIG.host,
         port=WEB_CONFIG.port,
+        log_config=logging_config
     )
     server = Server(server_config)
 
