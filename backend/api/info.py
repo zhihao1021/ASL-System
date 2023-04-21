@@ -2,16 +2,13 @@ from .responses import response_403, response_404
 
 from config import NOWTIME
 from curd import CURDSession, CURDUser
-from models import CustomResponse, Session
+from models import CustomResponse, Role, Session, User
 from utils import permissions
 
 from datetime import datetime
-from imghdr import what
-from os.path import isfile
 
-from aiofiles import open as aopen
 from fastapi import APIRouter, status, Cookie
-from fastapi.responses import FileResponse, ORJSONResponse
+from fastapi.responses import ORJSONResponse
 
 
 router = APIRouter()
@@ -27,73 +24,44 @@ curd_user = CURDUser()
     description="Get the data of user whose sid equal to the given sid(\"current\" to query current user's)."
 )
 async def get_user(sid: str, session: str = Cookie(None)):
+    # 取得使用者身份
     login_session = await curd_session.get_by_session(session)
     headers = {
         "cache-control": "max-age=0" if sid == "current" else "max-age=600"
     }
-    sid = login_session.sid if sid == "current" else sid
-    login_user = await curd_user.get_by_sid(login_session.sid)
 
-    if login_user.sid == sid or login_user.role >= permissions.TEACHER_ROLE:
-        user = login_user if login_user.sid == sid else await curd_user.get_by_sid(sid)
-        if user is None:
-            status_code, response = response_404("User")
-        else:
-            if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != user.class_id:
-                status_code, response = response_403()
-            else:
+    user = User.parse_obj(login_session.user_data)
+    if sid == "current" or sid == user.sid:
+        status_code = status.HTTP_200_OK
+        response = CustomResponse(**{
+            "status": status_code,
+            "success": True,
+            "data": user.dict()
+        })
+    else:
+        # 驗證權限
+        role = Role.parse_obj(login_session.role_data)
+        target_user = await curd_user.get_by_sid(sid)
+
+        if target_user:
+            has_permission = role.permissions & permissions.READ_ALL_STUDENT_DATA
+            class_code_eq = user.class_code == target_user.class_code and role.permissions & permissions.READ_SELF_STUDENT_DATA
+            if has_permission or class_code_eq:
                 status_code = status.HTTP_200_OK
                 response = CustomResponse(**{
                     "status": status_code,
                     "success": True,
-                    "data": user.dict()
+                    "data": target_user.dict()
                 })
-    else:
-        status_code, response = response_403()
+            else:
+                status_code, response = response_403()
+        else:
+            status_code, response = response_404("User")
 
     return ORJSONResponse(
         response.dict(),
         status_code,
         headers=headers
-    )
-
-
-@router.get(
-    "/user/{sid}/icon",
-    response_class=ORJSONResponse,
-    response_model=CustomResponse,
-    description="Get the icon of user whose sid equal to the given sid(\"current\" to query current user's)."
-)
-async def get_user_icon(sid: str, session: str = Cookie(None)):
-    login_session = await curd_session.get_by_session(session)
-    sid = login_session.sid if sid == "current" else sid
-    login_user = await curd_user.get_by_sid(login_session.sid)
-
-    if login_user.sid == sid or login_user.role >= permissions.TEACHER_ROLE:
-        user = login_user if login_user.sid == sid else await curd_user.get_by_sid(sid)
-        if user is None:
-            status_code, response = response_404("User")
-        else:
-            if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != user.class_id:
-                status_code, response = response_403()
-            else:
-                file_path = f"saves/user/{sid}/icon"
-                if isfile(file_path):
-                    async with aopen(file_path, mode="rb") as img_file:
-                        img_content = await img_file.read(32)
-                    img_type = what(None, img_content) or "jpeg"
-                    response = FileResponse(
-                        file_path, media_type=f"image/{img_type}")
-                else:
-                    response = FileResponse(
-                        "default_files/user_icon.png", media_type="image/png")
-                return response
-    else:
-        status_code, response = response_403()
-
-    return ORJSONResponse(
-        response.dict(),
-        status_code,
     )
 
 

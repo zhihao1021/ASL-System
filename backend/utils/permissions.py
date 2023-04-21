@@ -1,15 +1,20 @@
-ADMIN_ROLE =   0b100000 # 管理員
-AA_ROLE =      0b010000 # 學務主任
-AUX_ROLE =     0b001000 # 生輔組
-GS_ROLE =      0b000100 # 總務處
-TEACHER_ROLE = 0b000010 # 老師
-STUDENT_ROLE = 0b000001 # 學生
-NULL_ROLE =    0b000000 # Null
+EDIT_ANNOUNCEMENT      = 1 << 0
 
-TEACHER_ACCEPT = 0b0010
-AUX_ACCEPT = 0b0100
-AA_ACCEPT = 0b1000
+READ_CLASS_LIST        = 1 << 1
 
-TEACHER_REJECT = 0b10010
-AUX_REJECT = 0b10100
-AA_REJECT = 0b11000
+READ_ALL_CLASS_DATA    = 1 << 2
+
+READ_SELF_STUDENT_LIST = 1 << 3
+READ_ALL_STUDENT_LIST  = 1 << 4
+
+READ_SELF_STUDENT_DATA = 1 << 5
+READ_ALL_STUDENT_DATA  = 1 << 6
+
+READ_SELF_LEAVE_DATA   = 1 << 7
+READ_ALL_LEAVE_DATA    = 1 << 8
+
+def combine_permissions(*args):
+    result = 0
+    for i in args:
+        result |= i
+    return result

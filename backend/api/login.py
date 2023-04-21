@@ -1,6 +1,6 @@
 from .responses import response_400, response_403, response_404
 
-from curd import CURDSession, CURDUser
+from curd import CURDRole, CURDSession, CURDUser
 from models import CustomResponse
 from schemas import SessionCreate
 from swap import VALID_CODE_DICT
@@ -20,6 +20,7 @@ class LoginData(BaseModel):
 
 router = APIRouter()
 
+curd_role = CURDRole()
 curd_session = CURDSession()
 curd_user = CURDUser()
 
@@ -40,13 +41,21 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
     elif data.password != user.password:
         status_code, response = response_403("Wrong Password!")
     else:
-        if await curd_session.get_by_session(session) is None:
+        session_obj = await curd_session.get_by_session(session)
+        if session_obj is None:
             session_obj = SessionCreate(**{
                 "session": session,
                 "sid": user.sid,
                 "ip": request.client.host or "localhost"
             })
-            await curd_session.create(session_obj)
+            session_obj = await curd_session.create(session_obj)
+        
+        role = await curd_role.get_by_role_code(user.role)
+        
+        await curd_session.update(session_obj, {
+            "user_data": user.dict(),
+            "role_data": role.dict(),
+        })
 
         status_code = status.HTTP_200_OK
         response = CustomResponse(**{

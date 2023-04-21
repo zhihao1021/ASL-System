@@ -4,23 +4,25 @@ from config import NOWTIME
 
 from datetime import date, datetime
 
-from pydantic import validator
 from sqlmodel import Column, Field as SQLField, String
 
 
 class LeaveBase(IDBase):
     sid: str = SQLField(
-        nullable=False, foreign_key="UserData.sid", description="學號")
-    type: int = SQLField(
-        nullable=False, description="假別")
+        nullable=False, description="學號", foreign_key="UserData.sid")
+    type: int = SQLField(nullable=False, description="假別",
+                         foreign_key="LeaveType.leave_code")
     start_date: date = SQLField(
         nullable=False, sa_column=Column(String()), description="起始日期")
     end_date: date = SQLField(
         nullable=False, sa_column=Column(String()), description="結束日期")
-    start_lesson: int = SQLField(nullable=False, description="開始節次")
-    end_lesson: int = SQLField(nullable=False, description="結束節次")
+    start_lesson: int = SQLField(
+        nullable=False, description="開始節次", foreign_key="Lesson.lesson_code")
+    end_lesson: int = SQLField(
+        nullable=False, description="結束節次", foreign_key="Lesson.lesson_code")
     remark: str = SQLField("", nullable=False, description="備註")
-    status: int = SQLField(0b0001, nullable=False, description="狀態")
+    status: int = SQLField(nullable=False, description="狀態",
+                           foreign_key="Status.status_code")
     files: int = SQLField(0, ge=0, nullable=False, description="檔案數量")
     reject_reason: str = SQLField("", nullable=True, description="拒絕原因")
 # 0001 送出

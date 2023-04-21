@@ -16,9 +16,9 @@ class CURDUser(CURDBase[User, UserCreate, UserUpdate]):
 
     async def get_by_account(
         self,
-        account: str,
+        account: str = None,
     ) -> Optional[User]:
-        if account == None:
+        if account is None:
             return None
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(User).where(User.account == account)
@@ -28,9 +28,9 @@ class CURDUser(CURDBase[User, UserCreate, UserUpdate]):
 
     async def get_by_sid(
         self,
-        sid: str,
+        sid: str = None,
     ) -> Optional[User]:
-        if sid == None:
+        if sid is None:
             return None
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(User).where(User.sid == sid)
@@ -38,14 +38,17 @@ class CURDUser(CURDBase[User, UserCreate, UserUpdate]):
 
             return result.first()
     
-    async def get_by_class_id(
+    async def get_by_class_code(
         self,
-        class_id: int,
+        class_code: int = None,
+        role: Optional[int] = None
     ) -> list[User]:
-        if class_id == None:
+        if class_code is None:
             return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(User).where(User.class_id == class_id)
+            query_stat = select(User).where(User.class_code == class_code)
+            if role:
+                query_stat = query_stat.where(User.role == role)
             result = await db_session.exec(query_stat)
 
             return result.all()

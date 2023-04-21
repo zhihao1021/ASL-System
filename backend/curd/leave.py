@@ -16,11 +16,11 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
 
     async def get_by_sid(
         self,
-        sid: str,
+        sid: str = None,
         page: int = 0,
         num: int = 10
     ) -> list[Leave]:
-        if sid == None:
+        if sid is None:
             return []
         async with AsyncSession(ENGINE) as db_session:
             if page == -1:
@@ -35,11 +35,11 @@ class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
 
     async def get_by_status(
         self,
-        status: int,
+        status: int = None,
         ids: Optional[list[str]] = None,
         limit: int = 10
     ) -> list[Leave]:
-        if status == None:
+        if status is None:
             return []
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(Leave).where(Leave.status == status).order_by(Leave.create_time)

@@ -16,9 +16,9 @@ class CURDSession(CURDBase[Session, SessionCreate, SessionUpdate]):
 
     async def get_by_session(
         self,
-        session: str,
+        session: str = None,
     ) -> Optional[Session]:
-        if session == None:
+        if session is None:
             return None
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(Session).where(Session.session == session)
@@ -28,8 +28,10 @@ class CURDSession(CURDBase[Session, SessionCreate, SessionUpdate]):
     
     async def get_by_sid(
         self,
-        sid: str,
+        sid: str = None,
     ) -> Optional[list[Session]]:
+        if sid is None:
+            return None
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(Session).where(Session.sid == sid)
             result = await db_session.exec(query_stat)

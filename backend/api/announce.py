@@ -1,5 +1,7 @@
-from curd import CURDSession, CURDUser
-from models import CustomResponse
+from .responses import response_403
+
+from curd import CURDSession
+from models import CustomResponse, Role
 from typing import Optional
 from utils import permissions
 
@@ -13,7 +15,6 @@ from fastapi.responses import ORJSONResponse
 router = APIRouter()
 
 curd_session = CURDSession()
-curd_user = CURDUser()
 
 
 @router.get(
@@ -22,24 +23,30 @@ curd_user = CURDUser()
     response_model=CustomResponse,
     description="Get the announncements."
 )
-async def get_announcement(raw: bool=False):
+async def get_announcement(raw: bool = False):
+    # 檢查公告文件是否存在
     if isfile("announcements.txt"):
+        # 讀取公告
         async with aopen("announcements.txt") as ann_file:
             raw_results = await ann_file.read()
-            if raw:
-                results = raw_results
-            else:
-                results = raw_results.strip().split("\n")
-                results = list(map(lambda s: s.strip(), results))
+            results = raw_results if raw else list(
+                map(lambda s: s.strip(), raw_results.strip().split("\n")))
     else:
+        # 回傳空字串
         results = "" if raw else []
+
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
         "data": results
     })
-    return response
+
+    return ORJSONResponse(
+        response.dict(),
+        status_code,
+    )
+
 
 @router.put(
     "/",
@@ -48,12 +55,19 @@ async def get_announcement(raw: bool=False):
     description="Update the announncements."
 )
 async def update_announcement(context: str = Form(None), session: Optional[str] = Cookie(None)):
+    # 取得使用者身份
     login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
-    if login_user.role >= permissions.GS_ROLE:
+
+    # 檢查權限
+    role = Role.parse_obj(login_session.role_data)
+    if role.permissions & permissions.EDIT_ANNOUNCEMENT:
+        # 修飾內容
         context = context.replace("\r\n", "\n").strip()
+
+        # 寫入公告
         async with aopen("announcements.txt", mode="w") as ann_file:
             await ann_file.write(context)
+
         status_code = status.HTTP_200_OK
         response = CustomResponse(**{
             "status": status_code,
@@ -61,13 +75,9 @@ async def update_announcement(context: str = Form(None), session: Optional[str] 
             "data": context
         })
     else:
-        status_code = status.HTTP_403_FORBIDDEN
-        response = CustomResponse(**{
-            "status": status_code,
-            "success": False,
-            "data": ""
-        })
-    
+        # 權限不符
+        status_code, response = response_403()
+
     return ORJSONResponse(
         response.dict(),
         status_code,
