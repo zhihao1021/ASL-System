@@ -6,6 +6,8 @@ import OldLeave from "./old-leave/main";
 
 import TitleBar from "./title-bar";
 
+import { setLoading } from "../utils";
+
 import "../css/leave.css";
 
 export default class Leave extends React.Component {
@@ -16,14 +18,19 @@ export default class Leave extends React.Component {
             leaveData: [],
             pageUpdated: 0
         };
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
-        this.name = props.name;
-        this.sid = props.sid;
-        this.userClass = props.userClass;
         this.updateLock = false;
 
-        window.addEventListener("hashchange", this.hashChange.bind(this));
+        this.getLeaveData = this.getLeaveData.bind(this);
+        this.updateLeaveData = this.updateLeaveData.bind(this);
+
+        window.addEventListener("hashchange", () => {
+            const hash = window.location.hash;
+            if (hash === "#new-leave" || hash === "#old-leave") {
+                this.setState({
+                    display: window.location.hash === "#old-leave" ? 1 : 0,
+                });
+            }
+        });
     }
 
     componentDidMount() {
@@ -34,16 +41,8 @@ export default class Leave extends React.Component {
         if (this.props.display) {
             if (window.location.hash !== "#new-leave" && window.location.hash !== "#old-leave") {
                 window.location.hash = this.state.display === 0 ? "new-leave" : "old-leave";
+                this.getLeaveData();
             }
-        }
-    }
-
-    hashChange() {
-        const hash = window.location.hash;
-        if (hash === "#new-leave" || hash === "#old-leave") {
-            this.setState({
-                display: window.location.hash === "#old-leave" ? 1 : 0,
-            });
         }
     }
 
@@ -55,9 +54,9 @@ export default class Leave extends React.Component {
     }
 
     getLeaveData() {
-        this.loading(true);
+        setLoading(true);
         axios.get("/api/leave/sid/current").then(
-            (response)=>{
+            (response) => {
                 const data = response.data.data;
                 this.setState({
                     leaveData: data,
@@ -66,37 +65,35 @@ export default class Leave extends React.Component {
             }
         ).finally(
             () => {
-                this.loading(false);
+                setLoading(false);
             }
         )
     }
 
     updateLeaveData() {
         if (this.state.pageUpdated === -1 || this.updateLock) {
-            return
+            return;
         }
         this.updateLock = true;
         axios.get(`/api/leave/sid/current?page=${this.state.pageUpdated}`).then(
-            (response)=>{
+            (response) => {
                 const data = response.data.data;
                 this.setState((state) => {
                     return {
                         leaveData: state.leaveData.concat(data),
                         pageUpdated: data.length < 10 ? -1 : state.pageUpdated + 1
                     }
-                })
+                });
             }
         ).finally(
             () => {
                 this.updateLock = false;
             }
-        )
+        );
     }
 
     render() {
         const display = this.props.display;
-        const lessonOptions = this.props.lessonOptions;
-        const typeOptions = this.props.typeOptions;
         return (
             <div id="leave" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="請假">
@@ -111,27 +108,13 @@ export default class Leave extends React.Component {
                 </TitleBar>
                 <hr />
                 <NewLeave
-                    showMessage={this.showMessage}
-                    loading={this.loading}
-                    name={this.name}
-                    sid={this.sid}
-                    userClass={this.userClass}
                     display={this.state.display === 0}
-                    typeOptions={typeOptions}
-                    lessonOptions={lessonOptions}
-                    getLeaveData={this.getLeaveData.bind(this)}
+                    getLeaveData={this.getLeaveData}
                 />
                 <OldLeave
-                    showMessage={this.showMessage}
-                    loading={this.loading}
-                    name={this.name}
-                    sid={this.sid}
-                    userClass={this.userClass}
                     display={this.state.display === 1}
-                    typeOptions={typeOptions}
-                    lessonOptions={lessonOptions}
-                    getLeaveData={this.getLeaveData.bind(this)}
-                    updateLeaveData={this.updateLeaveData.bind(this)}
+                    getLeaveData={this.getLeaveData}
+                    updateLeaveData={this.updateLeaveData}
                     hasUpdate={this.state.pageUpdated !== -1}
                     data={this.state.leaveData}
                 />

@@ -11,6 +11,8 @@ export default class Announcement extends React.Component {
         this.state = {
             announcements: [],
         };
+
+        this.getAnnouncement = this.getAnnouncement.bind(this);
     }
 
     componentDidMount() {
@@ -20,23 +22,20 @@ export default class Announcement extends React.Component {
     componentDidUpdate(props) {
         if (!props.display && this.props.display) {
             window.location.hash = "announcement";
+            this.getAnnouncement();
         }
     }
 
     getAnnouncement() {
-        axios.get("/api/announce")
-            .then(
-                (response) => {
-                    let announcements = response.data.data.map(
-                        (string, index) => {
-                            return (<li key={index}>{string}</li>)
-                        }
-                    );
-                    this.setState({
-                        announcements: announcements
-                    });
-                }
-            );
+        axios.get("/api/announce").then(
+            (response) => {
+                this.setState({
+                    announcements: response.data.data.map(
+                        (string, index) => <li key={index}>{string}</li>
+                    )
+                });
+            }
+        );
     }
 
     render() {
@@ -44,7 +43,7 @@ export default class Announcement extends React.Component {
         return (
             <div id="announcement" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="公告">
-                    <button onClick={this.getAnnouncement.bind(this)}>
+                    <button onClick={this.getAnnouncement}>
                         <p className="ms">refresh</p>
                         <p>重新整理</p>
                     </button>

@@ -21,7 +21,7 @@ class LeaveBase(IDBase):
     end_lesson: int = SQLField(
         nullable=False, description="結束節次", foreign_key="Lesson.lesson_code")
     remark: str = SQLField("", nullable=False, description="備註")
-    status: int = SQLField(nullable=False, description="狀態",
+    status: int = SQLField(0, nullable=False, description="狀態",
                            foreign_key="Status.status_code")
     files: int = SQLField(0, ge=0, nullable=False, description="檔案數量")
     reject_reason: str = SQLField("", nullable=True, description="拒絕原因")
@@ -35,3 +35,9 @@ class Leave(LeaveBase, table=True):
     __tablename__ = "LeaveData"
     create_time: datetime = SQLField(
         default_factory=NOWTIME, nullable=False, sa_column=Column(String()), description="新增時間")
+
+    def late_time(self) -> int:
+        c_date = datetime.fromisoformat(self.create_time).date()
+        l_date = date.fromisoformat(self.start_date)
+
+        return (c_date - l_date).days

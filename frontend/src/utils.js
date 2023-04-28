@@ -11,7 +11,14 @@ const hashMap = {
     "management": 8,
 }
 
+export var setLoading, showMessage;
+
 export function getHashIndex() {
     const hash = window.location.hash.slice(1);
     return hashMap[hash] || 0;
+}
+
+export function functionInit(fnLoading, fnMessage) {
+    setLoading = fnLoading;
+    showMessage = fnMessage;
 }

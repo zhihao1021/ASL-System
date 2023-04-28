@@ -1,12 +1,12 @@
 from .responses import response_400, response_403, response_404
 
-from curd import CURDLeave, CURDSession, CURDUser
-from models import CustomResponse
+from curd import CURDLeave, CURDLeaveType, CURDLesson, CURDSession, CURDStatus, CURDUser
+from models import CustomResponse, User, Role
 from schemas import LeaveCreate
-from utils import format_exception, LEAVE_TYPE, LESSON, permissions
+from utils import format_exception, permissions
 
 from asyncio import create_task, gather
-from datetime import date, datetime
+from datetime import date
 from imghdr import what
 from io import BytesIO
 from os import listdir, makedirs, remove, removedirs
@@ -23,6 +23,11 @@ router = APIRouter()
 curd_leave = CURDLeave()
 curd_session = CURDSession()
 curd_user = CURDUser()
+
+
+curd_leave_type = CURDLeaveType()
+curd_lesson = CURDLesson()
+curd_status = CURDStatus()
 
 
 @router.post(
@@ -50,7 +55,7 @@ async def add_leave(
 
     try:
         files = list(filter(lambda file: file.size <=
-                     10000000 and file.content_type.startswith("image/"), files or []))
+                     1E7 and file.content_type.startswith("image/"), files or []))
 
         start_date = date.fromisoformat(start_date)
         end_date = date.fromisoformat(end_date)
@@ -106,23 +111,34 @@ async def add_leave(
     description="Get the leave by id."
 )
 async def get_leave_by_id(leave_id: int, session: str = Cookie(None)):
+    # 取得使用者身份
     login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
-    leave = await curd_leave.get(leave_id)
-    leave_user = await curd_user.get_by_sid(leave.sid)
+    user = User.parse_obj(login_session.user_data)
 
-    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
-        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
-            status_code, response = response_403()
-        else:
+    leave = await curd_leave.get(leave_id)
+
+    if leave:
+        # 驗證權限
+        role = Role.parse_obj(login_session.role_data)
+        self_data = user.sid == leave.sid
+        has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
+
+        class_code_eq = False
+        if not (self_data or has_permission):
+            leave_user = await curd_user.get_by_sid(leave.sid)
+            class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
+
+        if self_data or has_permission or class_code_eq:
             status_code = status.HTTP_200_OK
             response = CustomResponse(**{
                 "status": status_code,
                 "success": True,
                 "data": leave.dict()
             })
+        else:
+            status_code, response = response_403()
     else:
-        status_code, response = response_403()
+        status_code, response = response_404("Leave Data")
 
     return ORJSONResponse(
         response.dict(),
@@ -140,7 +156,7 @@ async def delete_leave(leave_id: int, session: str = Cookie(None)):
     login_session = await curd_session.get_by_session(session)
     leave = await curd_leave.get(leave_id)
 
-    if leave.status == 0b1000:
+    if leave.status == 8:
         status_code, response = response_400("Finished Data Can't Delete.")
     elif leave is None:
         status_code, response = response_404("Data")
@@ -176,15 +192,24 @@ async def delete_leave(leave_id: int, session: str = Cookie(None)):
     description="Get the leave file by id."
 )
 async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None)):
+    # 取得使用者身份
     login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
-    leave = await curd_leave.get(leave_id)
-    leave_user = await curd_user.get_by_sid(leave.sid)
+    user = User.parse_obj(login_session.user_data)
 
-    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
-        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
-            status_code, response = response_403()
-        else:
+    leave = await curd_leave.get(leave_id)
+
+    if leave:
+        # 驗證權限
+        role = Role.parse_obj(login_session.role_data)
+        self_data = user.sid == leave.sid
+        has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
+
+        class_code_eq = False
+        if not (self_data or has_permission):
+            leave_user = await curd_user.get_by_sid(leave.sid)
+            class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
+
+        if self_data or has_permission or class_code_eq:
             dir_path = f"saves/leave/{leave.id}"
             files = listdir(dir_path)
             try:
@@ -195,8 +220,10 @@ async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None
                 return FileResponse(file_path, media_type=f"image/{img_type}")
             except IndexError:
                 status_code, response = response_404("File")
+        else:
+            status_code, response = response_403()
     else:
-        status_code, response = response_403()
+        status_code, response = response_404("Leave Data")
 
     return ORJSONResponse(
         response.dict(),
@@ -212,140 +239,24 @@ async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None
     description="Get the leave by sid(\"current\" to query current user's)."
 )
 async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None)):
+    # 取得使用者身份
     login_session = await curd_session.get_by_session(session)
+    user = User.parse_obj(login_session.user_data)
+
     sid = login_session.sid if sid == "current" else sid
-    login_user = await curd_user.get_by_sid(login_session.sid)
-    leaves = await curd_leave.get_by_sid(sid, page)
-    leave_user = await curd_user.get_by_sid(sid)
+    leaves = await curd_leave.get_by_sid(sid)
 
-    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
-        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
-            status_code, response = response_403()
-        else:
-            # leaves.sort(key=lambda leave: datetime.fromisoformat(
-            #     leave.create_time), reverse=True)
+    # 驗證權限
+    role = Role.parse_obj(login_session.role_data)
+    self_data = user.sid == sid
+    has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
 
-            status_code = status.HTTP_200_OK
-            response = CustomResponse(**{
-                "status": status_code,
-                "success": True,
-                "data": list(map(
-                    lambda data: data.dict(),
-                    leaves
-                ))
-            })
-    else:
-        status_code, response = response_403()
+    class_code_eq = False
+    if not (self_data or has_permission) and leaves:
+        leave_user = await curd_user.get_by_sid(leaves[0].sid)
+        class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
-    return ORJSONResponse(
-        response.dict(),
-        status_code,
-    )
-
-
-@router.get(
-    "/sid/{sid}/export",
-    description="Get the leave excel sheet by sid."
-)
-async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
-    login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
-    leaves = await curd_leave.get_by_sid(sid, -1)
-    leave_user = await curd_user.get_by_sid(sid)
-
-    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
-        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
-            status_code, response = response_403()
-        else:
-            def export() -> BytesIO:
-                SORT_MAP = [
-                    "id",
-                    "create_time",
-                    "sid",
-                    "type",
-                    "status",
-                    "start_date",
-                    "start_lesson",
-                    "end_date",
-                    "end_lesson",
-                    "remark",
-                    "reject_reason",
-                    "files"
-                ]
-                STATUS_MAP = {
-                    0b0001: "送出",
-                    0b0010: "導師核准",
-                    0b0100: "教官核准",
-                    0b1000: "學務主任核准(完成)",
-                    0b10010: "導師拒絕",
-                    0b10100: "教官拒絕",
-                    0b11000: "學務主任拒絕",
-                }
-                wb = Workbook()
-                ws = wb.active
-                ws.append([
-                    "ID",
-                    "建立時間",
-                    "學號",
-                    "假別",
-                    "狀態",
-                    "開始日期",
-                    "開始節次",
-                    "結束日期",
-                    "結束節次",
-                    "備註",
-                    "拒絕原因",
-                ])
-                for leave in leaves:
-                    raw_data = leave.dict()
-                    raw_data["type"] = LEAVE_TYPE[raw_data["type"]]
-                    raw_data["status"] = STATUS_MAP[raw_data["status"]]
-                    raw_data["start_lesson"] = LESSON[raw_data["start_lesson"]]
-                    raw_data["end_lesson"] = LESSON[raw_data["end_lesson"]]
-                    data = list(raw_data.items())
-                    data.sort(key=lambda t: SORT_MAP.index(t[0]))
-                    values = tuple(map(lambda t: t[1], data[:-1]))
-                    ws.append(values)
-                io = BytesIO()
-                wb.save(io)
-                io.seek(0)
-
-                return io
-            
-            return Response(content=export().read(), headers={"Content-Disposition": "attachment; filename=export.xlsx"})
-    else:
-        status_code, response = response_403()
-
-    return ORJSONResponse(
-        response.dict(),
-        status_code,
-    )
-
-
-@router.get(
-    "/status/{status_}",
-    response_class=ORJSONResponse,
-    response_model=CustomResponse,
-    description="Get the leave by status(for authorize)."
-)
-async def get_leave_by_status(status_: int, session: str = Cookie(None)):
-    login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
-
-    if status_ == 0:
-        if login_user.role == permissions.TEACHER_ROLE:
-            status_ = 0b0001
-        elif login_user.role == permissions.AUX_ROLE:
-            status_ = 0b0010
-        elif login_user.role == permissions.AA_ROLE:
-            status_ = 0b0100
-
-    if login_user.role >= permissions.TEACHER_ROLE:
-        student_sids = None
-        if login_user.role == permissions.TEACHER_ROLE:
-            students = await curd_user.get_by_class_id(login_user.class_id)
-            student_sids = tuple(map(lambda student: student.sid, students))
-        leaves = await curd_leave.get_by_status(status_, ids=student_sids)
+    if self_data or has_permission or class_code_eq:
         status_code = status.HTTP_200_OK
         response = CustomResponse(**{
             "status": status_code,
@@ -365,17 +276,138 @@ async def get_leave_by_status(status_: int, session: str = Cookie(None)):
 
 
 @router.get(
+    "/sid/{sid}/export",
+    description="Get the leave excel sheet by sid."
+)
+async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
+    LEAVE_TYPE = await curd_leave_type.get_map()
+    LESSON = await curd_lesson.get_map()
+    STATUS_MAP = await curd_status.get_map()
+
+    # 取得使用者身份
+    login_session = await curd_session.get_by_session(session)
+    user = User.parse_obj(login_session.user_data)
+
+    sid = login_session.sid if sid == "current" else sid
+    leaves = await curd_leave.get_by_sid(sid)
+
+    # 驗證權限
+    role = Role.parse_obj(login_session.role_data)
+    self_data = user.sid == sid
+    has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
+
+    class_code_eq = False
+    if not (self_data or has_permission) and leaves:
+        leave_user = await curd_user.get_by_sid(leaves[0].sid)
+        class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
+
+    if self_data or has_permission or class_code_eq:
+        def export() -> BytesIO:
+            SORT_MAP = [
+                "id",
+                "create_time",
+                "sid",
+                "type",
+                "status",
+                "start_date",
+                "start_lesson",
+                "end_date",
+                "end_lesson",
+                "remark",
+                "reject_reason",
+                "files"
+            ]
+            wb = Workbook()
+            ws = wb.active
+            ws.append([
+                "ID",
+                "建立時間",
+                "學號",
+                "假別",
+                "狀態",
+                "開始日期",
+                "開始節次",
+                "結束日期",
+                "結束節次",
+                "備註",
+                "拒絕原因",
+            ])
+            for leave in leaves:
+                raw_data = leave.dict()
+                raw_data["type"] = LEAVE_TYPE[raw_data["type"]]
+                raw_data["status"] = STATUS_MAP[raw_data["status"]]
+                raw_data["start_lesson"] = LESSON[raw_data["start_lesson"]]
+                raw_data["end_lesson"] = LESSON[raw_data["end_lesson"]]
+                data = list(raw_data.items())
+                data.sort(key=lambda t: SORT_MAP.index(t[0]))
+                values = tuple(map(lambda t: t[1], data[:-1]))
+                ws.append(values)
+            io = BytesIO()
+            wb.save(io)
+            io.seek(0)
+
+            return io
+
+        return Response(content=export().read(), headers={"Content-Disposition": "attachment; filename=export.xlsx"})
+    else:
+        status_code, response = response_403()
+
+    return ORJSONResponse(
+        response.dict(),
+        status_code,
+    )
+
+
+@router.get(
+    "/status/{status_}",
+    response_class=ORJSONResponse,
+    response_model=CustomResponse,
+    description="Get the leave by status(for authorize)."
+)
+async def get_leave_by_status(status_: int, session: str = Cookie(None)):
+    # 取得使用者身份
+    login_session = await curd_session.get_by_session(session)
+    user = User.parse_obj(login_session.user_data)
+
+    # 驗證權限
+    role = Role.parse_obj(login_session.role_data)
+    if role.permissions & permissions.READ_ALL_LEAVE_DATA:
+        sids = None
+    else:
+        if role.permissions & permissions.READ_SELF_LEAVE_DATA:
+            sids = await curd_user.get_by_class_code(user.class_code, 1)
+        else:
+            sids = [user.sid,]
+
+    leaves = await curd_leave.get_by_status(status_, ids=sids)
+    status_code = status.HTTP_200_OK
+    response = CustomResponse(**{
+        "status": status_code,
+        "success": True,
+        "data": list(map(
+            lambda data: data.dict(),
+            leaves
+        ))
+    })
+
+    return ORJSONResponse(
+        response.dict(),
+        status_code,
+    )
+
+
+@router.get(
     "/type",
     response_class=ORJSONResponse,
     response_model=CustomResponse,
     description="Get all type of leave."
 )
-def get_type():
+async def get_type():
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
-        "data": LEAVE_TYPE
+        "data": await curd_leave_type.get_map()
     })
 
     return response.dict()
@@ -387,12 +419,29 @@ def get_type():
     response_model=CustomResponse,
     description="Get lesson list."
 )
-def get_lesson():
+async def get_lesson():
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
-        "data": LESSON
+        "data": await curd_lesson.get_map()
+    })
+
+    return response.dict()
+
+
+@router.get(
+    "/status",
+    response_class=ORJSONResponse,
+    response_model=CustomResponse,
+    description="Get status list."
+)
+async def get_status():
+    status_code = status.HTTP_200_OK
+    response = CustomResponse(**{
+        "status": status_code,
+        "success": True,
+        "data": await curd_status.get_map()
     })
 
     return response.dict()

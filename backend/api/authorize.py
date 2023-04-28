@@ -1,7 +1,7 @@
-from .responses import response_400, response_403, response_404
+from .responses import response_403, response_404
 
 from curd import CURDLeave, CURDSession, CURDUser
-from models import CustomResponse
+from models import CustomResponse, Role, User
 from schemas import LeaveUpdate
 from utils import permissions
 
@@ -15,40 +15,35 @@ curd_leave = CURDLeave()
 curd_session = CURDSession()
 curd_user = CURDUser()
 
-
-@router.put(
-    "/accept/{leave_id}",
-    response_class=ORJSONResponse,
-    response_model=CustomResponse,
-    description="Apply a new leave."
-)
-async def accept_leave(leave_id: int, session: str = Cookie(None)):
+async def leave_authorize(leave_id: int, session, reject_reason: str = "", accept: bool = True) -> tuple[int, CustomResponse]:
+    # 取得使用者身份
     login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
+    user = User.parse_obj(login_session.user_data)
 
     leave = await curd_leave.get(leave_id)
-    leave_user = await curd_user.get_by_sid(leave.sid)
 
-    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
-        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
-            status_code, response = response_403()
-        else:
-            target_status = permissions.TEACHER_ACCEPT
-            if login_user.role == permissions.TEACHER_ROLE:
-                target_status = permissions.TEACHER_ACCEPT
-            elif login_user.role == permissions.AUX_ROLE:
-                target_status = permissions.AUX_ACCEPT
-            elif login_user.role == permissions.AA_ROLE:
-                target_status = permissions.AA_ACCEPT
+    if leave:
+        leave_user = await curd_user.get_by_sid(leave.sid)
+        
+        # 驗證權限
+        role = Role.parse_obj(login_session.role_data)
+        has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
+        class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
+        if has_permission or class_code_eq:
+            if accept:
+                if role.late_status:
+                    if leave.late_time() > (role.late_days or 0):
+                        next_status = role.late_status
+                    else:
+                        next_status = role.accept_status
+                else:
+                    next_status = role.accept_status
             else:
-                if leave.status == 0b0001:
-                    target_status = permissions.TEACHER_ACCEPT
-                elif leave.status == 0b0010:
-                    target_status = permissions.AUX_ACCEPT
-                elif leave.status == 0b0100:
-                    target_status = permissions.AA_ACCEPT
+                next_status = role.reject_status
 
-            leave_update = LeaveUpdate(status=max(target_status, leave.status))
+            leave_update = LeaveUpdate(status=max(next_status, leave.status))
+            if not accept:
+                leave_update.reject_reason = reject_reason
             leave = await curd_leave.update(leave, leave_update)
 
             status_code = status.HTTP_200_OK
@@ -57,8 +52,26 @@ async def accept_leave(leave_id: int, session: str = Cookie(None)):
                 "success": True,
                 "data": leave.dict()
             })
+
+            return status_code, response
+        else:
+            return response_403()
     else:
-        status_code, response = response_403()
+        return response_404("Leave Data")
+
+
+@router.put(
+    "/accept/{leave_id}",
+    response_class=ORJSONResponse,
+    response_model=CustomResponse,
+    description="Apply a new leave."
+)
+async def accept_leave(leave_id: int, session: str = Cookie(None)):
+    status_code, response = await leave_authorize(
+        leave_id=leave_id,
+        session=session,
+        accept=True,
+    )
 
     return ORJSONResponse(
         response.dict(),
@@ -73,44 +86,12 @@ async def accept_leave(leave_id: int, session: str = Cookie(None)):
     description="Apply a new leave."
 )
 async def reject_leave(leave_id: str, reject_reason: str = Form(""), session: str = Cookie(None)):
-    login_session = await curd_session.get_by_session(session)
-    login_user = await curd_user.get_by_sid(login_session.sid)
-
-    leave = await curd_leave.get(leave_id)
-    leave_user = await curd_user.get_by_sid(leave.sid)
-
-    if login_user.sid == leave_user.sid or login_user.role >= permissions.TEACHER_ROLE:
-        if login_user.role == permissions.TEACHER_ROLE and login_user.class_id != leave_user.class_id:
-            status_code, response = response_403()
-        else:
-            target_status = permissions.TEACHER_REJECT
-            if login_user.role == permissions.TEACHER_ROLE:
-                target_status = permissions.TEACHER_REJECT
-            elif login_user.role == permissions.AUX_ROLE:
-                target_status=permissions.AUX_REJECT
-            elif login_user.role == permissions.AA_ROLE:
-                target_status=permissions.AA_REJECT
-            else:
-                if leave.status == 0b0001:
-                    target_status=permissions.TEACHER_REJECT
-                elif leave.status == 0b0010:
-                    target_status=permissions.AUX_REJECT
-                elif leave.status == 0b0100:
-                    target_status=permissions.AA_REJECT
-            leave_update = LeaveUpdate(
-                status=max(target_status, leave.status),
-                reject_reason=reject_reason
-            )
-            leave = await curd_leave.update(leave, leave_update)
-
-            status_code = status.HTTP_200_OK
-            response = CustomResponse(**{
-                "status": status_code,
-                "success": True,
-                "data": leave.dict()
-            })
-    else:
-        status_code, response = response_403()
+    status_code, response = await leave_authorize(
+        leave_id=leave_id,
+        session=session,
+        reject_reason=reject_reason,
+        accept=False,
+    )
 
     return ORJSONResponse(
         response.dict(),

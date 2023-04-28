@@ -33,7 +33,7 @@ async def get_class_list(session: str = Cookie(None)):
     else:
         user = User.parse_obj(login_session.user_data)
         data = await curd_class.get_by_class_code(user.class_code)
-        data = [data.dict(),]
+        data = [data.dict(),] if data else []
 
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
@@ -65,11 +65,12 @@ async def get_class(class_code: int, session: str = Cookie(None)):
     has_permission = role.permissions & permissions.READ_ALL_CLASS_DATA
     class_code_eq = user.class_code == class_code
     if has_permission or class_code_eq:
-        data = Class({
+        data = await curd_class.get_by_class_code(class_code)
+        data = data if data else Class(**{
             "id": -1,
             "class_code": -1,
             "class_name": "None"
-        }) if class_code else await curd_class.get_by_class_code(class_code)
+        })
         if data:
             status_code = status.HTTP_200_OK
             response = CustomResponse(**{

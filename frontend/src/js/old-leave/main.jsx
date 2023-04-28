@@ -5,6 +5,9 @@ import DetailBox from "../detail-box";
 import ResultBox from "../result-box";
 import LoadingBox from "../loading-box";
 
+import { setLoading, showMessage } from "../../utils";
+import { sid, name, className, leaveTypeList, lessonList } from "../../variables";
+
 import "../../css/old-leave/main.css"
 
 
@@ -15,25 +18,18 @@ export default class OldLeave extends React.Component {
             select: undefined,
             displayData: undefined,
         };
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
+
         this.reload = () => {
             this.setState({
                 select: undefined,
                 displayData: undefined
             });
-            this.getLeaveData();
+            props.getLeaveData();
         };
-        this.name = props.name;
-        this.sid = props.sid;
-        this.userClass = props.userClass;
-        this.getLeaveData = props.getLeaveData;
         this.updateLeaveData = props.updateLeaveData;
     }
 
     select(leave) {
-        const typeOptions = this.props.typeOptions;
-        const lessonOptions = this.props.lessonOptions;
         this.setState((state) => {
             if (state.select === leave.id) {
                 return {
@@ -42,9 +38,9 @@ export default class OldLeave extends React.Component {
                 }
             }
             let displayData = Object.assign({}, leave);
-            displayData.start_lesson = lessonOptions[leave.start_lesson];
-            displayData.end_lesson = lessonOptions[leave.end_lesson];
-            displayData.type = typeOptions[leave.type];
+            displayData.start_lesson = lessonList[leave.start_lesson];
+            displayData.end_lesson = lessonList[leave.end_lesson];
+            displayData.type = leaveTypeList[leave.type];
 
             return {
                 select: leave.id,
@@ -64,19 +60,19 @@ export default class OldLeave extends React.Component {
 
     delete() {
         if (this.state.select === undefined) {
-            this.showMessage("刪除失敗", "未選擇任何資料。", "error");
+            showMessage("刪除失敗", "未選擇任何資料。", "error");
         }
         else {
-            this.loading(true);
+            setLoading(true);
             axios.delete(
                 `/api/leave/id/${this.state.select}`
             ).then(
                 () => {
-                    this.showMessage("刪除成功", "請假資料刪除成功。", "success");
+                    showMessage("刪除成功", "請假資料刪除成功。", "success");
                 }
             ).catch(
                 () => {
-                    this.showMessage("刪除失敗", "請假資料刪除失敗。\n(注意: \"已完成\"之資料不可刪除)", "error");
+                    showMessage("刪除失敗", "請假資料刪除失敗。\n(注意: \"已完成\"之資料不可刪除)", "error");
                 }
             ).finally(
                 () => {
@@ -88,8 +84,6 @@ export default class OldLeave extends React.Component {
 
     render() {
         const display = this.props.display;
-        const typeOptions = this.props.typeOptions;
-        const lessonOptions = this.props.lessonOptions;
         const rawData = this.props.data;
         // .slice(Math.max(0, rawData.length - 10))
         const list = rawData.map((data, index) => {
@@ -99,11 +93,11 @@ export default class OldLeave extends React.Component {
                     createTime={data.create_time}
                     startDate={data.start_date}
                     endDate={data.end_date}
-                    startLesson={lessonOptions[data.start_lesson]}
-                    endLesson={lessonOptions[data.end_lesson]}
+                    startLesson={lessonList[data.start_lesson]}
+                    endLesson={lessonList[data.end_lesson]}
                     remark={data.remark}
                     files={data.files}
-                    type={typeOptions[data.type]}
+                    type={leaveTypeList[data.type]}
                     status={data.status}
                     select={this.state.select === data.id}
                     onClick={this.select.bind(this, data)}
@@ -134,9 +128,9 @@ export default class OldLeave extends React.Component {
                         }
                     </div>
                     <DetailBox
-                        name={this.name}
-                        sid={this.sid}
-                        userClass={this.userClass}
+                        name={name}
+                        sid={sid}
+                        userClass={className}
                         data={this.state.displayData}
                     />
                 </div>

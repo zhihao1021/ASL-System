@@ -23,7 +23,7 @@ class CURDClass(CURDBase[Class, ClassCreate, ClassUpdate]):
         self,
         class_code: int = None
     ) -> Class:
-        if class_code == None:
+        if class_code is None:
             return None
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(Class).where(Class.class_code == class_code)
