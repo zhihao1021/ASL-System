@@ -27,6 +27,9 @@ export default class OldLeave extends React.Component {
             props.getLeaveData();
         };
         this.updateLeaveData = props.updateLeaveData;
+
+        this.delete = this.delete.bind(this);
+        this.scrollDown = this.scrollDown.bind(this);
     }
 
     select(leave) {
@@ -85,7 +88,6 @@ export default class OldLeave extends React.Component {
     render() {
         const display = this.props.display;
         const rawData = this.props.data;
-        // .slice(Math.max(0, rawData.length - 10))
         const list = rawData.map((data, index) => {
             return (
                 <ResultBox
@@ -105,15 +107,15 @@ export default class OldLeave extends React.Component {
             );
         })
         return (
-            <div className="old-leave" style={{ "display": display ? "" : "none" }}>
+            <div className={`old-leave ${display ? "display" : ""}`}>
                 <div className="button-bar">
                     <button onClick={() => { this.setState({ select: undefined }) }}>回上頁</button>
                     <div className="empty" />
-                    <button onClick={this.delete.bind(this)}>移除請假</button>
+                    <button onClick={this.delete}>移除請假</button>
                     <button onClick={this.reload}>重新整理</button>
                 </div>
                 <div className="content">
-                    <div className="results" onScroll={this.scrollDown.bind(this)}>
+                    <div className="results" onScroll={this.scrollDown}>
                         <div className={`icon ${list.length === 0 ? "display" : ""}`}>
                             <div className="ms">quick_reference_all</div>
                             <div>無紀錄</div>

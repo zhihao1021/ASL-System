@@ -2,6 +2,8 @@ import React from "react";
 
 import InputBox from "../input-box";
 
+import { lessonList } from "../../variables";
+
 export default class DateBox extends React.Component {
     constructor(props) {
         super(props);
@@ -53,9 +55,11 @@ export default class DateBox extends React.Component {
                 />
             )
         })
-        const options = this.props.lessonList.map((value, index)=>{
+        const options = Object.entries(lessonList).map((item, index)=>{
+            const lessonCode = item[0];
+            const lessonValue = item[1];
             return (
-                <option key={index} value={index} >{value}</option>
+                <option key={index} value={lessonCode} >{lessonValue}</option>
             )
         });
         return (

@@ -244,7 +244,7 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
     user = User.parse_obj(login_session.user_data)
 
     sid = login_session.sid if sid == "current" else sid
-    leaves = await curd_leave.get_by_sid(sid)
+    leaves = await curd_leave.get_by_sid(sid, page=page)
 
     # 驗證權限
     role = Role.parse_obj(login_session.role_data)
@@ -371,11 +371,14 @@ async def get_leave_by_status(status_: int, session: str = Cookie(None)):
 
     # 驗證權限
     role = Role.parse_obj(login_session.role_data)
+    if status_ == -1:
+        status_ = role.search_status or 0
     if role.permissions & permissions.READ_ALL_LEAVE_DATA:
         sids = None
     else:
         if role.permissions & permissions.READ_SELF_LEAVE_DATA:
-            sids = await curd_user.get_by_class_code(user.class_code, 1)
+            user_list = await curd_user.get_by_class_code(user.class_code, 1)
+            sids = list(map(lambda user: user.sid, user_list))
         else:
             sids = [user.sid,]
 
@@ -441,7 +444,7 @@ async def get_status():
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
-        "data": await curd_status.get_map()
+        "data": await curd_status.get_map(has_type=True)
     })
 
     return response.dict()

@@ -2,40 +2,16 @@ import React from "react";
 
 import TitleBox from "./old-leave/title-box";
 
+import { statusList } from "../variables";
+
 import "../css/result-box.css"
 
 function getStatus(status) {
-    switch (status) {
-        case 0b1000:
-            return "已完成"
-        case 0b0100:
-            return "等待學務主任核准"
-        case 0b0010:
-            return "等待教官核准"
-        case 0b0001:
-            return "等待導師核准"
-        case 0b11000:
-            return "學務主任退回"
-        case 0b10100:
-            return "教官退回"
-        case 0b10010:
-            return "導師退回"
-        default:
-            return "未知"
-    }
+    return statusList[status][0]
 }
 
 function getClassName(status) {
-    switch (status) {
-        case 0b11000:
-        case 0b10100:
-        case 0b10010:
-            return "reject"
-        case 0b1000:
-            return "accept"
-        default:
-            return ""
-    }
+    return ["", "accept", "reject"][statusList[status][1] || 0]
 }
 
 export default class ResultBox extends React.Component {

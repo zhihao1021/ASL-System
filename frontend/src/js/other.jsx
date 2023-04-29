@@ -1,15 +1,11 @@
 import axios from "axios";
 import React from "react";
 
+import { setLoading, showMessage } from "../utils";
+
 import "../css/other.css";
 
 export default class Other extends React.Component {
-    constructor(props) {
-        super(props);
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
-    }
-
     componentDidUpdate(props) {
         if (!props.display && this.props.display) {
             window.location.hash = "other";
@@ -20,10 +16,7 @@ export default class Other extends React.Component {
         const display = this.props.display;
         return (
             <div id="other" style={{"display": display ? "" : "none"}}>
-                <SettingAnnouncement
-                    showMessage={this.showMessage}
-                    loading={this.loading}
-                />
+                <SettingAnnouncement />
             </div>
         );
     }
@@ -36,8 +29,9 @@ class SettingAnnouncement extends React.Component {
             context: ""
         };
         this.editBlock = React.createRef();
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
+
+        this.getAnnouncement = this.getAnnouncement.bind(this);
+        this.sendAnnouncement = this.sendAnnouncement.bind(this);
     }
 
     componentDidMount() {
@@ -54,7 +48,7 @@ class SettingAnnouncement extends React.Component {
     }
 
     sendAnnouncement() {
-        this.loading(true);
+        setLoading(true);
         let data = new FormData();
         data.append("context", this.editBlock.current.textContent)
         axios.put(
@@ -66,17 +60,17 @@ class SettingAnnouncement extends React.Component {
                 this.setState({
                     context: response.data.data
                 });
-                this.showMessage("更改成功", "公告更改成功。", "success");
+                showMessage("更改成功", "公告更改成功。", "success");
             }
         )
         .catch(
             () => {
-                this.showMessage("更改失敗", "公告更改失敗。", "error");
+                showMessage("更改失敗", "公告更改失敗。", "error");
             }
         )
         .finally(
             () => {
-                this.loading(false);
+                setLoading(false);
             }
         );
     }
@@ -93,8 +87,8 @@ class SettingAnnouncement extends React.Component {
                     contentEditable
                 />
                 <div className="tool-bar">
-                    <button onClick={this.getAnnouncement.bind(this)}>還原</button>
-                    <button onClick={this.sendAnnouncement.bind(this)}>儲存</button>
+                    <button onClick={this.getAnnouncement}>還原</button>
+                    <button onClick={this.sendAnnouncement}>儲存</button>
                 </div>
             </div>
         );

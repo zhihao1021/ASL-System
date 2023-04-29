@@ -18,6 +18,9 @@ export default class ButtonBar extends React.Component {
             }
         };
         this.final = props.final;
+
+        this.onLastClick = this.onLastClick.bind(this);
+        this.onNextClick = this.onNextClick.bind(this);
     }
 
     componentDidMount() {
@@ -56,12 +59,12 @@ export default class ButtonBar extends React.Component {
             <div className="button-bar">
                 <button
                     className="last"
-                    onClick={this.onLastClick.bind(this)}
+                    onClick={this.onLastClick}
                 >上一頁</button>
                 <div className="empty" />
                 <button
                     className="next"
-                    onClick={this.onNextClick.bind(this)}
+                    onClick={this.onNextClick}
                 >{this.final ? "完成" : "下一頁"}</button>
             </div>
         )

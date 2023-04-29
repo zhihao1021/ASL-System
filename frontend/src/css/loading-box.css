@@ -12,6 +12,7 @@
     color: #AAAAAA;
     font-family: "Caveat", cursive;
     animation: trans-l 3s infinite;
+    user-select: none;
 }
 
 .loading-box div {
@@ -22,6 +23,7 @@
     /* box-shadow: 0px 0px 4px 1px #FFFFFF; */
     border-radius: 50%;
     animation: scale 1.2s linear infinite;
+    user-select: none;
 }
 
 .loading-box div:nth-of-type(1) {

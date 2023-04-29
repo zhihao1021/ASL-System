@@ -1,5 +1,6 @@
 #leave .old-leave {
     overflow-y: hidden;
+    width: 100%;
     height: calc(100% - 6vh);
 }
 
@@ -114,7 +115,7 @@
         position: relative;
     }
 
-    #leave .old-leave .content .results {
+    #leave .old-leave.display .content .results {
         opacity: 100%;
         pointer-events: initial;
         position: absolute;
@@ -136,13 +137,12 @@
         transition: opacity 0.5s;
     }
 
-    #leave .old-leave .content:has(.result-box.select) .detail {
+    #leave .old-leave.display .content:has(.result-box.select) .detail {
         opacity: 100%;
         pointer-events: initial;
     }
 
-    #leave .old-leave:has(.result-box.select) .button-bar button:first-of-type {
-        /* display: block; */
+    #leave .old-leave.display:has(.result-box.select) .button-bar button:first-of-type {
         opacity: 100%;
         pointer-events: initial;
     }

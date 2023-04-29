@@ -5,6 +5,8 @@ import QueryBlock from "./query-block/main";
 import Results from "./query-results/main";
 import TitleBar from "./title-bar";
 
+import { setLoading, showMessage } from "../utils";
+
 import "../css/query.css";
 
 export default class Query extends React.Component {
@@ -18,10 +20,15 @@ export default class Query extends React.Component {
             pageUpdated: 0,
             querySelect: undefined
         };
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
+        
         this.sid = undefined;
         this.updateLock = false
+
+        this.setSelect = this.setSelect.bind(this);
+        this.setQuerySelect = this.setQuerySelect.bind(this);
+        this.getResult = this.getResult.bind(this);
+        this.updateResultData = this.updateResultData.bind(this);
+        this.back = this.back.bind(this);
     }
 
     componentDidUpdate(props) {
@@ -43,7 +50,7 @@ export default class Query extends React.Component {
     }
 
     getResult(sid, callback) {
-        this.loading(true);
+        setLoading(true);
         this.sid = sid;
         axios.all([
             axios.get(`/api/leave/sid/${sid}`),
@@ -52,7 +59,7 @@ export default class Query extends React.Component {
             (responses) => {
                 let leaveData = responses[0].data.data;
                 let userData = responses[1].data.data;
-                axios.get(`/api/class/${userData.class_id}`).then(
+                axios.get(`/api/class/${userData.class_code}`).then(
                     (response) => {
                         let userClass = response.data.data.class_name;
                         userData.userClass = userClass === "None" ? "無" : userClass;
@@ -65,14 +72,14 @@ export default class Query extends React.Component {
                     }
                 ).finally(
                     () => {
-                        this.loading(false);
+                        setLoading(false);
                     }
                 )
             }
         ).catch(
             () => {
-                this.showMessage("查詢失敗", "查詢失敗，請次檢查輸入參數。", "error");
-                this.loading(false);
+                showMessage("查詢失敗", "查詢失敗，請次檢查輸入參數。", "error");
+                setLoading(false);
             }
         )
         if (callback) {
@@ -117,12 +124,10 @@ export default class Query extends React.Component {
 
     render() {
         const display = this.props.display;
-        const lessonOptions = this.props.lessonOptions;
-        const typeOptions = this.props.typeOptions;
         return (
             <div id="query" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="查詢">
-                    <button onClick={this.back.bind(this)}>
+                    <button onClick={this.back}>
                         <p className="ms">arrow_back</p>
                         <p>回上頁</p>
                     </button>
@@ -135,20 +140,17 @@ export default class Query extends React.Component {
                 <div className="content">
                     <QueryBlock
                         display={this.state.display === 0}
-                        loading={this.loading}
-                        getResult={this.getResult.bind(this)}
-                        setSelect={this.setSelect.bind(this)}
+                        getResult={this.getResult}
+                        setSelect={this.setSelect}
                         queryDisplay={this.state.queryDisplay}
                     />
                     <Results
                         display={this.state.display === 1}
                         data={this.state.data}
                         userData={this.state.userData}
-                        typeOptions={typeOptions}
-                        lessonOptions={lessonOptions}
                         querySelect={this.state.querySelect}
-                        setQuerySelect={this.setQuerySelect.bind(this)}
-                        updateResultData={this.updateResultData.bind(this)}
+                        setQuerySelect={this.setQuerySelect}
+                        updateResultData={this.updateResultData}
                         hasUpdate={this.state.pageUpdated !== -1}
                     />
                 </div>

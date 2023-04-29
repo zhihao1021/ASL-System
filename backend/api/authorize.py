@@ -40,6 +40,9 @@ async def leave_authorize(leave_id: int, session, reject_reason: str = "", accep
                     next_status = role.accept_status
             else:
                 next_status = role.reject_status
+            
+            if not next_status:
+                next_status = leave.status
 
             leave_update = LeaveUpdate(status=max(next_status, leave.status))
             if not accept:

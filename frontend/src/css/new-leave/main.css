@@ -7,9 +7,10 @@
 @import url(./finished.css);
 
 #leave .new-leave {
-    margin: 2vh auto;
+    margin: 2vh 3vh;
     width: fit-content;
     min-width: 65vw;
+    width: calc(100% - 6vh);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -29,11 +30,8 @@
 }
 
 @media (max-aspect-ratio: 1/1) {
-    #leave .new-leave {
-        width: 90%;
-    }
-
+    #leave .new-leave .page.reason,
     #leave .new-leave .reason-block {
-        width: 75vw;
+        width: 100%;
     }
 }

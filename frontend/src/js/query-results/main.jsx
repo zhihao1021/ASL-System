@@ -4,6 +4,8 @@ import DetailBox from "../detail-box";
 import LoadingBox from "../loading-box";
 import ResultBox from "../result-box";
 
+import { leaveTypeList, lessonList } from "../../variables";
+
 import "../../css/query-results/main.css"
 
 export default class Results extends React.Component {
@@ -14,6 +16,8 @@ export default class Results extends React.Component {
         }
         this.setQuerySelect = props.setQuerySelect;
         this.updateResultData = props.updateResultData;
+
+        this.scrollDown = this.scrollDown.bind(this);
     }
 
     componentDidUpdate(props) {
@@ -31,8 +35,6 @@ export default class Results extends React.Component {
     }
 
     select(leave) {
-        const typeOptions = this.props.typeOptions;
-        const lessonOptions = this.props.lessonOptions;
         const select = this.props.querySelect;
         this.setState(() => {
             if (select === leave.id) {
@@ -42,9 +44,9 @@ export default class Results extends React.Component {
                 }
             }
             let displayData = Object.assign({}, leave);
-            displayData.start_lesson = lessonOptions[leave.start_lesson];
-            displayData.end_lesson = lessonOptions[leave.end_lesson];
-            displayData.type = typeOptions[leave.type];
+            displayData.start_lesson = lessonList[leave.start_lesson];
+            displayData.end_lesson = lessonList[leave.end_lesson];
+            displayData.type = leaveTypeList[leave.type];
 
             this.setQuerySelect(leave.id);
             return {
@@ -64,8 +66,6 @@ export default class Results extends React.Component {
 
     render() {
         const display = this.props.display;
-        const typeOptions = this.props.typeOptions;
-        const lessonOptions = this.props.lessonOptions;
         const select = this.props.querySelect
         const rawData = this.props.data;
         // .slice(Math.max(0, rawData.length - 10))
@@ -76,11 +76,11 @@ export default class Results extends React.Component {
                     createTime={data.create_time}
                     startDate={data.start_date}
                     endDate={data.end_date}
-                    startLesson={lessonOptions[data.start_lesson]}
-                    endLesson={lessonOptions[data.end_lesson]}
+                    startLesson={lessonList[data.start_lesson]}
+                    endLesson={lessonList[data.end_lesson]}
                     remark={data.remark}
                     files={data.files}
-                    type={typeOptions[data.type]}
+                    type={leaveTypeList[data.type]}
                     status={data.status}
                     select={select === data.id}
                     onClick={this.select.bind(this, data)}
@@ -90,7 +90,7 @@ export default class Results extends React.Component {
         const userData = this.props.userData;
         return (
             <div className={`query-results ${display ? "display" : ""}`}>
-                <div className="results" onScroll={this.scrollDown.bind(this)}>
+                <div className="results" onScroll={this.scrollDown}>
                     <div className={`icon ${list.length === 0 ? "display" : ""}`}>
                         <div className="ms">quick_reference_all</div>
                         <div>無紀錄</div>

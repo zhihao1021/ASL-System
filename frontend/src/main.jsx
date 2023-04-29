@@ -163,10 +163,9 @@ export default class MainContent extends React.Component {
                         display={this.state.nowDisplay === 3}
                         /> : null
                     }
-                    {/* 
                     {displayBlock[2] ?
                         <Authorize
-                            display={this.state.nowDisplay === 4}
+                        display={this.state.nowDisplay === 4}
                         /> : null
                     }
                     {displayBlock[3] ?
@@ -179,7 +178,6 @@ export default class MainContent extends React.Component {
                             display={this.state.nowDisplay === 6}
                         /> : null
                     }
-                     */}
                 </div>
                 <div id="copyright">
                     Copyright © {year} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank" rel="noreferrer">莊智皓</a>

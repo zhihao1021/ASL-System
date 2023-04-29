@@ -1,6 +1,6 @@
 #leave .new-leave .page {
     position: absolute;
-    top: 15vh;
+    top: 6vh;
     margin: 2vh auto;
     animation: mount 0.5s;
     transition: opacity 0.5s;
@@ -21,6 +21,6 @@
 
 @media (max-aspect-ratio: 1/1) {
     #leave .new-leave .page {
-        top: 18vh;
+        top: 8vh;
     }
 }

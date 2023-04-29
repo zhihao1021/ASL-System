@@ -1,9 +1,11 @@
 import React from "react";
 
+import { statusList } from "../variables";
+
 import "../css/detail-box.css"
 
 function show_reject_reason(status) {
-    return status > 1 && status & 0b0001
+    return statusList[status][1] === 2;
 }
 
 export default class DetailBox extends React.Component {
@@ -13,6 +15,8 @@ export default class DetailBox extends React.Component {
             displayImg: false
         };
         this.oldData = {};
+
+        this.displayImg = this.displayImg.bind(this);
     }
 
     componentDidUpdate(props) {
@@ -41,6 +45,17 @@ export default class DetailBox extends React.Component {
         const userClass = this.props.userClass;
         const data = this.props.data || this.oldData;
         this.oldData = data;
+
+        let startDate = data.start_date;
+        if (startDate) {
+            startDate = startDate.split("-");
+            startDate = `${startDate[0]}年${startDate[1]}月${startDate[2]}日`;
+        }
+        let endDate = data.end_date;
+        if (endDate) {
+            endDate = endDate.split("-");
+            endDate = `${endDate[0]}年${endDate[1]}月${endDate[2]}日`;
+        }
 
         const imgList = Array.from(Array(data.files || 0).keys()).map((index) => {
             return <img key={index} src={`/api/leave/id/${data.id}/${index}`} alt="" />
@@ -85,18 +100,18 @@ export default class DetailBox extends React.Component {
                             <p>假別：{data.type}</p>
                         </li>
                         <li>
-                            <p>開始時間：{data.start_date} {data.start_lesson}</p>
+                            <p>開始時間：{startDate} {data.start_lesson}</p>
                         </li>
                         <li>
-                            <p>結束時間：{data.end_date} {data.end_lesson}</p>
+                            <p>結束時間：{endDate} {data.end_lesson}</p>
                         </li>
                     </ul>
                     <div className="title">請假事由</div>
                     <div className="reason">{data.remark || "無"}</div>
-                    {show_reject_reason(data.status) ? reject_reason : ""}
+                    {show_reject_reason(data.status || 0) ? reject_reason : ""}
                     <div className="title">附件</div>
                     <div className="img-content">
-                        {this.state.displayImg ? (imgList.length === 0 ? "無" : imgList) : (<button onClick={this.displayImg.bind(this)}>顯示附件</button>)}
+                        {imgList.length === 0 ? "無" : this.state.displayImg ? imgList : (<button onClick={this.displayImg}>顯示附件</button>)}
                     </div>
                 </div>
             </div>

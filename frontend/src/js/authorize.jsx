@@ -3,16 +3,19 @@ import React from "react";
 
 import TitleBar from "./title-bar";
 
+import { getClassInfoList, getUserInfoList, setLoading, showMessage } from "../utils";
+import { leaveTypeList, lessonList } from "../variables";
+
 import "../css/authorize.css"
 
 export default class Authorize extends React.Component {
     constructor(props) {
         super(props);
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
         this.state = {
             list: []
         }
+
+        this.getData = this.getData.bind(this);
     }
 
     componentDidMount() {
@@ -27,74 +30,70 @@ export default class Authorize extends React.Component {
     }
 
     getData() {
-        this.loading(true);
-        const typeOptions = this.props.typeOptions;
-        const lessonOptions = this.props.lessonOptions;
-        if (typeOptions.length === 0 || lessonOptions.length === 0) {
-            setTimeout(this.getData.bind(this), 500)
-            return
-        }
-        axios.get("/api/leave/status/0").then(
+        setLoading(true);
+        axios.get("/api/leave/status/-1").then(
             (response) => {
-                let dataList = response.data.data.map((data) => {
-                    let images = Array.from(Array(data.files || 0).keys()).map((index) => {
-                        return <img key={index} src={`/api/leave/id/${data.id}/${index}`} alt="" />
-                    })
-                    data.start_lesson = lessonOptions[data.start_lesson];
-                    data.end_lesson = lessonOptions[data.end_lesson];
-                    data.type = typeOptions[data.type];
-                    data.files = images;
-                    return data;
-                })
-                axios.all(dataList.map((data) => {
-                    return axios.get(`/api/info/user/${data.sid}`);
-                })).then(
-                    (responses) => {
-                        axios.all(responses.map((response, index) => {
-                            const data = response.data.data;
-                            dataList[index].name = data.name;
-                            return axios.get(`/api/class/${data.class_id}`);
-                        })).then(
-                            (responses) => {
-                                responses.forEach((response, index) => {
-                                    const data = response.data.data;
-                                    dataList[index].class_name = data.class_name;
-                                })
-                                let list = dataList.map((data, index) => {
-                                    return (
-                                        <ResultPage
-                                            key={index}
-                                            showMessage={this.showMessage}
-                                            loading={this.loading}
-                                            id={data.id}
-                                            createTime={data.create_time}
-                                            startDate={data.start_date}
-                                            endDate={data.end_date}
-                                            startLesson={data.start_lesson}
-                                            endLesson={data.end_lesson}
-                                            type={data.type}
-                                            remark={data.remark}
-                                            files={data.files}
-                                            sid={data.sid}
-                                            name={data.name}
-                                            className={data.class_name}
-                                            updateTime={Date.now()}
-                                            last={index === dataList.length - 1}
-                                            updateData={this.getData.bind(this)}
-                                        />
-                                    )
-                                });
-                                this.setState({
-                                    list: list
-                                });
-                            }
-                        )
-                    }
-                )
+                const leaveDataList = response.data.data;
+                const userInfoCallback = (userInfoList) => {
+                    const classInfoCallback = (classInfoList) => {
+                        const elementList = leaveDataList.map((leaveData, index) => {
+                            const userInfo = userInfoList[index];
+                            const classInfo = classInfoList[index];
+
+                            const id = leaveData.id;
+                            const createTime = leaveData.create_time;
+                            let startDate = leaveData.start_date.split("-");
+                            startDate = `${startDate[0]}年${startDate[1]}月${startDate[2]}日`
+                            let endDate = leaveData.end_date.split("-");
+                            endDate = `${endDate[0]}年${endDate[1]}月${endDate[2]}日`
+                            const startLesson = lessonList[leaveData.start_lesson];
+                            const endLesson = lessonList[leaveData.end_lesson];
+                            const type = leaveTypeList[leaveData.type];
+                            const remark = leaveData.remark
+                            
+                            const files = Array.from(Array(leaveData.files || 0).keys()).map((index) => {
+                                return <img key={index} src={`/api/leave/id/${id}/${index}`} alt="" />
+                            })
+
+                            const sid = userInfo.sid;
+                            const name = userInfo.name;
+                            const className = classInfo.class_name;
+
+                            return (
+                                <ResultPage
+                                    key={index}
+                                    id={id}
+                                    createTime={createTime}
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    startLesson={startLesson}
+                                    endLesson={endLesson}
+                                    type={type}
+                                    remark={remark}
+                                    files={files}
+                                    sid={sid}
+                                    name={name}
+                                    className={className}
+                                    updateTime={Date.now()}
+                                    last={index === leaveDataList.length - 1}
+                                    updateData={this.getData}
+                                />
+                            )
+                        });
+                        this.setState({
+                            list: elementList
+                        });
+                        setLoading(false);
+                    };
+                    const classCodeList = userInfoList.map(userInfo => userInfo.class_code);
+                    getClassInfoList(classCodeList, classInfoCallback);
+                };
+                const userSidList = leaveDataList.map(leaveData => leaveData.sid);
+                getUserInfoList(userSidList, userInfoCallback);
             }
         ).finally(
             () => {
-                this.loading(false);
+                setLoading(false);
             }
         )
     }
@@ -104,7 +103,7 @@ export default class Authorize extends React.Component {
         return (
             <div id="authorize" style={{ "display": display ? "" : "none" }}>
                 <TitleBar title="審核">
-                    <button onClick={this.getData.bind(this)}>
+                    <button onClick={this.getData}>
                         <p className="ms">refresh</p>
                         <p>重新整理</p>
                     </button>
@@ -130,9 +129,21 @@ class ResultPage extends React.Component {
             reject: false,
         }
         this.ref = React.createRef();
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
         this.updateData = props.updateData;
+
+        this.accept = this.accept.bind(this);
+        this.reject = this.reject.bind(this);
+
+        this.showRejectBox = () => {
+            this.setState({
+                reject: true
+            });
+        }
+        this.hideRejectBox = () => {
+            this.setState({
+                reject: false
+            });
+        }
     }
 
     componentDidUpdate(props) {
@@ -144,20 +155,8 @@ class ResultPage extends React.Component {
         }
     }
 
-    showRejectBox() {
-        this.setState({
-            reject: true
-        });
-    }
-
-    hideRejectBox() {
-        this.setState({
-            reject: false
-        });
-    }
-
     accept() {
-        this.loading(true);
+        setLoading(true);
         axios.put(`/api/authorize/accept/${this.props.id}`).then(
             () => {
                 if (this.props.last) {
@@ -167,19 +166,19 @@ class ResultPage extends React.Component {
                     this.setState({
                         finish: true
                     });
-                    this.loading(false);
+                    setLoading(false);
                 }
             }
         ).catch(
             () => {
-                this.showMessage("執行失敗", "執行失敗，請嘗試重新整理頁面。", "error");
-                this.loading(false);
+                showMessage("執行失敗", "執行失敗，請嘗試重新整理頁面。", "error");
+                setLoading(false);
             }
         )
     }
 
     reject() {
-        this.loading(true);
+        setLoading(true);
         let data = new FormData()
         data.append("reject_reason", this.ref.current.textContent || "");
         axios.put(
@@ -194,13 +193,13 @@ class ResultPage extends React.Component {
                     this.setState({
                         finish: true
                     });
-                    this.loading(false);
+                    setLoading(false);
                 }
             }
         ).catch(
             () => {
-                this.showMessage("執行失敗", "執行失敗，請嘗試重新整理頁面。", "error");
-                this.loading(false);
+                showMessage("執行失敗", "執行失敗，請嘗試重新整理頁面。", "error");
+                setLoading(false);
             }
         )
     }
@@ -261,13 +260,13 @@ class ResultPage extends React.Component {
                     />
                     <button
                         className={`accept ${this.state.reject ? "rejecting" : ""}`}
-                        onClick={this.state.reject ? this.hideRejectBox.bind(this) : this.accept.bind(this)}
+                        onClick={this.state.reject ? this.hideRejectBox : this.accept}
                     >
                         {this.state.reject ? "回上頁" : "允許"}
                     </button>
                     <button
                         className="reject"
-                        onClick={this.state.reject ? this.reject.bind(this) : this.showRejectBox.bind(this)}
+                        onClick={this.state.reject ? this.reject : this.showRejectBox}
                     >
                         拒絕
                     </button>

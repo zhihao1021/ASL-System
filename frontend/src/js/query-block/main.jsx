@@ -8,7 +8,6 @@ import "../../css/query-block/main.css"
 export default class QueryBlock extends React.Component {
     constructor(props) {
         super(props);
-        this.loading = props.loading;
         this.getResult = props.getResult;
         this.setSelect = props.setSelect;
     }
@@ -20,14 +19,12 @@ export default class QueryBlock extends React.Component {
             <div className={`query-block ${display ? "display" : ""}`}>
                 <div className={`query-page`}>
                     <QueryBySid
-                        loading={this.loading}
                         getResult={this.getResult}
                         setSelect={this.setSelect}
                         selected={queryDisplay === 1}
                     />
                     <hr />
                     <QueryByName
-                        loading={this.loading}
                         getResult={this.getResult}
                         setSelect={this.setSelect}
                         selected={queryDisplay === 2}

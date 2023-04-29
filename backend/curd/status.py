@@ -5,6 +5,8 @@ from config import ENGINE
 from models import Status
 from schemas import StatusCreate, StatusUpdate
 
+from typing import Union
+
 from sqlmodel import select
 
 
@@ -15,7 +17,8 @@ class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
     
     async def get_map(
         self,
-    ) -> dict[int, str]:
+        has_type: bool = False
+    ) -> Union[dict[int, str], dict[int, list[str, int]]]:
         if self.map:
             return self.map
         async with AsyncSession(ENGINE) as db_session:
@@ -23,13 +26,23 @@ class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
             data_list = await db_session.exec(query_stat)
             data_list = data_list.all()
 
-            result = {
-                key: value
-                for key, value in zip(
-                    map(lambda data: data.status_code, data_list),
-                    map(lambda data: data.status_title, data_list)
-                )
-            }
+            if has_type:
+                result = {
+                    key: [value, status]
+                    for key, value, status in zip(
+                        map(lambda data: data.status_code, data_list),
+                        map(lambda data: data.status_title, data_list),
+                        map(lambda data: data.status_type, data_list)
+                    )
+                }
+            else:
+                result = {
+                    key: value
+                    for key, value in zip(
+                        map(lambda data: data.status_code, data_list),
+                        map(lambda data: data.status_title, data_list)
+                    )
+                }
 
             self.map = result
 

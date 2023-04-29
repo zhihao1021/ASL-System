@@ -1,6 +1,7 @@
 import axios from "axios";
 import React from "react";
 
+import { setLoading } from "../utils";
 import { name } from "../variables";
 
 import "../css/top-bar.css";
@@ -17,7 +18,7 @@ export default class TopBar extends React.Component {
     }
 
     logout() {
-        this.loading(true);
+        setLoading(true);
         axios.get("/api/logout/current").then(
             () => {
                 window.location.reload();

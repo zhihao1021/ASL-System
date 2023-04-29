@@ -5,6 +5,9 @@ import Page from "./page";
 import DateBox from "./date-box";
 import ButtonBar from "./button-bar";
 
+import { setLoading, showMessage } from "../../utils";
+import { name, sid, className, leaveTypeList, lessonList } from "../../variables";
+
 import "../../css/new-leave/main.css";
 
 const flowMap = [
@@ -23,52 +26,57 @@ export default class NewLeave extends React.Component {
         this.state = {
             proc: 10,
             display: 0,
-            typeSelect: -1,
-            startDateCheck: false,
-            endDateCheck: false,
+            leaveTypeSelect: -1,
+            dateCheck: 0,
             files: undefined,
             finish: false,
         };
 
-        this.startRef = [
-            React.createRef(),
-            React.createRef(),
-            React.createRef(),
-            React.createRef(),
-        ];
-        this.endRef = [
-            React.createRef(),
-            React.createRef(),
-            React.createRef(),
-            React.createRef(),
+        this.dateRefList = [
+            [
+                React.createRef(),
+                React.createRef(),
+                React.createRef(),
+                React.createRef(),
+            ],
+            [
+                React.createRef(),
+                React.createRef(),
+                React.createRef(),
+                React.createRef(),
+            ]
         ];
         this.reason = React.createRef();
         this.filesInput = React.createRef();
-        this.showMessage = props.showMessage;
-        this.loading = props.loading;
-        this.name = props.name;
-        this.sid = props.sid;
-        this.userClass = props.userClass;
 
-        this.startData = [0, 0, 0, 0];
-        this.endData = [0, 0, 0, 0];
+        this.dateList = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
         this.reasonContent = "";
 
         this.getLeaveData = props.getLeaveData;
+        this.setPage = this.setPage.bind(this);
+        this.saveReason = this.saveReason.bind(this);
+        this.saveFiles = this.saveFiles.bind(this);
+        this.checkFiles = this.checkFiles.bind(this);
+        this.sendData = this.sendData.bind(this);
+        this.dataInit = this.dataInit.bind(this)
     }
 
     dataInit() {
         this.setState({
             proc: 10,
             display: 0,
-            typeSelect: -1,
-            startDateCheck: false,
-            endDateCheck: false,
+            leaveTypeSelect: -1,
+            dateCheck: 0,
             files: undefined,
             finish: false,
         });
-        this.startData = [0, 0, 0, 0];
-        this.endData = [0, 0, 0, 0];
+        this.dateList = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
         this.reasonContent = "";
     }
 
@@ -80,45 +88,25 @@ export default class NewLeave extends React.Component {
     }
 
     checkDate(index) {
-        let list;
-        if (index === 0) {
-            list = this.startRef;
-            this.setState({
-                startDateCheck: true
-            })
+        this.setState((state) => {
+            return {
+                dateCheck: state.dateCheck | (1 << index)
+            };
+        })
+        let emptyRef = this.dateRefList[index].filter(
+            ref => ref.current.value === ""
+        )[0];
+        if (emptyRef) {
+            emptyRef.current.focus();
+            return false;
         }
-        else {
-            list = this.endRef;
-            this.setState({
-                endDateCheck: true
-            })
-        }
-        let firstEmpty = null;
-        list.forEach((ref) => {
-            if (ref.current.value === "") {
-                if (firstEmpty === null) {
-                    firstEmpty = ref;
-                }
-            }
-        });
-        if (firstEmpty === null) {
-            return true;
-        }
-        firstEmpty.current.focus();
-        return false;
+        return true;
     }
 
     saveDate(index) {
-        if (index === 0) {
-            this.startRef.forEach((ref, index) => {
-                this.startData[index] = ref.current.value;
-            });
-        }
-        else {
-            this.endRef.forEach((ref, index) => {
-                this.endData[index] = ref.current.value;
-            });
-        }
+        this.dateList[index] = this.dateRefList[index].map(
+            ref => ref.current.value
+        );
     }
 
     saveReason() {
@@ -127,13 +115,13 @@ export default class NewLeave extends React.Component {
 
     checkFiles() {
         if (this.filesInput.current.files.length > 3) {
-            this.showMessage("檔案不符合限制", "不得選擇超過3個檔案。", "error");
+            showMessage("檔案不符合限制", "不得選擇超過3個檔案。", "error");
             return false;
         }
-        else if (Array.from(this.filesInput.current.files).filter((file) => {
-            return file.size > 10000000
-        }).length !== 0) {
-            this.showMessage("檔案不符合限制", "檔案不得超過10MB。", "error");
+        else if (Array.from(this.filesInput.current.files).filter(
+            file => file.size > 10000000
+        ).length !== 0) {
+            showMessage("檔案不符合限制", "檔案不得超過10MB。", "error");
             return false;
         }
         return true;
@@ -142,17 +130,17 @@ export default class NewLeave extends React.Component {
     saveFiles() {
         this.setState({
             files: this.filesInput.current.files
-        })
+        });
     }
 
     sendData() {
-        this.loading(true);
+        setLoading(true);
         let form = new FormData();
-        form.append("leave_type", this.state.typeSelect);
-        form.append("start_date", this.startData.slice(0, 3).map((value) => { return value.toString().padStart(2, "0") }).join("-"));
-        form.append("end_date", this.endData.slice(0, 3).map((value) => { return value.toString().padStart(2, "0") }).join("-"));
-        form.append("start_lesson", this.startData[3]);
-        form.append("end_lesson", this.endData[3]);
+        form.append("leave_type", this.state.leaveTypeSelect);
+        form.append("start_date", this.dateList[0].slice(0, 3).map(value => value.toString().padStart(2, "0")).join("-"));
+        form.append("end_date", this.dateList[1].slice(0, 3).map(value => value.toString().padStart(2, "0")).join("-"));
+        form.append("start_lesson", this.dateList[0][3]);
+        form.append("end_lesson", this.dateList[1][3]);
         Array.from(this.state.files || []).forEach((file) => {
             form.append("files", file)
         });
@@ -166,10 +154,10 @@ export default class NewLeave extends React.Component {
             });
         }).catch(() => {
             this.setPage(this.state.display - 1);
-            this.showMessage("發生錯誤", "發生錯誤，請重新檢查填寫容是否正確。", "error");
+            showMessage("發生錯誤", "發生錯誤，請重新檢查填寫容是否正確。", "error");
         }).finally(
             () => {
-                this.loading(false);
+                setLoading(false);
                 this.getLeaveData();
             }
         );
@@ -178,8 +166,6 @@ export default class NewLeave extends React.Component {
 
     render() {
         const display = this.props.display;
-        const typeOptions = this.props.typeOptions;
-        const lessonOptions = this.props.lessonOptions;
         const flow = flowMap.map(
             (flowName, index) => {
                 let pos = 10 + 15 * index;
@@ -196,61 +182,64 @@ export default class NewLeave extends React.Component {
                 );
             }
         );
-        const typeOptionsElement = typeOptions.map(
-            (tpyeString, index) => {
+        const leaveTypeOptionsElement = Object.entries(leaveTypeList).map(
+            (item, index) => {
+                const leaveTypeCode = parseInt(item[0]);
+                const leaveTypeName = item[1];
                 return (
                     <div
                         key={index}
-                        className={`option ${this.state.typeSelect === index ? "selected" : ""}`}
-                        onClick={() => { this.setState({ typeSelect: index }); this.setPage(1) }}
+                        className={`option ${this.state.leaveTypeSelect === leaveTypeCode ? "selected" : ""}`}
+                        onClick={() => {
+                            this.setState({ leaveTypeSelect: leaveTypeCode });
+                            this.setPage(1);
+                        }}
                     >
-                        {tpyeString}
+                        {leaveTypeName}
                     </div>
-                )
+                );
             }
         );
         const imgList = Array.from(this.state.files || []).map((file, index) => {
             return (
                 <img key={index} src={URL.createObjectURL(file)} alt="附件" />
-            )
+            );
         })
         return (
-            <div className="new-leave" style={{ "display": display ? "" : "none" }}>
+            <div className={`new-leave ${display ? "display" : ""}`}>
                 <div className="flow" style={{ "--proc": `${this.state.proc}%` }}>
                     {flow}
                 </div>
                 <Page className="select-type" display={this.state.display === 0}>
-                    {typeOptionsElement}
+                    {leaveTypeOptionsElement}
                 </Page>
                 <Page className="start-time" display={this.state.display === 1}>
                     <DateBox
-                        refList={this.startRef}
+                        refList={this.dateRefList[0]}
                         prefix="start"
-                        check={this.state.startDateCheck}
-                        defaultData={this.startData}
+                        check={this.state.dateCheck & 0b01}
+                        defaultData={this.dateList[0]}
                         onUnmount={this.saveDate.bind(this, 0)}
-                        lessonList={lessonOptions}
                     />
                     <ButtonBar
                         now={1}
                         nextClick={this.checkDate.bind(this, 0)}
-                        setPage={this.setPage.bind(this)}
+                        setPage={this.setPage}
                         display={this.state.display === 1}
                     />
                 </Page>
                 <Page className="end-time" display={this.state.display === 2}>
                     <DateBox
-                        refList={this.endRef}
+                        refList={this.dateRefList[1]}
                         prefix="end"
-                        check={this.state.endDateCheck}
-                        defaultData={this.endData}
+                        check={this.state.dateCheck & 0b10}
+                        defaultData={this.dateList[1]}
                         onUnmount={this.saveDate.bind(this, 1)}
-                        lessonList={lessonOptions}
                     />
                     <ButtonBar
                         now={2}
                         nextClick={this.checkDate.bind(this, 1)}
-                        setPage={this.setPage.bind(this)}
+                        setPage={this.setPage}
                         display={this.state.display === 2}
                     />
                 </Page>
@@ -258,11 +247,11 @@ export default class NewLeave extends React.Component {
                     <TextDivInput
                         cref={this.reason}
                         content={this.reasonContent}
-                        onUnmount={this.saveReason.bind(this)}
+                        onUnmount={this.saveReason}
                     />
                     <ButtonBar
                         now={3}
-                        setPage={this.setPage.bind(this)}
+                        setPage={this.setPage}
                         display={this.state.display === 3}
                     />
                 </Page>
@@ -274,11 +263,11 @@ export default class NewLeave extends React.Component {
                             <li>每個檔案不可超過10MB。</li>
                         </ul>
                     </div>
-                    <FilesInput cref={this.filesInput} files={this.state.files} onUnmount={this.saveFiles.bind(this)} />
+                    <FilesInput cref={this.filesInput} files={this.state.files} onUnmount={this.saveFiles} />
                     <ButtonBar
                         now={4}
-                        nextClick={this.checkFiles.bind(this)}
-                        setPage={this.setPage.bind(this)}
+                        nextClick={this.checkFiles}
+                        setPage={this.setPage}
                         display={this.state.display === 4}
                     />
                 </Page>
@@ -287,27 +276,27 @@ export default class NewLeave extends React.Component {
                         <div className="title">個人資料</div>
                         <ul>
                             <li>
-                                <p>姓名：{this.name}</p>
+                                <p>姓名：{name}</p>
                             </li>
                             <li>
-                                <p>學號：{this.sid}</p>
+                                <p>學號：{sid}</p>
                             </li>
                             <li>
-                                <p>班級：{this.userClass}</p>
+                                <p>班級：{className}</p>
                             </li>
                         </ul>
                         <div className="title">請假資料</div>
                         <ul>
                             <li>
-                                <p>假別：{typeOptions[this.state.typeSelect]}</p>
+                                <p>假別：{leaveTypeList[this.state.leaveTypeSelect]}</p>
                             </li>
                             <li>
                                 <p>開始時間：</p>
-                                <p>{this.startData[0]}年{this.startData[1]}月{this.startData[2]}日 {lessonOptions[this.startData[3]]}</p>
+                                <p>{this.dateList[0][0]}年{this.dateList[0][1]}月{this.dateList[0][2]}日 {lessonList[this.dateList[0][3]]}</p>
                             </li>
                             <li>
                                 <p>結束時間：</p>
-                                <p>{this.endData[0]}年{this.endData[1]}月{this.endData[2]}日 {lessonOptions[this.endData[3]]}</p>
+                                <p>{this.dateList[1][0]}年{this.dateList[1][1]}月{this.dateList[1][2]}日 {lessonList[this.dateList[1][3]]}</p>
                             </li>
                         </ul>
                         <div className="title">請假事由</div>
@@ -319,14 +308,14 @@ export default class NewLeave extends React.Component {
                     </div>
                     <ButtonBar
                         now={5}
-                        nextClick={this.sendData.bind(this)}
-                        setPage={this.setPage.bind(this)}
+                        nextClick={this.sendData}
+                        setPage={this.setPage}
                         final={true}
                         display={this.state.display === 5}
                     />
                 </Page>
                 <Page className="finished" display={this.state.display === 6 && this.state.finish}>
-                    <FinishPage init={this.dataInit.bind(this)} />
+                    <FinishPage init={this.dataInit} />
                 </Page>
             </div>
         );

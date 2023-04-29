@@ -7,10 +7,11 @@ import "../../css/query-block/query-by-sid.css"
 export default class QueryBySid extends React.Component {
     constructor(props) {
         super(props);
-        this.loading = props.loading;
         this.getResult = props.getResult;
         this.inputRef = React.createRef();
         this.setSelect = props.setSelect;
+
+        this.send = this.send.bind(this);
     }
 
     componentDidMount() {
@@ -50,7 +51,7 @@ export default class QueryBySid extends React.Component {
                         }
                     }}
                 />
-                <button onClick={this.send.bind(this)}>
+                <button onClick={this.send}>
                     查詢
                 </button>
             </div>

@@ -74,6 +74,13 @@
     word-wrap: break-word;
 }
 
+#authorize .results .result-page .img-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1vh;
+}
+
 #authorize .results .result-page .img-content img {
     max-width: 100%;
     object-fit: contain;

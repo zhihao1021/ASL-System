@@ -3,6 +3,8 @@ import React from "react";
 
 import SelectOption from "./select-option";
 
+import { setLoading } from "../../utils";
+
 import "../../css/query-block/query-by-name.css"
 
 export default class QueryByName extends React.Component {
@@ -15,7 +17,6 @@ export default class QueryByName extends React.Component {
             userData: []
         };
         this.getResult = props.getResult;
-        this.loading = props.loading;
         this.setSelect = props.setSelect;
     }
 
@@ -33,7 +34,7 @@ export default class QueryByName extends React.Component {
     }
 
     getClass() {
-        this.loading(true);
+        setLoading(true);
         axios.get("/api/class").then(
             (response) => {
                 const classData = response.data.data;
@@ -42,12 +43,12 @@ export default class QueryByName extends React.Component {
                 });
             }
         ).finally(() => {
-            this.loading(false);
+            setLoading(false);
         })
     }
 
     getUser() {
-        this.loading(true);
+        setLoading(true);
         setTimeout(() => {
             axios.get(`/api/class/${this.state.selected}/students`).then(
                 (response) => {
@@ -60,7 +61,7 @@ export default class QueryByName extends React.Component {
                 this.setState({
                     display: 1
                 })
-                this.loading(false);
+                setLoading(false);
             })
         }, 500);
     }
@@ -102,8 +103,8 @@ export default class QueryByName extends React.Component {
                 <SelectOption
                     key={index}
                     context={data.class_name}
-                    select={this.selectClass.bind(this, data.id)}
-                    selected={data.id === this.state.selected}
+                    select={this.selectClass.bind(this, data.class_code)}
+                    selected={data.class_code === this.state.selected}
                 />
             )
         });
