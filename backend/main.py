@@ -40,7 +40,7 @@ if __name__ == "__main__":
     logging_config = deepcopy(LOGGING_CONFIG)
     logging_config["formatters"]["file"] = {
         "()": "uvicorn.logging.DefaultFormatter",
-        "fmt": "%(levelprefix)s %(message)s",
+        "fmt": "%(asctime)s %(levelprefix)s %(message)s",
         "use_colors": False,
     }
     logging_config["handlers"]["file"] = {
