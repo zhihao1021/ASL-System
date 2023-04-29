@@ -29,24 +29,32 @@ export function functionInit(fnLoading, fnMessage) {
 }
 
 export function getUserInfoList(sidList, callback) {
-    const notExistSid = sidList.filter(sid => !Object.keys(userInfoData).includes(sid));
+    let uniqueSidList = sidList.filter((item, pos) => {
+        return sidList.indexOf(item) === pos;
+    })
+    const notExistSid = uniqueSidList.filter(
+        sid => !Object.keys(userInfoData).includes(`c${sid}`)
+    );
     axios.all(
         notExistSid.map(sid => axios.get(`/api/info/user/${sid}`))
     ).then((responses) => {
         responses.forEach((response, index) => {
             const sid = notExistSid[index];
             const data = response.data.data;
-            userInfoData[sid] = data;
+            userInfoData[`c${sid}`] = data;
         });
 
-        const results = sidList.map(sid => userInfoData[sid])
+        const results = sidList.map(sid => userInfoData[`c${sid}`])
         callback(results)
     });
 }
 
 export function getClassInfoList(classCodeList, callback) {
-    const notExistClassCode = classCodeList.filter(
-        classCode => !Object.keys(classCodeList).includes(classCode)
+    let uniqueclassCodeList = classCodeList.filter((item, pos) => {
+        return classCodeList.indexOf(item) === pos;
+    })
+    const notExistClassCode = uniqueclassCodeList.filter(
+        classCode => !Object.keys(classInfoData).includes(`c${classCode}`)
     );
 
     axios.all(
@@ -55,10 +63,10 @@ export function getClassInfoList(classCodeList, callback) {
         responses.forEach((response, index) => {
             const classCode = notExistClassCode[index];
             const data = response.data.data;
-            classInfoData[classCode] = data;
+            classInfoData[`c${classCode}`] = data;
         });
 
-        const results = classCodeList.map(classCode => classInfoData[classCode])
+        const results = classCodeList.map(classCode => classInfoData[`c${classCode}`])
         callback(results)
     });
 }
