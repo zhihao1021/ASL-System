@@ -20,7 +20,7 @@
 
 #login-history .login-history-box {
     position: relative;
-    margin: 0px;
+    margin: 0px 1vh;
     width: calc(100% - 2vh -2px);
     border-style: solid;
     border-radius: 8px;
