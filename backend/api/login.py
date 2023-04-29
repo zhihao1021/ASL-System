@@ -7,6 +7,8 @@ from swap import VALID_CODE_DICT
 from utils import gen_session_id, gen_valid_code
 from typing import Optional
 
+from logging import getLogger
+
 from fastapi import APIRouter, Cookie, Request, Response, status
 from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
@@ -24,6 +26,8 @@ curd_role = CURDRole()
 curd_session = CURDSession()
 curd_user = CURDUser()
 
+logger = getLogger("uvicorn")
+
 
 @router.post(
     "/auth",
@@ -36,10 +40,15 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
 
     if not VALID_CODE_DICT.valid(session, data.valid_code):
         status_code, response = response_400("Wrong Valid Code!")
+        if user:
+            logger.info(f"{user.name} Login Fail! Reason: Wrong Valid Code!")
+        else:
+            logger.info(f"{request.client.host} Login Fail! Reason: Wrong Valid Code!")
     elif user is None:
         status_code, response = response_404("Account")
     elif data.password != user.password:
         status_code, response = response_403("Wrong Password!")
+        logger.info(f"{user.name} Login Fail! Reason: Wrong Password!")
     else:
         session_obj = await curd_session.get_by_session(session)
         if session_obj is None:
@@ -63,6 +72,8 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
             "success": True,
             "data": "Auth Success!"
         })
+
+        logger.info(f"{request.client.host}:{request.client.port} - {user.name} Login!")
 
     return ORJSONResponse(response.dict(), status_code)
 

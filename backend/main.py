@@ -9,7 +9,6 @@ from os.path import isdir, isfile
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from sqlmodel import SQLModel
 from uvicorn import Config, Server
 from uvicorn.config import LOGGING_CONFIG
 
