@@ -14,12 +14,15 @@ class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
     def __init__(self) -> None:
         super().__init__(Status)
         self.map = None
+        self.h_map = None
     
     async def get_map(
         self,
         has_type: bool = False
     ) -> Union[dict[int, str], dict[int, list[str, int]]]:
-        if self.map:
+        if has_type and self.h_map:
+            return self.h_map
+        elif not has_type and  self.map:
             return self.map
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(Status)
@@ -35,6 +38,7 @@ class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
                         map(lambda data: data.status_type, data_list)
                     )
                 }
+                self.h_map = result
             else:
                 result = {
                     key: value
@@ -43,7 +47,7 @@ class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
                         map(lambda data: data.status_title, data_list)
                     )
                 }
+                self.map = result
 
-            self.map = result
 
             return result
