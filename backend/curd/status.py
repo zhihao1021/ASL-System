@@ -22,7 +22,7 @@ class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
     ) -> Union[dict[int, str], dict[int, list[str, int]]]:
         if has_type and self.h_map:
             return self.h_map
-        elif not has_type and  self.map:
+        elif not has_type and self.map:
             return self.map
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(Status)
