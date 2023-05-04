@@ -254,7 +254,8 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
     class_code_eq = False
     if not (self_data or has_permission) and leaves:
         leave_user = await curd_user.get_by_sid(leaves[0].sid)
-        class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
+        class_code_eq = (user.class_code == leave_user.class_code) and (role.permissions & permissions.READ_SELF_LEAVE_DATA)
+        print(user.class_code, leave_user.class_code, role.permissions, class_code_eq)
 
     if self_data or has_permission or class_code_eq:
         status_code = status.HTTP_200_OK
