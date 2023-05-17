@@ -280,9 +280,12 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
     description="Get the leave excel sheet by sid."
 )
 async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
-    LEAVE_TYPE = await crud_leave_type.get_map()
-    LESSON = await crud_lesson.get_map()
-    STATUS_MAP = await crud_status.get_map()
+    tasks = [
+        create_task(crud_leave_type.get_map()),
+        create_task(crud_lesson.get_map()),
+        create_task(crud_status.get_map()),
+    ]
+    LEAVE_TYPE, LESSON, STATUS_MAP = await gather(*tasks)
 
     # 取得使用者身份
     login_session = await crud_session.get_by_session(session)
