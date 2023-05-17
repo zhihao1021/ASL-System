@@ -1,6 +1,6 @@
 from .responses import response_403
 
-from curd import CURDSession
+from crud import CRUDSession
 from models import CustomResponse, Role
 from typing import Optional
 from utils import permissions
@@ -14,7 +14,7 @@ from fastapi.responses import ORJSONResponse
 
 router = APIRouter()
 
-curd_session = CURDSession()
+crud_session = CRUDSession()
 
 
 @router.get(
@@ -56,7 +56,7 @@ async def get_announcement(raw: bool = False):
 )
 async def update_announcement(context: str = Form(None), session: Optional[str] = Cookie(None)):
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
 
     # 檢查權限
     role = Role.parse_obj(login_session.role_data)

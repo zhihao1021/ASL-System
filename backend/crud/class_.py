@@ -1,4 +1,4 @@
-from .base import CURDBase
+from .base import CRUDBase
 
 from aiosqlmodel import AsyncSession
 from config import ENGINE
@@ -8,7 +8,7 @@ from schemas import ClassCreate, ClassUpdate
 from sqlmodel import select
 
 
-class CURDClass(CURDBase[Class, ClassCreate, ClassUpdate]):
+class CRUDClass(CRUDBase[Class, ClassCreate, ClassUpdate]):
     def __init__(self) -> None:
         super().__init__(Class)
 

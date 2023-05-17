@@ -1,4 +1,4 @@
-from .base import CURDBase
+from .base import CRUDBase
 
 from aiosqlmodel import AsyncSession
 from config import ENGINE
@@ -10,7 +10,7 @@ from typing import Optional
 from sqlmodel import desc, select
 
 
-class CURDLeave(CURDBase[Leave, LeaveCreate, LeaveUpdate]):
+class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
     def __init__(self) -> None:
         super().__init__(Leave)
 

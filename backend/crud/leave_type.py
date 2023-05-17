@@ -1,4 +1,4 @@
-from .base import CURDBase
+from .base import CRUDBase
 
 from aiosqlmodel import AsyncSession
 from config import ENGINE
@@ -8,7 +8,7 @@ from schemas import LeaveTypeCreate, LeaveTypeUpdate
 from sqlmodel import select
 
 
-class CURDLeaveType(CURDBase[LeaveType, LeaveTypeCreate, LeaveTypeUpdate]):
+class CRUDLeaveType(CRUDBase[LeaveType, LeaveTypeCreate, LeaveTypeUpdate]):
     def __init__(self) -> None:
         super().__init__(LeaveType)
         self.map = None

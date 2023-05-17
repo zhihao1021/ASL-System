@@ -1,6 +1,6 @@
 from .responses import response_403, response_404
 
-from curd import CURDLeave, CURDSession, CURDUser
+from crud import CRUDLeave, CRUDSession, CRUDUser
 from models import CustomResponse, Role, User
 from schemas import LeaveUpdate
 from utils import permissions
@@ -11,19 +11,19 @@ from fastapi.responses import ORJSONResponse
 
 router = APIRouter()
 
-curd_leave = CURDLeave()
-curd_session = CURDSession()
-curd_user = CURDUser()
+crud_leave = CRUDLeave()
+crud_session = CRUDSession()
+crud_user = CRUDUser()
 
 async def leave_authorize(leave_id: int, session, reject_reason: str = "", accept: bool = True) -> tuple[int, CustomResponse]:
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     user = User.parse_obj(login_session.user_data)
 
-    leave = await curd_leave.get(leave_id)
+    leave = await crud_leave.get(leave_id)
 
     if leave:
-        leave_user = await curd_user.get_by_sid(leave.sid)
+        leave_user = await crud_user.get_by_sid(leave.sid)
         
         # 驗證權限
         role = Role.parse_obj(login_session.role_data)
@@ -47,7 +47,7 @@ async def leave_authorize(leave_id: int, session, reject_reason: str = "", accep
             leave_update = LeaveUpdate(status=max(next_status, leave.status))
             if not accept:
                 leave_update.reject_reason = reject_reason
-            leave = await curd_leave.update(leave, leave_update)
+            leave = await crud_leave.update(leave, leave_update)
 
             status_code = status.HTTP_200_OK
             response = CustomResponse(**{

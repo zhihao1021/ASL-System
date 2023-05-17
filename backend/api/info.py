@@ -1,7 +1,7 @@
 from .responses import response_403, response_404
 
 from config import NOWTIME
-from curd import CURDSession, CURDUser
+from crud import CRUDSession, CRUDUser
 from models import CustomResponse, Role, Session, User
 from utils import permissions
 
@@ -13,8 +13,8 @@ from fastapi.responses import ORJSONResponse
 
 router = APIRouter()
 
-curd_session = CURDSession()
-curd_user = CURDUser()
+crud_session = CRUDSession()
+crud_user = CRUDUser()
 
 
 @router.get(
@@ -25,7 +25,7 @@ curd_user = CURDUser()
 )
 async def get_user(sid: str, session: str = Cookie(None)):
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     headers = {
         "cache-control": "max-age=0" if sid == "current" else "max-age=600"
     }
@@ -41,7 +41,7 @@ async def get_user(sid: str, session: str = Cookie(None)):
     else:
         # 驗證權限
         role = Role.parse_obj(login_session.role_data)
-        target_user = await curd_user.get_by_sid(sid)
+        target_user = await crud_user.get_by_sid(sid)
 
         if target_user:
             has_permission = role.permissions & permissions.READ_ALL_STUDENT_DATA
@@ -76,8 +76,8 @@ async def get_user_login_history(session: str = Cookie(None)):
         result = d.dict()
         result["current"] = d.session == session
         return result
-    login_session = await curd_session.get_by_session(session)
-    target_sessions = await curd_session.get_by_sid(login_session.sid)
+    login_session = await crud_session.get_by_session(session)
+    target_sessions = await crud_session.get_by_sid(login_session.sid)
 
     now_datetime = NOWTIME()
     target_sessions.sort(key=lambda d: (

@@ -1,6 +1,6 @@
 from .responses import response_400, response_403, response_404
 
-from curd import CURDLeave, CURDLeaveType, CURDLesson, CURDSession, CURDStatus, CURDUser
+from crud import CRUDLeave, CRUDLeaveType, CRUDLesson, CRUDSession, CRUDStatus, CRUDUser
 from models import CustomResponse, User, Role
 from schemas import LeaveCreate
 from utils import format_exception, permissions
@@ -20,14 +20,14 @@ from openpyxl import Workbook
 
 router = APIRouter()
 
-curd_leave = CURDLeave()
-curd_session = CURDSession()
-curd_user = CURDUser()
+crud_leave = CRUDLeave()
+crud_session = CRUDSession()
+crud_user = CRUDUser()
 
 
-curd_leave_type = CURDLeaveType()
-curd_lesson = CURDLesson()
-curd_status = CURDStatus()
+crud_leave_type = CRUDLeaveType()
+crud_lesson = CRUDLesson()
+crud_status = CRUDStatus()
 
 
 @router.post(
@@ -51,7 +51,7 @@ async def add_leave(
         async with aopen(join(dir_path, f"{index}{sub_filename}"), mode="wb") as write_file:
             await write_file.write(await file.read())
 
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
 
     try:
         files = list(filter(lambda file: file.size <=
@@ -75,7 +75,7 @@ async def add_leave(
             "remark": remark,
             "files": len(files)
         })
-        leave = await curd_leave.create(leave)
+        leave = await crud_leave.create(leave)
 
         if files:
             files_path = f"saves/leave/{leave.id}"
@@ -112,10 +112,10 @@ async def add_leave(
 )
 async def get_leave_by_id(leave_id: int, session: str = Cookie(None)):
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     user = User.parse_obj(login_session.user_data)
 
-    leave = await curd_leave.get(leave_id)
+    leave = await crud_leave.get(leave_id)
 
     if leave:
         # 驗證權限
@@ -125,7 +125,7 @@ async def get_leave_by_id(leave_id: int, session: str = Cookie(None)):
 
         class_code_eq = False
         if not (self_data or has_permission):
-            leave_user = await curd_user.get_by_sid(leave.sid)
+            leave_user = await crud_user.get_by_sid(leave.sid)
             class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
         if self_data or has_permission or class_code_eq:
@@ -153,15 +153,15 @@ async def get_leave_by_id(leave_id: int, session: str = Cookie(None)):
     description="Delete the leave."
 )
 async def delete_leave(leave_id: int, session: str = Cookie(None)):
-    login_session = await curd_session.get_by_session(session)
-    leave = await curd_leave.get(leave_id)
+    login_session = await crud_session.get_by_session(session)
+    leave = await crud_leave.get(leave_id)
 
     if leave.status == 8:
         status_code, response = response_400("Finished Data Can't Delete.")
     elif leave is None:
         status_code, response = response_404("Data")
     elif leave.sid == login_session.sid:
-        await curd_leave.delete(leave_id)
+        await crud_leave.delete(leave_id)
 
         files_path = f"saves/leave/{leave.id}"
         if isdir(files_path):
@@ -193,10 +193,10 @@ async def delete_leave(leave_id: int, session: str = Cookie(None)):
 )
 async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None)):
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     user = User.parse_obj(login_session.user_data)
 
-    leave = await curd_leave.get(leave_id)
+    leave = await crud_leave.get(leave_id)
 
     if leave:
         # 驗證權限
@@ -206,7 +206,7 @@ async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None
 
         class_code_eq = False
         if not (self_data or has_permission):
-            leave_user = await curd_user.get_by_sid(leave.sid)
+            leave_user = await crud_user.get_by_sid(leave.sid)
             class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
         if self_data or has_permission or class_code_eq:
@@ -240,11 +240,11 @@ async def get_leave_file(leave_id: int, file_id: int, session: str = Cookie(None
 )
 async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None)):
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     user = User.parse_obj(login_session.user_data)
 
     sid = login_session.sid if sid == "current" else sid
-    leaves = await curd_leave.get_by_sid(sid, page=page)
+    leaves = await crud_leave.get_by_sid(sid, page=page)
 
     # 驗證權限
     role = Role.parse_obj(login_session.role_data)
@@ -253,7 +253,7 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
 
     class_code_eq = False
     if not (self_data or has_permission):
-        leave_user = await curd_user.get_by_sid(sid)
+        leave_user = await crud_user.get_by_sid(sid)
         class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
     if self_data or has_permission or class_code_eq:
@@ -280,16 +280,16 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
     description="Get the leave excel sheet by sid."
 )
 async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
-    LEAVE_TYPE = await curd_leave_type.get_map()
-    LESSON = await curd_lesson.get_map()
-    STATUS_MAP = await curd_status.get_map()
+    LEAVE_TYPE = await crud_leave_type.get_map()
+    LESSON = await crud_lesson.get_map()
+    STATUS_MAP = await crud_status.get_map()
 
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     user = User.parse_obj(login_session.user_data)
 
     sid = login_session.sid if sid == "current" else sid
-    leaves = await curd_leave.get_by_sid(sid)
+    leaves = await crud_leave.get_by_sid(sid)
 
     # 驗證權限
     role = Role.parse_obj(login_session.role_data)
@@ -298,7 +298,7 @@ async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
 
     class_code_eq = False
     if not (self_data or has_permission) and leaves:
-        leave_user = await curd_user.get_by_sid(leaves[0].sid)
+        leave_user = await crud_user.get_by_sid(leaves[0].sid)
         class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
     if self_data or has_permission or class_code_eq:
@@ -366,7 +366,7 @@ async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
 )
 async def get_leave_by_status(status_: int, session: str = Cookie(None)):
     # 取得使用者身份
-    login_session = await curd_session.get_by_session(session)
+    login_session = await crud_session.get_by_session(session)
     user = User.parse_obj(login_session.user_data)
 
     # 驗證權限
@@ -377,12 +377,12 @@ async def get_leave_by_status(status_: int, session: str = Cookie(None)):
         sids = None
     else:
         if role.permissions & permissions.READ_SELF_LEAVE_DATA:
-            user_list = await curd_user.get_by_class_code(user.class_code, 1)
+            user_list = await crud_user.get_by_class_code(user.class_code, 1)
             sids = list(map(lambda user: user.sid, user_list))
         else:
             sids = [user.sid,]
 
-    leaves = await curd_leave.get_by_status(status_, ids=sids)
+    leaves = await crud_leave.get_by_status(status_, ids=sids)
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
         "status": status_code,
@@ -410,7 +410,7 @@ async def get_type():
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
-        "data": await curd_leave_type.get_map()
+        "data": await crud_leave_type.get_map()
     })
 
     return response.dict()
@@ -427,7 +427,7 @@ async def get_lesson():
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
-        "data": await curd_lesson.get_map()
+        "data": await crud_lesson.get_map()
     })
 
     return response.dict()
@@ -444,7 +444,7 @@ async def get_status():
     response = CustomResponse(**{
         "status": status_code,
         "success": True,
-        "data": await curd_status.get_map(has_type=True)
+        "data": await crud_status.get_map(has_type=True)
     })
 
     return response.dict()

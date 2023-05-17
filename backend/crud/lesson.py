@@ -1,4 +1,4 @@
-from .base import CURDBase
+from .base import CRUDBase
 
 from aiosqlmodel import AsyncSession
 from config import ENGINE
@@ -8,7 +8,7 @@ from schemas import LessonCreate, LessonUpdate
 from sqlmodel import select
 
 
-class CURDLesson(CURDBase[Lesson, LessonCreate, LessonUpdate]):
+class CRUDLesson(CRUDBase[Lesson, LessonCreate, LessonUpdate]):
     def __init__(self) -> None:
         super().__init__(Lesson)
         self.map = None

@@ -1,4 +1,4 @@
-from .base import CURDBase
+from .base import CRUDBase
 
 from aiosqlmodel import AsyncSession
 from config import ENGINE, NOWTIME
@@ -10,7 +10,7 @@ from typing import Optional
 from sqlmodel import select
 
 
-class CURDSession(CURDBase[Session, SessionCreate, SessionUpdate]):
+class CRUDSession(CRUDBase[Session, SessionCreate, SessionUpdate]):
     def __init__(self) -> None:
         super().__init__(Session)
 

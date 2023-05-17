@@ -1,6 +1,6 @@
 from .responses import response_400, response_403, response_404
 
-from curd import CURDRole, CURDSession, CURDUser
+from crud import CRUDRole, CRUDSession, CRUDUser
 from models import CustomResponse
 from schemas import SessionCreate
 from swap import VALID_CODE_DICT
@@ -22,9 +22,9 @@ class LoginData(BaseModel):
 
 router = APIRouter()
 
-curd_role = CURDRole()
-curd_session = CURDSession()
-curd_user = CURDUser()
+crud_role = CRUDRole()
+crud_session = CRUDSession()
+crud_user = CRUDUser()
 
 logger = getLogger("uvicorn")
 
@@ -36,7 +36,7 @@ logger = getLogger("uvicorn")
     description="Auth by account and password to get the session cookies."
 )
 async def auth(request: Request, data: LoginData, session: Optional[str] = Cookie(None)):
-    user = await curd_user.get_by_account(data.account)
+    user = await crud_user.get_by_account(data.account)
 
     if not VALID_CODE_DICT.valid(session, data.valid_code):
         status_code, response = response_400("Wrong Valid Code!")
@@ -50,18 +50,18 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
         status_code, response = response_403("Wrong Password!")
         logger.info(f"{user.name} Login Fail! Reason: Wrong Password!")
     else:
-        session_obj = await curd_session.get_by_session(session)
+        session_obj = await crud_session.get_by_session(session)
         if session_obj is None:
             session_obj = SessionCreate(**{
                 "session": session,
                 "sid": user.sid,
                 "ip": request.client.host or "localhost"
             })
-            session_obj = await curd_session.create(session_obj)
+            session_obj = await crud_session.create(session_obj)
         
-        role = await curd_role.get_by_role_code(user.role)
+        role = await crud_role.get_by_role_code(user.role)
         
-        await curd_session.update(session_obj, {
+        await crud_session.update(session_obj, {
             "user_data": user.dict(),
             "role_data": role.dict(),
         })

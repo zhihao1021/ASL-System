@@ -1,4 +1,4 @@
-from .base import CURDBase
+from .base import CRUDBase
 
 from aiosqlmodel import AsyncSession
 from config import ENGINE
@@ -10,7 +10,7 @@ from typing import Union
 from sqlmodel import select
 
 
-class CURDStatus(CURDBase[Status, StatusCreate, StatusUpdate]):
+class CRUDStatus(CRUDBase[Status, StatusCreate, StatusUpdate]):
     def __init__(self) -> None:
         super().__init__(Status)
         self.map = None

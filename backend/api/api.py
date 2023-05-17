@@ -7,7 +7,7 @@ from .login import router as login_router
 from .logout import router as logout_router
 from .responses import response_403
 
-from curd import CURDSession
+from crud import CRUDSession
 
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import ORJSONResponse
@@ -33,14 +33,14 @@ NEED_AUTH = (
     "/api/openapi.json",
 )
 
-curd_session = CURDSession()
+crud_session = CRUDSession()
 
 
 @api_router.middleware("")
 async def api_filter(request: Request, call_next):
     if request.url.path.startswith(NEED_AUTH):
         session = request.cookies.get("session")
-        login_session = await curd_session.get_by_session(session)
+        login_session = await crud_session.get_by_session(session)
         if login_session is None:
             status_code, c_response = response_403()
             return ORJSONResponse(
@@ -49,7 +49,7 @@ async def api_filter(request: Request, call_next):
                 headers={"cache-control": "max-age=0"}
             )
         try:
-            await curd_session.update_time(login_session)
+            await crud_session.update_time(login_session)
         except:
             pass
 
