@@ -37,7 +37,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             result = await db_session.exec(query_stat)
 
             return result.first()
-    
+
     async def get_by_class_code(
         self,
         class_code: int = None,

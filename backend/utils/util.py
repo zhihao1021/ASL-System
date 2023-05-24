@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 URL_MAP = (ascii_letters + "0123456789").encode()
 
+
 def text_encode(text: Union[str, bytes], raw: bool = False) -> str:
     """
     將明文加密。

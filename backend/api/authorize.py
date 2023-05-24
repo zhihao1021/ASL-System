@@ -15,6 +15,7 @@ crud_leave = CRUDLeave()
 crud_session = CRUDSession()
 crud_user = CRUDUser()
 
+
 async def leave_authorize(leave_id: int, session, reject_reason: str = "", accept: bool = True) -> tuple[int, CustomResponse]:
     # 取得使用者身份
     login_session = await crud_session.get_by_session(session)
@@ -24,7 +25,7 @@ async def leave_authorize(leave_id: int, session, reject_reason: str = "", accep
 
     if leave:
         leave_user = await crud_user.get_by_sid(leave.sid)
-        
+
         # 驗證權限
         role = Role.parse_obj(login_session.role_data)
         has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
@@ -40,7 +41,7 @@ async def leave_authorize(leave_id: int, session, reject_reason: str = "", accep
                     next_status = role.accept_status
             else:
                 next_status = role.reject_status
-            
+
             if not next_status:
                 next_status = leave.status
 

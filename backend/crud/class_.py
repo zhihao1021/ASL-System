@@ -14,7 +14,7 @@ class CRUDClass(CRUDBase[Class, ClassCreate, ClassUpdate]):
 
     async def get_all(self) -> list[Class]:
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Class).where(Class.class_code != -1)
+            query_stat = select(Class)
             result = await db_session.exec(query_stat)
 
             return result.all()

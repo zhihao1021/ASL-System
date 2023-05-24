@@ -43,7 +43,8 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
         if user:
             logger.info(f"{user.name} Login Fail! Reason: Wrong Valid Code!")
         else:
-            logger.info(f"{request.client.host} Login Fail! Reason: Wrong Valid Code!")
+            logger.info(
+                f"{request.client.host} Login Fail! Reason: Wrong Valid Code!")
     elif user is None:
         status_code, response = response_404("Account")
     elif data.password != user.password:
@@ -58,9 +59,9 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
                 "ip": request.client.host or "localhost"
             })
             session_obj = await crud_session.create(session_obj)
-        
+
         role = await crud_role.get_by_role_code(user.role)
-        
+
         await crud_session.update(session_obj, {
             "user_data": user.dict(),
             "role_data": role.dict(),
@@ -73,7 +74,8 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
             "data": "Auth Success!"
         })
 
-        logger.info(f"{request.client.host}:{request.client.port} - {user.name} Login!")
+        logger.info(
+            f"{request.client.host}:{request.client.port} - {user.name} Login!")
 
     return ORJSONResponse(response.dict(), status_code)
 
@@ -82,7 +84,7 @@ async def auth(request: Request, data: LoginData, session: Optional[str] = Cooki
     "/valid-code",
     description="Valid Code."
 )
-def valid_code(session: Optional[str] = Cookie(None), scale: float=0.3):
+def valid_code(session: Optional[str] = Cookie(None), scale: float = 0.3):
     answer, img_bytes = gen_valid_code(scale)
     response = Response(content=img_bytes, headers={
                         "Cache-Control": "no-store"}, media_type="image/jpeg")

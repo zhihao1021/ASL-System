@@ -27,7 +27,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         async with AsyncSession(ENGINE) as db_session:
             query_stat = select(self.model).where(self.model.id == id)
             result = await db_session.exec(query_stat)
-            
+
             return result.first()
 
     async def get_by_ids(self, ids: list[int]) -> Optional[list[ModelType]]:

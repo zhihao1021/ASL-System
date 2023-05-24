@@ -15,8 +15,10 @@ from fastapi.responses import ORJSONResponse
 api_router = FastAPI()
 api_router.include_router(login_router, prefix="/login", tags=["login"])
 
-api_router.include_router(announce_router, prefix="/announce", tags=["announce"])
-api_router.include_router(authorize_router, prefix="/authorize", tags=["authorize"])
+api_router.include_router(
+    announce_router, prefix="/announce", tags=["announce"])
+api_router.include_router(
+    authorize_router, prefix="/authorize", tags=["authorize"])
 api_router.include_router(class_router, prefix="/class", tags=["class"])
 api_router.include_router(info_router, prefix="/info", tags=["info"])
 api_router.include_router(leave_router, prefix="/leave", tags=["leave"])

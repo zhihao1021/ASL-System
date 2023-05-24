@@ -312,6 +312,7 @@ async def export_leave_by_sid(sid: str, finished: bool = True, session: str = Co
                 break
             leaves += l
             i += 1
+
         def export() -> BytesIO:
             SORT_MAP = [
                 "id",
@@ -396,6 +397,7 @@ async def export_all_leave(finished: bool = True, session: str = Cookie(None)):
                 break
             leaves += l
             i += 1
+
         def export() -> BytesIO:
             SORT_MAP = [
                 "id",

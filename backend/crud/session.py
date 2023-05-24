@@ -25,7 +25,7 @@ class CRUDSession(CRUDBase[Session, SessionCreate, SessionUpdate]):
             result = await db_session.exec(query_stat)
 
             return result.first()
-    
+
     async def get_by_sid(
         self,
         sid: str = None,

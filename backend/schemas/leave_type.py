@@ -1,6 +1,7 @@
 from models import LeaveTypeBase
 from utils import optional
 
+
 class LeaveTypeCreate(LeaveTypeBase):
     pass
 

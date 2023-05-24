@@ -16,8 +16,10 @@ class SessionBase(IDBase):
         default_factory=NOWTIME, nullable=False, sa_column=Column(String()), description="最後登入時間")
     ip: str = SQLField(
         nullable=False, description="登入IP")
-    user_data: dict = SQLField({}, sa_column=Column(JSON()), description="使用者資料")
-    role_data: dict = SQLField({}, sa_column=Column(JSON()), description="權限資料")
+    user_data: dict = SQLField(
+        {}, sa_column=Column(JSON()), description="使用者資料")
+    role_data: dict = SQLField(
+        {}, sa_column=Column(JSON()), description="權限資料")
 
 
 class Session(SessionBase, table=True):

@@ -13,7 +13,7 @@ from sqlmodel import desc, select
 class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
     def __init__(self) -> None:
         super().__init__(Leave)
-    
+
     async def get_all(
         self,
         page: int = 0,
@@ -25,7 +25,7 @@ class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
                 query_stat = select(Leave).where(Leave.status == 8)
             else:
                 query_stat = select(Leave)
-                
+
             if page == -1:
                 query_stat = query_stat.order_by(Leave.id)
             else:
@@ -49,7 +49,7 @@ class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
                 query_stat = select(Leave).where(Leave.status == 8)
             else:
                 query_stat = select(Leave)
-                
+
             if page == -1:
                 query_stat = query_stat.where(
                     Leave.sid == sid).order_by(Leave.id)
@@ -69,7 +69,8 @@ class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
         if status is None:
             return []
         async with AsyncSession(ENGINE) as db_session:
-            query_stat = select(Leave).where(Leave.status == status).order_by(Leave.create_time)
+            query_stat = select(Leave).where(
+                Leave.status == status).order_by(Leave.create_time)
             if ids:
                 query_stat = query_stat.where(Leave.sid.in_(ids))
             if limit != -1:

@@ -29,7 +29,7 @@ async def sql_init():
             for i, name in enumerate([
                 "等待導師核准",    # 0
                 "等待教官核准",    # 1
-                "等待學務主任核准", # 2
+                "等待學務主任核准",  # 2
                 "等待校長核准",    # 3
                 "導師退回",        # 4
                 "教官退回",        # 5
@@ -68,7 +68,8 @@ async def sql_init():
                         search_status=2, accept_status=8, reject_status=6,))
             session.add(Role(role_code=5, role_name="校長", permissions=READ_ALL_DATA,
                         search_status=3, accept_status=8, reject_status=7,))
-            session.add(Role(role_code=6, role_name="export", permissions=READ_ALL_DATA))
+            session.add(Role(role_code=6, role_name="export",
+                        permissions=READ_ALL_DATA))
 
             # 班級
             session.add(Class(class_code=-1, class_name="None"))

@@ -15,7 +15,7 @@ class CRUDStatus(CRUDBase[Status, StatusCreate, StatusUpdate]):
         super().__init__(Status)
         self.map = None
         self.h_map = None
-    
+
     async def get_map(
         self,
         has_type: bool = False
@@ -48,6 +48,5 @@ class CRUDStatus(CRUDBase[Status, StatusCreate, StatusUpdate]):
                     )
                 }
                 self.map = result
-
 
             return result
