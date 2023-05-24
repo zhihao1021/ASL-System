@@ -28,6 +28,7 @@ class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
                 query_stat = select(Leave).where(Leave.status == 8)
             else:
                 query_stat = select(Leave)
+                
             if page == -1:
                 query_stat = query_stat.where(
                     Leave.sid == sid).order_by(Leave.id)

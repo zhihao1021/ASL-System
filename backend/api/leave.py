@@ -305,11 +305,13 @@ async def export_leave_by_sid(sid: str, finished: bool = True, session: str = Co
 
     if self_data or has_permission or class_code_eq:
         leaves = []
+        i = 0
         while True:
-            l = await crud_leave.get_by_sid(sid, page=-1, finished=finished)
+            l = await crud_leave.get_by_sid(sid, page=i, finished=finished)
             if len(l) == 0:
                 break
             leaves += l
+            i += 1
         def export() -> BytesIO:
             SORT_MAP = [
                 "id",
