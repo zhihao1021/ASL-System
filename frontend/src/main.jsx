@@ -34,7 +34,13 @@ function updateDisplayBlock() {
         displayBlock[1] = false;
         displayBlock[6] = false;
     }
+
     if (role === 2) {
+        displayBlock[4] = false;
+    }
+    // Export All
+    if (role === 6) {
+        displayBlock[2] = false;
         displayBlock[4] = false;
     }
 }

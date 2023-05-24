@@ -6,6 +6,7 @@ import Results from "./query-results/main";
 import TitleBar from "./title-bar";
 
 import { setLoading, showMessage } from "../utils";
+import { role } from "../variables";
 
 import "../css/query.css";
 
@@ -135,6 +136,10 @@ export default class Query extends React.Component {
                         <p className="ms">ios_share</p>
                         <p>匯出檔案</p>
                     </button>
+                    {role === 6 ? <button className="export-all" onClick={() => {window.open(`/api/leave/export-all`, "_blank").focus();}}>
+                        <p className="ms">ios_share</p>
+                        <p>匯出所有</p>
+                    </button> : null}
                 </TitleBar>
                 <hr />
                 <div className="content">

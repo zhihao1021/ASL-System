@@ -6,6 +6,7 @@
     pointer-events: none;
     transition: opacity 0.5s, border-color 0.3s, color 0.3s;
 }
+#query .title-bar button.export-all,
 #query:has(.query-results.display) .title-bar button {
     opacity: 100%;
     pointer-events: initial;

@@ -66,11 +66,6 @@ async def get_class(class_code: int, session: str = Cookie(None)):
     class_code_eq = user.class_code == class_code
     if has_permission or class_code_eq:
         data = await crud_class.get_by_class_code(class_code)
-        data = data if data else Class(**{
-            "id": -1,
-            "class_code": -1,
-            "class_name": "None"
-        })
         if data:
             status_code = status.HTTP_200_OK
             response = CustomResponse(**{

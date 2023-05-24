@@ -71,6 +71,7 @@ async def sql_init():
             session.add(Role(role_code=6, role_name="export", permissions=READ_ALL_DATA))
 
             # 班級
+            session.add(Class(class_code=-1, class_name="None"))
             session.add(Class(class_code=0, class_name="01"))
             session.add(Class(class_code=1, class_name="02"))
 
