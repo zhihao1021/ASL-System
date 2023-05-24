@@ -369,6 +369,90 @@ async def export_leave_by_sid(sid: str, finished: bool = True, session: str = Co
 
 
 @router.get(
+    "/export-all",
+    description="Get the leave excel sheet by sid."
+)
+async def export_all_leave(finished: bool = True, session: str = Cookie(None)):
+    tasks = [
+        create_task(crud_leave_type.get_map()),
+        create_task(crud_lesson.get_map()),
+        create_task(crud_status.get_map()),
+    ]
+    LEAVE_TYPE, LESSON, STATUS_MAP = await gather(*tasks)
+
+    # 取得使用者身份
+    login_session = await crud_session.get_by_session(session)
+
+    # 驗證權限
+    role = Role.parse_obj(login_session.role_data)
+    has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
+
+    if has_permission:
+        leaves = []
+        i = 0
+        while True:
+            l = await crud_leave.get_all(page=i, finished=finished)
+            if len(l) == 0:
+                break
+            leaves += l
+            i += 1
+        def export() -> BytesIO:
+            SORT_MAP = [
+                "id",
+                "create_time",
+                "sid",
+                "type",
+                "status",
+                "start_date",
+                "start_lesson",
+                "end_date",
+                "end_lesson",
+                "remark",
+                "reject_reason",
+                "files"
+            ]
+            wb = Workbook()
+            ws = wb.active
+            ws.append([
+                "ID",
+                "建立時間",
+                "學號",
+                "假別",
+                "狀態",
+                "開始日期",
+                "開始節次",
+                "結束日期",
+                "結束節次",
+                "備註",
+                "拒絕原因",
+            ])
+            for leave in leaves:
+                raw_data = leave.dict()
+                raw_data["type"] = LEAVE_TYPE[raw_data["type"]]
+                raw_data["status"] = STATUS_MAP[raw_data["status"]]
+                raw_data["start_lesson"] = LESSON[raw_data["start_lesson"]]
+                raw_data["end_lesson"] = LESSON[raw_data["end_lesson"]]
+                data = list(raw_data.items())
+                data.sort(key=lambda t: SORT_MAP.index(t[0]))
+                values = tuple(map(lambda t: t[1], data[:-1]))
+                ws.append(values)
+            io = BytesIO()
+            wb.save(io)
+            io.seek(0)
+
+            return io
+
+        return Response(content=export().read(), headers={"Content-Disposition": "attachment; filename=export.xlsx"})
+    else:
+        status_code, response = response_403()
+
+    return ORJSONResponse(
+        response.dict(),
+        status_code,
+    )
+
+
+@router.get(
     "/status/{status_}",
     response_class=ORJSONResponse,
     response_model=CustomResponse,

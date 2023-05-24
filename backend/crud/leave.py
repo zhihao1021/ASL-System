@@ -13,6 +13,27 @@ from sqlmodel import desc, select
 class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
     def __init__(self) -> None:
         super().__init__(Leave)
+    
+    async def get_all(
+        self,
+        page: int = 0,
+        num: int = 10,
+        finished: bool = False,
+    ) -> list[Leave]:
+        async with AsyncSession(ENGINE) as db_session:
+            if finished:
+                query_stat = select(Leave).where(Leave.status == 8)
+            else:
+                query_stat = select(Leave)
+                
+            if page == -1:
+                query_stat = query_stat.order_by(Leave.id)
+            else:
+                query_stat = query_stat.order_by(desc(Leave.create_time)).offset(
+                    max(page * num, 0)).limit(max(num, 1))
+            result = await db_session.exec(query_stat)
+
+            return result.all()
 
     async def get_by_sid(
         self,
