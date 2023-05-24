@@ -292,7 +292,6 @@ async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
     user = User.parse_obj(login_session.user_data)
 
     sid = login_session.sid if sid == "current" else sid
-    leaves = await crud_leave.get_by_sid(sid)
 
     # 驗證權限
     role = Role.parse_obj(login_session.role_data)
@@ -300,11 +299,12 @@ async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
     has_permission = role.permissions & permissions.READ_ALL_LEAVE_DATA
 
     class_code_eq = False
-    if not (self_data or has_permission) and leaves:
-        leave_user = await crud_user.get_by_sid(leaves[0].sid)
+    if not (self_data or has_permission):
+        leave_user = await crud_user.get_by_sid(sid)
         class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
     if self_data or has_permission or class_code_eq:
+        leaves = await crud_leave.get_by_sid(sid, page=-1)
         def export() -> BytesIO:
             SORT_MAP = [
                 "id",
