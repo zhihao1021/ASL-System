@@ -33,7 +33,7 @@ async def get_class_list(session: str = Cookie(None)):
     else:
         user = User.parse_obj(login_session.user_data)
         data = await crud_class.get_by_class_code(user.class_code)
-        data = [data.dict(),] if data else []
+        data = [data.dict(),] if data.class_code != -1 else []
 
     status_code = status.HTTP_200_OK
     response = CustomResponse(**{
