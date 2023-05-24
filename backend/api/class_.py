@@ -29,8 +29,7 @@ async def get_class_list(session: str = Cookie(None)):
     role = Role.parse_obj(login_session.role_data)
     if role.permissions & permissions.READ_CLASS_LIST:
         data = await crud_class.get_all()
-        data = list(map(lambda class_: class_.dict(),
-                    filter(lambda c: c.class_code != -1, data)))
+        data = list(map(lambda class_: class_.dict(), data))
     else:
         user = User.parse_obj(login_session.user_data)
         data = await crud_class.get_by_class_code(user.class_code)

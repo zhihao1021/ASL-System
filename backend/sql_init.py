@@ -57,6 +57,7 @@ async def sql_init():
 
             READ_ALL_DATA = combine_permissions(
                 permissions.EDIT_ANNOUNCEMENT,
+                permissions.READ_CLASS_LIST,
                 permissions.READ_ALL_CLASS_DATA,
                 permissions.READ_ALL_STUDENT_LIST,
                 permissions.READ_ALL_STUDENT_DATA,
