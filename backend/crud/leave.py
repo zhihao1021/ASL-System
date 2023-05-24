@@ -18,16 +18,21 @@ class CRUDLeave(CRUDBase[Leave, LeaveCreate, LeaveUpdate]):
         self,
         sid: str = None,
         page: int = 0,
-        num: int = 10
+        num: int = 10,
+        finished: bool = False,
     ) -> list[Leave]:
         if sid is None:
             return []
         async with AsyncSession(ENGINE) as db_session:
+            if finished:
+                query_stat = select(Leave).where(Leave.status == 8)
+            else:
+                query_stat = select(Leave)
             if page == -1:
-                query_stat = select(Leave).where(
+                query_stat = query_stat.where(
                     Leave.sid == sid).order_by(Leave.id)
             else:
-                query_stat = select(Leave).where(Leave.sid == sid).order_by(desc(Leave.create_time)).offset(
+                query_stat = query_stat.where(Leave.sid == sid).order_by(desc(Leave.create_time)).offset(
                     max(page * num, 0)).limit(max(num, 1))
             result = await db_session.exec(query_stat)
 

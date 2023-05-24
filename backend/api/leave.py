@@ -279,7 +279,7 @@ async def get_leave_by_sid(sid: str, page: int = 0, session: str = Cookie(None))
     "/sid/{sid}/export",
     description="Get the leave excel sheet by sid."
 )
-async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
+async def export_leave_by_sid(sid: str, finished: bool = True, session: str = Cookie(None)):
     tasks = [
         create_task(crud_leave_type.get_map()),
         create_task(crud_lesson.get_map()),
@@ -304,7 +304,12 @@ async def export_leave_by_sid(sid: str, session: str = Cookie(None)):
         class_code_eq = user.class_code == leave_user.class_code and role.permissions & permissions.READ_SELF_LEAVE_DATA
 
     if self_data or has_permission or class_code_eq:
-        leaves = await crud_leave.get_by_sid(sid, page=-1)
+        leaves = []
+        while True:
+            l = await crud_leave.get_by_sid(sid, page=-1, finished=finished)
+            if len(l) == 0:
+                break
+            leaves += l
         def export() -> BytesIO:
             SORT_MAP = [
                 "id",
