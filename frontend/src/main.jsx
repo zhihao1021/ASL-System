@@ -185,9 +185,9 @@ export default class MainContent extends React.Component {
                         /> : null
                     }
                 </div>
-                <div id="copyright">
+                { /* <div id="copyright">
                     Copyright © {year} <a href="https://github.com/AloneAlongLife/ASL-System" target="_blank" rel="noreferrer">莊智皓</a>
-                </div>
+                </div> */ }
             </div>
         );
     }
